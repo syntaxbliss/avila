@@ -2,6 +2,42 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Material {
+  id: ID!
+  name: String!
+  code: String!
+  measureUnit: MaterialMeasureUnit!
+  currentQuantity: Float!
+  alertQuantity: Float
+  deletedAt: DateTime
+}
+
+enum MaterialMeasureUnit {
+  GR
+  KG
+  TN
+  LT
+  MT
+  UNIT
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Query {
-  _: String!
+  materials: [Material!]!
+}
+
+type Mutation {
+  createMaterial(input: CreateMaterialInput!): Material!
+}
+
+input CreateMaterialInput {
+  name: String!
+  code: String!
+  measureUnit: MaterialMeasureUnit!
+  currentQuantity: Float!
+  alertQuantity: Float
 }

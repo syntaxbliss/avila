@@ -6,7 +6,11 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import TestResolver from './resolvers';
+import { MaterialEntity } from './entities';
+import { MaterialResolver } from './resolvers';
+
+const entities = [MaterialEntity];
+const resolvers = [MaterialResolver];
 
 @Module({
   imports: [
@@ -19,7 +23,7 @@ import TestResolver from './resolvers';
         username: process.env.DATABASE_USERNAME,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_DATABASE,
-        entities: [],
+        entities,
         synchronize: true,
         logging: true,
         migrations: ['dist/migrations/*.js'],
@@ -43,6 +47,6 @@ import TestResolver from './resolvers';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
   ],
-  providers: [TestResolver],
+  providers: [...resolvers],
 })
 export class AppModule {}
