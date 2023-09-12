@@ -3,7 +3,7 @@ import { MaterialMeasureUnitEnum } from 'src/entities';
 import { z } from 'zod';
 
 @InputType()
-export class CreateMaterialInput {
+export class SaveMaterialInput {
   @Field(() => String)
   name: string;
 
@@ -13,16 +13,16 @@ export class CreateMaterialInput {
   @Field(() => MaterialMeasureUnitEnum)
   measureUnit: MaterialMeasureUnitEnum;
 
-  @Field(() => Float)
-  currentQuantity: number;
+  @Field(() => Float, { nullable: true })
+  currentQuantity: number | null;
 
   @Field(() => Float, { nullable: true })
   alertQuantity: number | null;
 }
-export const createMaterialSchema = z.object({
+export const saveMaterialSchema = z.object({
   name: z.string().trim().min(1).max(250),
   code: z.string().trim().min(1).max(20),
   measureUnit: z.nativeEnum(MaterialMeasureUnitEnum),
-  currentQuantity: z.number().nonnegative(),
+  currentQuantity: z.number().nonnegative().optional(),
   alertQuantity: z.number().nonnegative().optional(),
 });

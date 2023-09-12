@@ -1,16 +1,16 @@
 import { Button, Divider, Flex, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
 import { MdOutlineAllInbox, MdOutlineDashboard } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import { RouteURL } from '../types';
 import { Fragment } from 'react';
+import { appRoutes } from '../routes';
 
 type Props = {
   children?: React.ReactNode;
 };
 
 const sections = [
-  { path: RouteURL.DASHBOARD, icon: MdOutlineDashboard, text: 'Escritorio' },
-  { path: RouteURL.MATERIALS, icon: MdOutlineAllInbox, text: 'Materiales' },
+  { path: appRoutes.dashboard.index, icon: MdOutlineDashboard, text: 'Escritorio' },
+  { path: appRoutes.materials.index, icon: MdOutlineAllInbox, text: 'Materiales' },
 ];
 
 export default function Layout({ children }: Props): JSX.Element {
@@ -20,7 +20,7 @@ export default function Layout({ children }: Props): JSX.Element {
         <Sidebar />
       </GridItem>
 
-      <GridItem bg="gray.100" p="3">
+      <GridItem bg="gray.100" px="5" py="4">
         {children}
       </GridItem>
     </Grid>
@@ -29,7 +29,7 @@ export default function Layout({ children }: Props): JSX.Element {
 
 function Sidebar(): JSX.Element {
   return (
-    <Flex h="full" w="full" flexDir="column" bgColor="purple.900">
+    <Flex h="full" w="full" flexDir="column" bgColor="gray.800">
       {sections.map(section => (
         <Fragment key={section.path}>
           <Button

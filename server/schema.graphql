@@ -7,7 +7,7 @@ type Material {
   name: String!
   code: String!
   measureUnit: MaterialMeasureUnit!
-  currentQuantity: Float!
+  currentQuantity: Float
   alertQuantity: Float
   deletedAt: DateTime
 }
@@ -28,16 +28,18 @@ scalar DateTime
 
 type Query {
   materials: [Material!]!
+  material(materialId: ID!): Material!
 }
 
 type Mutation {
-  createMaterial(input: CreateMaterialInput!): Material!
+  createMaterial(input: SaveMaterialInput!): Material!
+  updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
 }
 
-input CreateMaterialInput {
+input SaveMaterialInput {
   name: String!
   code: String!
   measureUnit: MaterialMeasureUnit!
-  currentQuantity: Float!
+  currentQuantity: Float
   alertQuantity: Float
 }

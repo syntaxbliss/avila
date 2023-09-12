@@ -18,7 +18,13 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-      <ChakraProvider resetCSS theme={theme}>
+      <ChakraProvider
+        resetCSS
+        theme={theme}
+        toastOptions={{
+          defaultOptions: { position: 'top-right', duration: 5000, status: 'success' },
+        }}
+      >
         <AppContainer />
       </ChakraProvider>
     </ApolloProvider>

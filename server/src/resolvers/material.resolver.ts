@@ -1,7 +1,7 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { MaterialEntity } from 'src/entities';
-import { CreateMaterialInput, createMaterialSchema } from 'src/input-types';
+import { SaveMaterialInput, saveMaterialSchema } from 'src/input-types';
 import { Material } from 'src/object-types';
 import { DataSource } from 'typeorm';
 
@@ -29,9 +29,16 @@ export default class MaterialResolver {
     return materials.map(material => this.mapMaterialEntityToMaterial(material));
   }
 
+  @Query(() => Material)
+  async material(@Args('materialId', { type: () => ID }) materialId: string): Promise<Material> {
+    const material = await this.ds.manager.findOneByOrFail(MaterialEntity, { id: materialId });
+
+    return this.mapMaterialEntityToMaterial(material);
+  }
+
   @Mutation(() => Material)
-  async createMaterial(@Args('input') input: CreateMaterialInput): Promise<Material> {
-    const data = createMaterialSchema.parse(input);
+  async createMaterial(@Args('input') input: SaveMaterialInput): Promise<Material> {
+    const data = saveMaterialSchema.parse(input);
 
     const materialWithSameCode = await this.ds.manager.findOneBy(MaterialEntity, {
       code: data.code,
@@ -46,8 +53,34 @@ export default class MaterialResolver {
       code: data.code,
       measureUnit: data.measureUnit,
       currentQuantity: data.currentQuantity,
-      alertQuantity: data.alertQuantity ?? null,
+      alertQuantity: data.alertQuantity,
     });
+    await this.ds.manager.save(material);
+
+    return this.mapMaterialEntityToMaterial(material);
+  }
+
+  @Mutation(() => Material)
+  async updateMaterial(
+    @Args('materialId', { type: () => ID }) materialId: string,
+    @Args('input') input: SaveMaterialInput
+  ): Promise<Material> {
+    const data = saveMaterialSchema.parse(input);
+    const material = await this.ds.manager.findOneByOrFail(MaterialEntity, { id: materialId });
+
+    const materialWithSameCode = await this.ds.manager.findOneBy(MaterialEntity, {
+      code: data.code,
+    });
+
+    if (materialWithSameCode && materialWithSameCode.id !== material.id) {
+      throw new GraphQLError('CODE_TAKEN');
+    }
+
+    material.name = data.name;
+    material.code = data.code;
+    material.measureUnit = data.measureUnit;
+    material.currentQuantity = data.currentQuantity ?? null;
+    material.alertQuantity = data.alertQuantity ?? null;
     await this.ds.manager.save(material);
 
     return this.mapMaterialEntityToMaterial(material);

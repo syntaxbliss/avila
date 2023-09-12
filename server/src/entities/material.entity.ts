@@ -15,8 +15,8 @@ export default class MaterialEntity {
   @Column({ type: 'enum', enum: MaterialMeasureUnitEnum })
   measureUnit: MaterialMeasureUnitEnum;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  currentQuantity: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  currentQuantity: number | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   alertQuantity: number | null;

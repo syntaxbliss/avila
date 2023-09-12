@@ -15,8 +15,8 @@ export default class Material {
   @Field(() => MaterialMeasureUnitEnum)
   measureUnit: MaterialMeasureUnitEnum;
 
-  @Field(() => Float)
-  currentQuantity: number;
+  @Field(() => Float, { nullable: true })
+  currentQuantity: number | null;
 
   @Field(() => Float, { nullable: true })
   alertQuantity: number | null;
