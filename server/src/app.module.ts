@@ -6,11 +6,11 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { MaterialEntity } from './entities';
-import { MaterialResolver } from './resolvers';
+import { MaterialEntity, SupplierEntity } from './entities';
+import { MaterialResolver, SupplierResolver } from './resolvers';
 
-const entities = [MaterialEntity];
-const resolvers = [MaterialResolver];
+const entities = [MaterialEntity, SupplierEntity];
+const resolvers = [MaterialResolver, SupplierResolver];
 
 @Module({
   imports: [

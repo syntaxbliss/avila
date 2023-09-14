@@ -59,4 +59,21 @@ export const validationRules = {
       required ? schema : schema.optional()
     );
   },
+
+  email: (required: boolean = true) => {
+    const schema = z.string().trim().email('Ingrese una dirección de email válida.');
+
+    return z.preprocess(
+      val => {
+        const v = String(val).trim();
+
+        if (v.length) {
+          return v;
+        }
+
+        return undefined;
+      },
+      required ? schema : schema.optional()
+    );
+  },
 };

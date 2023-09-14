@@ -4,12 +4,17 @@ import { appRoutes } from '../routes';
 import DashboardContainer from './dashboard/DashboardContainer';
 import MaterialsContainer from './materials/MaterialsContainer';
 import MaterialFormContainer from './materials/MaterialFormContainer';
+import SuppliersContainer from './suppliers/SuppliersContainer';
+import SupplierFormContainer from './suppliers/SupplierFormContainer';
 
 const routes = [
   { path: appRoutes.dashboard.index, element: DashboardContainer },
   { path: appRoutes.materials.index, element: MaterialsContainer },
   { path: appRoutes.materials.create, element: MaterialFormContainer },
   { path: appRoutes.materials.edit, element: MaterialFormContainer },
+  { path: appRoutes.suppliers.index, element: SuppliersContainer },
+  { path: appRoutes.suppliers.create, element: SupplierFormContainer },
+  { path: appRoutes.suppliers.edit, element: SupplierFormContainer },
 ];
 
 export default function AppContainer(): JSX.Element {

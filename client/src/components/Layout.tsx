@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
-import { MdOutlineAllInbox, MdOutlineDashboard } from 'react-icons/md';
+import { MdOutlineAllInbox, MdOutlineDashboard, MdOutlineFireTruck } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { Fragment } from 'react';
 import { appRoutes } from '../routes';
@@ -11,6 +11,7 @@ type Props = {
 const sections = [
   { path: appRoutes.dashboard.index, icon: MdOutlineDashboard, text: 'Escritorio' },
   { path: appRoutes.materials.index, icon: MdOutlineAllInbox, text: 'Materiales' },
+  { path: appRoutes.suppliers.index, icon: MdOutlineFireTruck, text: 'Proveedores' },
 ];
 
 export default function Layout({ children }: Props): JSX.Element {
@@ -20,7 +21,7 @@ export default function Layout({ children }: Props): JSX.Element {
         <Sidebar />
       </GridItem>
 
-      <GridItem bg="gray.100" px="5" py="4">
+      <GridItem bg="gray.100" px="5" py="4" maxH="100%" overflow="auto">
         {children}
       </GridItem>
     </Grid>

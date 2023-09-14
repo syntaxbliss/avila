@@ -26,14 +26,27 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Supplier {
+  id: ID!
+  name: String
+  address: String
+  email: String
+  phone: String
+  deletedAt: DateTime
+}
+
 type Query {
   materials: [Material!]!
   material(materialId: ID!): Material!
+  suppliers: [Supplier!]!
+  supplier(supplierId: ID!): Supplier!
 }
 
 type Mutation {
   createMaterial(input: SaveMaterialInput!): Material!
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
+  createSupplier(input: SaveSupplierInput!): Supplier!
+  updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
 }
 
 input SaveMaterialInput {
@@ -42,4 +55,11 @@ input SaveMaterialInput {
   measureUnit: MaterialMeasureUnit!
   currentQuantity: Float
   alertQuantity: Float
+}
+
+input SaveSupplierInput {
+  name: String!
+  address: String
+  email: String
+  phone: String
 }
