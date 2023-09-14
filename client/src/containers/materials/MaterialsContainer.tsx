@@ -53,7 +53,6 @@ MaterialsContent.gql = {
           measureUnit
           currentQuantity
           alertQuantity
-          deletedAt
         }
       }
     `),
@@ -66,8 +65,8 @@ function MaterialsContent(): JSX.Element {
   });
 
   const getRowColor = useCallback<
-    (material: Material) => React.ComponentProps<typeof Tr>['bgColor']
-  >((material: Material) => {
+    (material: Partial<Material>) => React.ComponentProps<typeof Tr>['bgColor']
+  >((material: Partial<Material>) => {
     if (
       !_.isNull(material.currentQuantity) &&
       !_.isUndefined(material.currentQuantity) &&

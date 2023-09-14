@@ -1,39 +1,28 @@
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { MaterialEntity } from 'src/entities';
+import { MaterialEntity, Material_SupplierEntity, SupplierEntity } from 'src/entities';
 import { SaveMaterialInput, saveMaterialSchema } from 'src/input-types';
-import { Material } from 'src/object-types';
-import { DataSource } from 'typeorm';
+import { SupplierLoader } from 'src/loaders';
+import { mapMaterialEntityToMaterial } from 'src/mappers';
+import { Material, Supplier } from 'src/object-types';
+import { DataSource, In } from 'typeorm';
 
 @Resolver(() => Material)
 export default class MaterialResolver {
   constructor(private readonly ds: DataSource) {}
 
-  private mapMaterialEntityToMaterial(entity: MaterialEntity): Material {
-    const material = new Material();
-    material.id = entity.id;
-    material.name = entity.name;
-    material.code = entity.code;
-    material.measureUnit = entity.measureUnit;
-    material.currentQuantity = entity.currentQuantity;
-    material.alertQuantity = entity.alertQuantity;
-    material.deletedAt = entity.deletedAt;
-
-    return material;
-  }
-
   @Query(() => [Material])
   async materials(): Promise<Material[]> {
     const materials = await this.ds.manager.find(MaterialEntity, { order: { name: 'ASC' } });
 
-    return materials.map(material => this.mapMaterialEntityToMaterial(material));
+    return materials.map(material => mapMaterialEntityToMaterial(material));
   }
 
   @Query(() => Material)
   async material(@Args('materialId', { type: () => ID }) materialId: string): Promise<Material> {
     const material = await this.ds.manager.findOneByOrFail(MaterialEntity, { id: materialId });
 
-    return this.mapMaterialEntityToMaterial(material);
+    return mapMaterialEntityToMaterial(material);
   }
 
   @Mutation(() => Material)
@@ -48,16 +37,29 @@ export default class MaterialResolver {
       throw new GraphQLError('CODE_TAKEN');
     }
 
-    const material = this.ds.manager.create<MaterialEntity>(MaterialEntity, {
-      name: data.name,
-      code: data.code,
-      measureUnit: data.measureUnit,
-      currentQuantity: data.currentQuantity,
-      alertQuantity: data.alertQuantity,
-    });
-    await this.ds.manager.save(material);
+    const suppliers = await this.ds.manager.findBy(SupplierEntity, { id: In(data.suppliers) });
 
-    return this.mapMaterialEntityToMaterial(material);
+    if (suppliers.length !== data.suppliers.length) {
+      throw new GraphQLError('BAD_REQUEST');
+    }
+
+    return this.ds.transaction(async em => {
+      const material = em.create<MaterialEntity>(MaterialEntity, {
+        name: data.name,
+        code: data.code,
+        measureUnit: data.measureUnit,
+        currentQuantity: data.currentQuantity,
+        alertQuantity: data.alertQuantity,
+      });
+      await em.save(material);
+
+      const material_suppliers = suppliers.map(supplier => {
+        return em.create<Material_SupplierEntity>(Material_SupplierEntity, { material, supplier });
+      });
+      await Promise.all(material_suppliers.map(m_s => em.save(m_s)));
+
+      return mapMaterialEntityToMaterial(material);
+    });
   }
 
   @Mutation(() => Material)
@@ -76,13 +78,51 @@ export default class MaterialResolver {
       throw new GraphQLError('CODE_TAKEN');
     }
 
-    material.name = data.name;
-    material.code = data.code;
-    material.measureUnit = data.measureUnit;
-    material.currentQuantity = data.currentQuantity ?? null;
-    material.alertQuantity = data.alertQuantity ?? null;
-    await this.ds.manager.save(material);
+    const suppliers = await this.ds.manager.findBy(SupplierEntity, { id: In(data.suppliers) });
 
-    return this.mapMaterialEntityToMaterial(material);
+    if (suppliers.length !== data.suppliers.length) {
+      throw new GraphQLError('BAD_REQUEST');
+    }
+
+    return this.ds.transaction(async em => {
+      material.name = data.name;
+      material.code = data.code;
+      material.measureUnit = data.measureUnit;
+      material.currentQuantity = data.currentQuantity ?? null;
+      material.alertQuantity = data.alertQuantity ?? null;
+      await this.ds.manager.save(material);
+
+      const material_suppliers = await em.findBy(Material_SupplierEntity, {
+        materialId: material.id,
+      });
+
+      const operations = [];
+
+      data.suppliers.forEach(supplierId => {
+        const isAlreadySaved = material_suppliers.some(m_s => m_s.supplierId === supplierId);
+
+        if (!isAlreadySaved) {
+          const material_supplier = em.create<Material_SupplierEntity>(Material_SupplierEntity, {
+            material,
+            supplier: suppliers.find(supplier => supplier.id === supplierId) as SupplierEntity,
+          });
+          operations.push(em.save(material_supplier));
+        }
+      });
+
+      const toDelete = material_suppliers.filter(m_s => !data.suppliers.includes(m_s.supplierId));
+      operations.push(...toDelete.map(m_s => em.softRemove(m_s)));
+
+      await Promise.all(operations);
+
+      return mapMaterialEntityToMaterial(material);
+    });
+  }
+
+  @ResolveField()
+  suppliers(@Parent() parent: Material): Promise<Supplier[]> {
+    const supplierLoader = new SupplierLoader(this.ds);
+
+    return supplierLoader.suppliersByMaterial.load(parent.id);
   }
 }

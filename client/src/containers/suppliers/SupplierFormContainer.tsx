@@ -75,6 +75,10 @@ SupplierFormContent.gql = {
       mutation SupplierFormContentCreateSupplierMutation($input: SaveSupplierInput!) {
         createSupplier(input: $input) {
           id
+          name
+          address
+          email
+          phone
         }
       }
     `),
@@ -82,6 +86,10 @@ SupplierFormContent.gql = {
       mutation SupplierFormContentUpdateSupplierMutation($supplierId: ID!, $input: SaveSupplierInput!) {
         updateSupplier(supplierId: $supplierId, input: $input) {
           id
+          name
+          address
+          email
+          phone
         }
       }
     `),

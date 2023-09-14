@@ -1,4 +1,4 @@
-import { Field, Float, InputType } from '@nestjs/graphql';
+import { Field, Float, ID, InputType } from '@nestjs/graphql';
 import { MaterialMeasureUnitEnum } from 'src/entities';
 import { z } from 'zod';
 
@@ -18,6 +18,9 @@ export class SaveMaterialInput {
 
   @Field(() => Float, { nullable: true })
   alertQuantity: number | null;
+
+  @Field(() => [ID])
+  suppliers: string[];
 }
 export const saveMaterialSchema = z.object({
   name: z.string().trim().min(1).max(250),
@@ -25,4 +28,5 @@ export const saveMaterialSchema = z.object({
   measureUnit: z.nativeEnum(MaterialMeasureUnitEnum),
   currentQuantity: z.number().nonnegative().optional(),
   alertQuantity: z.number().nonnegative().optional(),
+  suppliers: z.array(z.string().uuid()),
 });

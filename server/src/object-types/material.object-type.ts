@@ -1,5 +1,6 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { MaterialMeasureUnitEnum } from 'src/entities';
+import Supplier from './supplier.object-type';
 
 @ObjectType()
 export default class Material {
@@ -20,6 +21,9 @@ export default class Material {
 
   @Field(() => Float, { nullable: true })
   alertQuantity: number | null;
+
+  @Field(() => [Supplier])
+  suppliers: Supplier[];
 
   @Field(() => Date, { nullable: true })
   deletedAt: Date | null;

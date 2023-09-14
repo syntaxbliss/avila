@@ -1,6 +1,7 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SupplierEntity } from 'src/entities';
 import { SaveSupplierInput, saveSupplierSchema } from 'src/input-types';
+import { mapSupplierEntityToSupplier } from 'src/mappers';
 import { Supplier } from 'src/object-types';
 import { DataSource } from 'typeorm';
 
@@ -8,30 +9,18 @@ import { DataSource } from 'typeorm';
 export default class SupplierResolver {
   constructor(private readonly ds: DataSource) {}
 
-  private mapSupplierEntityToSupplier(entity: SupplierEntity): Supplier {
-    const supplier = new Supplier();
-    supplier.id = entity.id;
-    supplier.name = entity.name;
-    supplier.address = entity.address;
-    supplier.email = entity.email;
-    supplier.phone = entity.phone;
-    supplier.deletedAt = entity.deletedAt;
-
-    return supplier;
-  }
-
   @Query(() => [Supplier])
   async suppliers(): Promise<Supplier[]> {
     const suppliers = await this.ds.manager.find(SupplierEntity, { order: { name: 'ASC' } });
 
-    return suppliers.map(supplier => this.mapSupplierEntityToSupplier(supplier));
+    return suppliers.map(supplier => mapSupplierEntityToSupplier(supplier));
   }
 
   @Query(() => Supplier)
   async supplier(@Args('supplierId', { type: () => ID }) supplierId: string): Promise<Supplier> {
     const supplier = await this.ds.manager.findOneByOrFail(SupplierEntity, { id: supplierId });
 
-    return this.mapSupplierEntityToSupplier(supplier);
+    return mapSupplierEntityToSupplier(supplier);
   }
 
   @Mutation(() => Supplier)
@@ -46,7 +35,7 @@ export default class SupplierResolver {
     });
     await this.ds.manager.save(SupplierEntity, supplier);
 
-    return this.mapSupplierEntityToSupplier(supplier);
+    return mapSupplierEntityToSupplier(supplier);
   }
 
   @Mutation(() => Supplier)
@@ -63,6 +52,6 @@ export default class SupplierResolver {
     supplier.phone = data.phone || null;
     await this.ds.manager.save(SupplierEntity, supplier);
 
-    return this.mapSupplierEntityToSupplier(supplier);
+    return mapSupplierEntityToSupplier(supplier);
   }
 }

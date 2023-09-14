@@ -48,7 +48,6 @@ SuppliersContent.gql = {
           address
           email
           phone
-          deletedAt
         }
       }
     `),

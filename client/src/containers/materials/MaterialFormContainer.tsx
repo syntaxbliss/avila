@@ -1,23 +1,25 @@
 import { Button, Container, Divider, Grid, GridItem, useToast } from '@chakra-ui/react';
 import {
   Card,
+  FormAutocomplete,
+  FormAutocompleteOption,
   FormInputNumber,
   FormInputText,
   FormSwitch,
   MeasureUnitSelect,
   PageHeader,
+  SuspenseSpinner,
 } from '../../components';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { appRoutes } from '../../routes';
 import { MdOutlineArrowCircleLeft } from 'react-icons/md';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
 import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
 import { MaterialMeasureUnit } from '../../__generated__/graphql';
-import SuspenseSpinner from '../../components/SuspenseSpinner';
 
 type FormState = {
   name: string;
@@ -26,6 +28,7 @@ type FormState = {
   stockable: boolean;
   currentQuantity: string;
   alertQuantity: string;
+  suppliers: string[];
 };
 
 const formSchema = z
@@ -36,6 +39,7 @@ const formSchema = z
     measureUnit: validationRules.enum(MaterialMeasureUnit),
     currentQuantity: validationRules.decimal(0, 99999999.99, false),
     alertQuantity: validationRules.decimal(0, 99999999.99, false),
+    suppliers: z.array(z.string().trim().uuid()),
   })
   .refine(schema => (schema.stockable ? !_.isUndefined(schema.currentQuantity) : true), {
     path: ['currentQuantity'],
@@ -97,6 +101,14 @@ MaterialFormContent.gql = {
       mutation MaterialFormContentCreateMaterialMutation($input: SaveMaterialInput!) {
         createMaterial(input: $input) {
           id
+          name
+          code
+          measureUnit
+          currentQuantity
+          alertQuantity
+          suppliers {
+            id
+          }
         }
       }
     `),
@@ -104,6 +116,14 @@ MaterialFormContent.gql = {
       mutation MaterialFormContentUpdateMaterialMutation($materialId: ID!, $input: SaveMaterialInput!) {
         updateMaterial(materialId: $materialId, input: $input) {
           id
+          name
+          code
+          measureUnit
+          currentQuantity
+          alertQuantity
+          suppliers {
+            id
+          }
         }
       }
     `),
@@ -118,6 +138,17 @@ MaterialFormContent.gql = {
           measureUnit
           currentQuantity
           alertQuantity
+          suppliers {
+            id
+          }
+        }
+      }
+    `),
+    suppliers: gql(`
+      query MaterialFormContentSuppliersQuery {
+        suppliers {
+          id
+          name
         }
       }
     `),
@@ -129,39 +160,49 @@ type MaterialFormContentProps = {
 };
 
 function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Element {
-  const { data } = useSuspenseQuery(MaterialFormContent.gql.queries.material, {
+  const { data: materialData } = useSuspenseQuery(MaterialFormContent.gql.queries.material, {
     variables: { materialId: String(materialId) },
     skip: !materialId,
   });
+  const { data: suppliersData } = useSuspenseQuery(MaterialFormContent.gql.queries.suppliers);
 
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [form, setForm] = useState<FormState>({
-    name: data?.material.name ?? '',
-    code: data?.material.code ?? '',
-    measureUnit: data?.material.measureUnit ?? '',
-    stockable: _.isUndefined(data?.material.currentQuantity)
-      ? false
-      : !_.isNull(data?.material.currentQuantity),
-    currentQuantity: _.isUndefined(data?.material.currentQuantity)
-      ? ''
-      : _.isNull(data?.material.currentQuantity)
-      ? ''
-      : Number(data?.material.currentQuantity).toFixed(2),
-    alertQuantity: _.isUndefined(data?.material.alertQuantity)
-      ? ''
-      : _.isNull(data?.material.alertQuantity)
-      ? ''
-      : Number(data?.material.alertQuantity).toFixed(2),
-  });
-
-  const [formErrors, setFormErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [createMaterialMutation, createMaterialMutationStatus] = useMutation(
     MaterialFormContent.gql.mutations.createMaterial
   );
   const [updateMaterialMutation, updateMaterialMutationStatus] = useMutation(
     MaterialFormContent.gql.mutations.updateMaterial
   );
+
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState<FormState>({
+    name: materialData?.material.name ?? '',
+    code: materialData?.material.code ?? '',
+    measureUnit: materialData?.material.measureUnit ?? '',
+    stockable: _.isUndefined(materialData?.material.currentQuantity)
+      ? false
+      : !_.isNull(materialData?.material.currentQuantity),
+    currentQuantity: _.isUndefined(materialData?.material.currentQuantity)
+      ? ''
+      : _.isNull(materialData?.material.currentQuantity)
+      ? ''
+      : Number(materialData?.material.currentQuantity).toFixed(2),
+    alertQuantity: _.isUndefined(materialData?.material.alertQuantity)
+      ? ''
+      : _.isNull(materialData?.material.alertQuantity)
+      ? ''
+      : Number(materialData?.material.alertQuantity).toFixed(2),
+    suppliers: materialData?.material.suppliers.map(s => s.id) ?? [],
+  });
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+
+  const suppliersOptions: FormAutocompleteOption[] = useMemo(() => {
+    return suppliersData.suppliers.map(supplier => ({
+      label: String(supplier.name),
+      value: supplier.id,
+    }));
+  }, [suppliersData]);
 
   const handleStockableChange = useCallback((checked: boolean) => {
     setForm(form => {
@@ -201,6 +242,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
                 measureUnit: validation.data.measureUnit as MaterialMeasureUnit,
                 currentQuantity: validation.data.currentQuantity,
                 alertQuantity: validation.data.alertQuantity,
+                suppliers: validation.data.suppliers,
               },
             },
             onError(error) {
@@ -225,6 +267,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
                 measureUnit: validation.data.measureUnit as MaterialMeasureUnit,
                 currentQuantity: validation.data.currentQuantity,
                 alertQuantity: validation.data.alertQuantity,
+                suppliers: validation.data.suppliers,
               },
             },
             onError(error) {
@@ -312,6 +355,19 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
               value={form.alertQuantity}
               onChange={e => setForm({ ...form, alertQuantity: e })}
               error={formErrors.alertQuantity}
+            />
+
+            <GridItem gridColumn="1 / 3">
+              <Divider />
+            </GridItem>
+
+            <FormAutocomplete
+              label="Proveedores"
+              gridColumn="1 / 3"
+              multiple
+              onChange={e => setForm({ ...form, suppliers: e })}
+              options={suppliersOptions}
+              value={form.suppliers}
             />
 
             <GridItem gridColumn="1 / 3">
