@@ -1,19 +1,36 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { MaterialEntity, Material_SupplierEntity, SupplierEntity } from 'src/entities';
-import { SaveMaterialInput, saveMaterialSchema } from 'src/input-types';
+import { SaveMaterialInput, SearchMaterialInput, saveMaterialSchema } from 'src/input-types';
 import { SupplierLoader } from 'src/loaders';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
 import { Material, Supplier } from 'src/object-types';
-import { DataSource, In } from 'typeorm';
+import { DataSource, FindManyOptions, FindOptionsOrderValue, In, Like } from 'typeorm';
 
 @Resolver(() => Material)
 export default class MaterialResolver {
-  constructor(private readonly ds: DataSource) {}
+  constructor(private readonly ds: DataSource, private readonly supplierLoader: SupplierLoader) {}
 
   @Query(() => [Material])
-  async materials(): Promise<Material[]> {
-    const materials = await this.ds.manager.find(MaterialEntity, { order: { name: 'ASC' } });
+  async materials(
+    @Args('searchParams', { nullable: true }) searchParams?: SearchMaterialInput
+  ): Promise<Material[]> {
+    const options: FindManyOptions<MaterialEntity> = {};
+
+    if (searchParams?.name) {
+      options.where = { ...options.where, name: Like(`%${searchParams.name}%`) };
+    }
+
+    if (searchParams?.code) {
+      options.where = { ...options.where, code: Like(`%${searchParams.code}%`) };
+    }
+
+    const sortField: keyof MaterialEntity = searchParams?.sortField ?? 'name';
+    const sortOrder: FindOptionsOrderValue = searchParams?.sortOrder ?? 'ASC';
+    options.order = { [sortField]: sortOrder, material_suppliers: { supplier: { name: 'ASC' } } };
+    this.supplierLoader.setSuppliersByMaterialOrder(options.order);
+
+    const materials = await this.ds.manager.find(MaterialEntity, options);
 
     return materials.map(material => mapMaterialEntityToMaterial(material));
   }
@@ -142,8 +159,6 @@ export default class MaterialResolver {
 
   @ResolveField()
   suppliers(@Parent() parent: Material): Promise<Supplier[]> {
-    const supplierLoader = new SupplierLoader(this.ds);
-
-    return supplierLoader.suppliersByMaterial.load(parent.id);
+    return this.supplierLoader.loadSuppliersByMaterial(parent.id);
   }
 }

@@ -8,9 +8,11 @@ import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { MaterialEntity, Material_SupplierEntity, SupplierEntity } from './entities';
 import { MaterialResolver, SupplierResolver } from './resolvers';
+import { SupplierLoader } from './loaders';
 
 const entities = [MaterialEntity, SupplierEntity, Material_SupplierEntity];
 const resolvers = [MaterialResolver, SupplierResolver];
+const loaders = [SupplierLoader];
 
 @Module({
   imports: [
@@ -47,6 +49,6 @@ const resolvers = [MaterialResolver, SupplierResolver];
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
   ],
-  providers: [...resolvers],
+  providers: [...resolvers, ...loaders],
 })
 export class AppModule {}

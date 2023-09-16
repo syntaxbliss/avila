@@ -1,5 +1,8 @@
 import {
   Button,
+  Divider,
+  Grid,
+  GridItem,
   IconButton,
   Table,
   TableContainer,
@@ -12,18 +15,59 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { Card, DeleteDialog, NoRecordsAlert, PageHeader, SuspenseSpinner } from '../../components';
+import {
+  Card,
+  DeleteDialog,
+  FormInputText,
+  FormSelect,
+  NoRecordsAlert,
+  PageHeader,
+  SuspenseSpinner,
+} from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdDelete, MdEdit } from 'react-icons/md';
+import { MdAddCircleOutline, MdDelete, MdEdit, MdFilterAltOff } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
 import { formatMaterialQuantity } from '../../helpers';
 import { useCallback, useState } from 'react';
-import { Material } from '../../__generated__/graphql';
+import {
+  Material,
+  MaterialsContentMaterialsQueryQueryVariables,
+  QuerySortOrder,
+  SearchMaterialQuerySortField,
+} from '../../__generated__/graphql';
 import _ from 'lodash';
+import { useFilters } from '../../hooks';
+
+type SearchParams = {
+  code: string;
+  name: string;
+  sortField: SearchMaterialQuerySortField;
+  sortOrder: QuerySortOrder;
+};
+
+const sortFieldSelectOptions = [
+  { label: 'Nombre', value: SearchMaterialQuerySortField.Name },
+  { label: 'Código', value: SearchMaterialQuerySortField.Code },
+];
+
+const sortOrderSelectOptions = [
+  { label: 'Ascendente', value: QuerySortOrder.Asc },
+  { label: 'Descendente', value: QuerySortOrder.Desc },
+];
+
+const defaultFilters: SearchParams = {
+  code: '',
+  name: '',
+  sortField: SearchMaterialQuerySortField.Name,
+  sortOrder: QuerySortOrder.Asc,
+};
 
 export default function MaterialsContainer(): JSX.Element {
+  const [form, setForm] = useState<SearchParams>({ ...defaultFilters });
+  const searchParams = useFilters(defaultFilters, form);
+
   return (
     <>
       <PageHeader title="Materiales" />
@@ -37,8 +81,61 @@ export default function MaterialsContainer(): JSX.Element {
         Nuevo material
       </Button>
 
+      <Card mt="8" title="Filtros">
+        <Grid templateColumns="1fr 1fr auto 1fr 1fr auto auto" gap="5">
+          <FormInputText
+            label="Código"
+            value={form.code}
+            onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
+          />
+
+          <FormInputText
+            label="Nombre"
+            value={form.name}
+            onChange={e => setForm({ ...form, name: e.target.value })}
+          />
+
+          <GridItem>
+            <Divider orientation="vertical" />
+          </GridItem>
+
+          <FormSelect
+            label="Ordenar por"
+            options={sortFieldSelectOptions}
+            value={form.sortField}
+            onChange={e =>
+              setForm({ ...form, sortField: e.target.value as SearchMaterialQuerySortField })
+            }
+            placeholder=""
+          />
+
+          <FormSelect
+            label="Sentido"
+            options={sortOrderSelectOptions}
+            value={form.sortOrder}
+            onChange={e => setForm({ ...form, sortOrder: e.target.value as QuerySortOrder })}
+            placeholder=""
+          />
+
+          <GridItem>
+            <Divider orientation="vertical" />
+          </GridItem>
+
+          <GridItem alignSelf="flex-end">
+            <IconButton
+              rounded="full"
+              aria-label="clear-filters"
+              icon={<MdFilterAltOff />}
+              colorScheme="orange"
+              onClick={() => setForm(defaultFilters)}
+              isDisabled={_.isEqual(defaultFilters, form)}
+            />
+          </GridItem>
+        </Grid>
+      </Card>
+
       <SuspenseSpinner>
-        <MaterialsContent />
+        <MaterialsContent searchParams={searchParams} />
       </SuspenseSpinner>
     </>
   );
@@ -47,8 +144,8 @@ export default function MaterialsContainer(): JSX.Element {
 MaterialsContent.gql = {
   queries: {
     materials: gql(`
-      query MaterialsContentMaterialsQuery {
-        materials {
+      query MaterialsContentMaterialsQuery ($searchParams: SearchMaterialInput) {
+        materials (searchParams: $searchParams) {
           id
           name
           code
@@ -68,9 +165,14 @@ MaterialsContent.gql = {
   },
 };
 
-function MaterialsContent(): JSX.Element {
+type MaterialsContentProps = {
+  searchParams: MaterialsContentMaterialsQueryQueryVariables['searchParams'];
+};
+
+function MaterialsContent({ searchParams }: MaterialsContentProps): JSX.Element {
   const { data, refetch } = useSuspenseQuery(MaterialsContent.gql.queries.materials, {
     fetchPolicy: 'network-only',
+    variables: { searchParams: { ...searchParams } },
   });
 
   const [deleteMaterialMutation, deleteMaterialMutationStatus] = useMutation(

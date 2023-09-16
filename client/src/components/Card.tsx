@@ -1,4 +1,4 @@
-import { Flex, Heading } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 
 type Props = React.ComponentProps<typeof Flex> & {
   children?: React.ReactNode;
@@ -18,7 +18,13 @@ export default function Card({ children, title, ...rest }: Props): JSX.Element {
       rounded="md"
       {...rest}
     >
-      {title && <Heading size="md">{title}</Heading>}
+      {title && (
+        <>
+          <Heading size="md">{title}</Heading>
+
+          <Divider mt="2" mb="5" />
+        </>
+      )}
 
       {children}
     </Flex>

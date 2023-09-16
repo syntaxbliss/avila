@@ -13,6 +13,7 @@ type Props = {
   label?: string;
   onChange: React.ComponentProps<typeof Select>['onChange'];
   options: FormSelectOption[];
+  placeholder?: React.ComponentProps<typeof Select>['placeholder'];
   value: React.ComponentProps<typeof Select>['value'];
 };
 
@@ -24,6 +25,7 @@ export default function FormSelect({
   label,
   onChange,
   options,
+  placeholder = ' ',
   value,
 }: Props): JSX.Element {
   return (
@@ -35,7 +37,7 @@ export default function FormSelect({
           variant="filled"
           value={value}
           onChange={onChange}
-          placeholder=" "
+          placeholder={placeholder}
           isDisabled={isDisabled}
         >
           {options.map(option => (

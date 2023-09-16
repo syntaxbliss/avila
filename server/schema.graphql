@@ -37,10 +37,27 @@ enum MaterialMeasureUnit {
 }
 
 type Query {
-  materials: [Material!]!
+  materials(searchParams: SearchMaterialInput): [Material!]!
   material(materialId: ID!): Material!
   suppliers: [Supplier!]!
   supplier(supplierId: ID!): Supplier!
+}
+
+input SearchMaterialInput {
+  name: String
+  code: String
+  sortField: SearchMaterialQuerySortField
+  sortOrder: QuerySortOrder
+}
+
+enum SearchMaterialQuerySortField {
+  CODE
+  NAME
+}
+
+enum QuerySortOrder {
+  ASC
+  DESC
 }
 
 type Mutation {
