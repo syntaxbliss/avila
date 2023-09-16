@@ -20,8 +20,10 @@ import {
   DeleteDialog,
   FormInputText,
   FormSelect,
+  FormSwitch,
   NoRecordsAlert,
   PageHeader,
+  Pagination,
   SuspenseSpinner,
 } from '../../components';
 import { Link } from 'react-router-dom';
@@ -30,10 +32,10 @@ import { MdAddCircleOutline, MdDelete, MdEdit, MdFilterAltOff } from 'react-icon
 import { gql } from '../../__generated__';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
 import { formatMaterialQuantity } from '../../helpers';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   Material,
-  MaterialsContentMaterialsQueryQueryVariables,
+  PaginationInput,
   QuerySortOrder,
   SearchMaterialQuerySortField,
 } from '../../__generated__/graphql';
@@ -43,6 +45,7 @@ import { useFilters } from '../../hooks';
 type SearchParams = {
   code: string;
   name: string;
+  lowQuantity: boolean;
   sortField: SearchMaterialQuerySortField;
   sortOrder: QuerySortOrder;
 };
@@ -60,6 +63,7 @@ const sortOrderSelectOptions = [
 const defaultFilters: SearchParams = {
   code: '',
   name: '',
+  lowQuantity: false,
   sortField: SearchMaterialQuerySortField.Name,
   sortOrder: QuerySortOrder.Asc,
 };
@@ -82,47 +86,64 @@ export default function MaterialsContainer(): JSX.Element {
       </Button>
 
       <Card mt="8" title="Filtros">
-        <Grid templateColumns="1fr 1fr auto 1fr 1fr auto auto" gap="5">
-          <FormInputText
-            label="Código"
-            value={form.code}
-            onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
-          />
+        <Grid templateColumns="1fr auto 1fr auto auto" gap="5">
+          <GridItem>
+            <Grid templateColumns="1fr 1fr" gap="5">
+              <FormInputText
+                label="Código"
+                value={form.code}
+                onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
+              />
 
-          <FormInputText
-            label="Nombre"
-            value={form.name}
-            onChange={e => setForm({ ...form, name: e.target.value })}
-          />
+              <FormInputText
+                label="Nombre"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+              />
+
+              <FormSwitch
+                gridColumn="1 / 3"
+                label="Sólo materiales con bajas existencias"
+                id="materials-container__low-quantity"
+                value={form.lowQuantity}
+                onChange={e => setForm({ ...form, lowQuantity: e })}
+              />
+            </Grid>
+          </GridItem>
 
           <GridItem>
             <Divider orientation="vertical" />
           </GridItem>
 
-          <FormSelect
-            label="Ordenar por"
-            options={sortFieldSelectOptions}
-            value={form.sortField}
-            onChange={e =>
-              setForm({ ...form, sortField: e.target.value as SearchMaterialQuerySortField })
-            }
-            placeholder=""
-          />
+          <GridItem>
+            <Grid templateColumns="1fr 1fr" gap="5">
+              <FormSelect
+                label="Ordenar por"
+                options={sortFieldSelectOptions}
+                value={form.sortField}
+                onChange={e =>
+                  setForm({ ...form, sortField: e.target.value as SearchMaterialQuerySortField })
+                }
+                placeholder=""
+              />
 
-          <FormSelect
-            label="Sentido"
-            options={sortOrderSelectOptions}
-            value={form.sortOrder}
-            onChange={e => setForm({ ...form, sortOrder: e.target.value as QuerySortOrder })}
-            placeholder=""
-          />
+              <FormSelect
+                label="Sentido"
+                options={sortOrderSelectOptions}
+                value={form.sortOrder}
+                onChange={e => setForm({ ...form, sortOrder: e.target.value as QuerySortOrder })}
+                placeholder=""
+              />
+            </Grid>
+          </GridItem>
 
           <GridItem>
             <Divider orientation="vertical" />
           </GridItem>
 
-          <GridItem alignSelf="flex-end">
+          <GridItem>
             <IconButton
+              mt="6"
               rounded="full"
               aria-label="clear-filters"
               icon={<MdFilterAltOff />}
@@ -144,14 +165,21 @@ export default function MaterialsContainer(): JSX.Element {
 MaterialsContent.gql = {
   queries: {
     materials: gql(`
-      query MaterialsContentMaterialsQuery ($searchParams: SearchMaterialInput) {
-        materials (searchParams: $searchParams) {
-          id
-          name
-          code
-          measureUnit
-          currentQuantity
-          alertQuantity
+      query MaterialsContentMaterialsQuery ($searchParams: SearchMaterialInput, $pagination: PaginationInput) {
+        materials (searchParams: $searchParams, pagination: $pagination) {
+          paginationInfo {
+            count
+            pageNumber
+            pageSize
+          }
+          items {
+            id
+            name
+            code
+            measureUnit
+            currentQuantity
+            alertQuantity
+          }
         }
       }
     `),
@@ -166,18 +194,24 @@ MaterialsContent.gql = {
 };
 
 type MaterialsContentProps = {
-  searchParams: MaterialsContentMaterialsQueryQueryVariables['searchParams'];
+  searchParams: SearchParams;
 };
 
 function MaterialsContent({ searchParams }: MaterialsContentProps): JSX.Element {
+  const pagination = useRef<PaginationInput>({ pageNumber: 1, pageSize: 10 });
+
   const { data, refetch } = useSuspenseQuery(MaterialsContent.gql.queries.materials, {
     fetchPolicy: 'network-only',
-    variables: { searchParams: { ...searchParams } },
+    variables: { searchParams, pagination: pagination.current },
   });
 
   const [deleteMaterialMutation, deleteMaterialMutationStatus] = useMutation(
     MaterialsContent.gql.mutations.deleteMaterial
   );
+
+  const refetchWithPersistedVariables = useCallback(() => {
+    refetch({ searchParams, pagination: pagination.current });
+  }, [refetch, searchParams]);
 
   const [toDelete, setToDelete] = useState<Partial<Material>>();
   const toast = useToast();
@@ -205,44 +239,48 @@ function MaterialsContent({ searchParams }: MaterialsContentProps): JSX.Element 
         onCompleted() {
           toast({ description: 'Material eliminado exitosamente.' });
           deleteDialog.onClose();
-          refetch();
+          refetchWithPersistedVariables();
         },
       });
     }
-  }, [toDelete?.id, deleteMaterialMutation, toast, deleteDialog, refetch]);
+  }, [toDelete?.id, deleteMaterialMutation, toast, deleteDialog, refetchWithPersistedVariables]);
 
   return (
     <Card mt="8" px="3" py="2">
-      {data.materials.length > 0 ? (
+      {data.materials.items.length > 0 ? (
         <>
           <TableContainer>
+            <Pagination
+              {...data.materials.paginationInfo}
+              onPageNumberChange={pageNumber => {
+                pagination.current = { ...pagination.current, pageNumber };
+                refetchWithPersistedVariables();
+              }}
+            />
+
+            <Divider my="5" />
+
             <Table size="sm">
               <Thead>
                 <Tr>
                   <Th textAlign="center" w="0">
                     Código
                   </Th>
-                  <Th w="50%">Nombre</Th>
+                  <Th w="75%">Nombre</Th>
                   <Th textAlign="center" w="25%">
-                    Cantidad en stock
-                  </Th>
-                  <Th textAlign="center" w="25%">
-                    Cantidad de alerta
+                    Existencias
                   </Th>
                   <Th w="0" />
                 </Tr>
               </Thead>
 
               <Tbody>
-                {data.materials.map(material => (
+                {data.materials.items.map(material => (
                   <Tr key={material.id} bgColor={getRowColor(material)}>
                     <Td textAlign="center">{material.code}</Td>
                     <Td>{material.name}</Td>
                     <Td textAlign="center">
                       {formatMaterialQuantity(material.currentQuantity, material.measureUnit)}
-                    </Td>
-                    <Td textAlign="center">
-                      {formatMaterialQuantity(material.alertQuantity, material.measureUnit)}
                     </Td>
                     <Td textAlign="center">
                       <IconButton

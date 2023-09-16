@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type PaginationInfo {
+  count: Int!
+  pageNumber: Int!
+  pageSize: Int!
+}
+
 type Supplier {
   id: ID!
   name: String
@@ -36,8 +42,13 @@ enum MaterialMeasureUnit {
   UNIT
 }
 
+type PaginatedMaterials {
+  items: [Material!]!
+  paginationInfo: PaginationInfo!
+}
+
 type Query {
-  materials(searchParams: SearchMaterialInput): [Material!]!
+  materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
   suppliers: [Supplier!]!
   supplier(supplierId: ID!): Supplier!
@@ -46,6 +57,7 @@ type Query {
 input SearchMaterialInput {
   name: String
   code: String
+  lowQuantity: Boolean
   sortField: SearchMaterialQuerySortField
   sortOrder: QuerySortOrder
 }
@@ -58,6 +70,11 @@ enum SearchMaterialQuerySortField {
 enum QuerySortOrder {
   ASC
   DESC
+}
+
+input PaginationInput {
+  pageNumber: Int!
+  pageSize: Int!
 }
 
 type Mutation {

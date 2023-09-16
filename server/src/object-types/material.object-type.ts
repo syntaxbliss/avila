@@ -1,6 +1,7 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { MaterialMeasureUnitEnum } from 'src/entities';
 import Supplier from './supplier.object-type';
+import { PaginatedResponse } from './commons';
 
 @ObjectType()
 export default class Material {
@@ -28,3 +29,6 @@ export default class Material {
   @Field(() => Date, { nullable: true })
   deletedAt: Date | null;
 }
+
+@ObjectType()
+export class PaginatedMaterials extends PaginatedResponse(Material) {}

@@ -1,38 +1,60 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { MaterialEntity, Material_SupplierEntity, SupplierEntity } from 'src/entities';
-import { SaveMaterialInput, SearchMaterialInput, saveMaterialSchema } from 'src/input-types';
+import {
+  PaginationInput,
+  SaveMaterialInput,
+  SearchMaterialInput,
+  saveMaterialSchema,
+} from 'src/input-types';
 import { SupplierLoader } from 'src/loaders';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
 import { Material, Supplier } from 'src/object-types';
-import { DataSource, FindManyOptions, FindOptionsOrderValue, In, Like } from 'typeorm';
+import { PaginatedMaterials } from 'src/object-types/material.object-type';
+import { DataSource, In } from 'typeorm';
 
 @Resolver(() => Material)
 export default class MaterialResolver {
   constructor(private readonly ds: DataSource, private readonly supplierLoader: SupplierLoader) {}
 
-  @Query(() => [Material])
+  @Query(() => PaginatedMaterials)
   async materials(
-    @Args('searchParams', { nullable: true }) searchParams?: SearchMaterialInput
-  ): Promise<Material[]> {
-    const options: FindManyOptions<MaterialEntity> = {};
+    @Args('searchParams', { nullable: true }) searchParams?: SearchMaterialInput,
+    @Args('pagination', { nullable: true }) pagination?: PaginationInput
+  ): Promise<PaginatedMaterials> {
+    const query = this.ds.manager.createQueryBuilder(MaterialEntity, 'material');
 
     if (searchParams?.name) {
-      options.where = { ...options.where, name: Like(`%${searchParams.name}%`) };
+      query.where('material.name LIKE :name', { name: `%${searchParams.name}%` });
     }
 
     if (searchParams?.code) {
-      options.where = { ...options.where, code: Like(`%${searchParams.code}%`) };
+      query.andWhere('material.code LIKE :code', { code: `%${searchParams.code}%` });
     }
 
-    const sortField: keyof MaterialEntity = searchParams?.sortField ?? 'name';
-    const sortOrder: FindOptionsOrderValue = searchParams?.sortOrder ?? 'ASC';
-    options.order = { [sortField]: sortOrder, material_suppliers: { supplier: { name: 'ASC' } } };
-    this.supplierLoader.setSuppliersByMaterialOrder(options.order);
+    if (searchParams?.lowQuantity) {
+      query.andWhere('material.currentQuantity <= material.alertQuantity');
+    }
 
-    const materials = await this.ds.manager.find(MaterialEntity, options);
+    if (pagination) {
+      query.offset((pagination.pageNumber - 1) * pagination.pageSize).limit(pagination.pageSize);
+    }
 
-    return materials.map(material => mapMaterialEntityToMaterial(material));
+    const sortField = searchParams?.sortField ?? 'name';
+    const sortOrder = searchParams?.sortOrder ?? 'ASC';
+    this.supplierLoader.setSuppliersByMaterialOrder({ [sortField]: sortOrder });
+    query.orderBy(`material.${sortField}`, sortOrder);
+
+    const [materials, count] = await query.getManyAndCount();
+
+    return {
+      items: materials.map(material => mapMaterialEntityToMaterial(material)),
+      paginationInfo: {
+        count,
+        pageNumber: pagination?.pageNumber ?? 1,
+        pageSize: pagination?.pageSize ?? count,
+      },
+    };
   }
 
   @Query(() => Material)

@@ -46,6 +46,9 @@ export class SearchMaterialInput {
   @Field(() => String, { nullable: true })
   code: string | null;
 
+  @Field(() => Boolean, { nullable: true })
+  lowQuantity: boolean | null;
+
   @Field(() => SearchMaterialQuerySortFieldEnum, { nullable: true })
   sortField: SearchMaterialQuerySortFieldEnum | null;
 

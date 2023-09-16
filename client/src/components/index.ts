@@ -9,4 +9,5 @@ export { default as Layout } from './Layout';
 export { default as MeasureUnitSelect } from './MeasureUnitSelect';
 export { default as NoRecordsAlert } from './NoRecordsAlert';
 export { default as PageHeader } from './PageHeader';
+export { default as Pagination } from './Pagination';
 export { default as SuspenseSpinner } from './SuspenseSpinner';
