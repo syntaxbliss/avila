@@ -119,6 +119,27 @@ export default class MaterialResolver {
     });
   }
 
+  @Mutation(() => Boolean)
+  async deleteMaterial(
+    @Args('materialId', { type: () => ID }) materialId: string
+  ): Promise<boolean> {
+    return this.ds.transaction(async em => {
+      const material = await em.findOne(MaterialEntity, {
+        where: { id: materialId },
+        relations: { material_suppliers: true },
+      });
+
+      if (!material) {
+        throw new GraphQLError('BAD_REQUEST');
+      }
+
+      await Promise.all(material.material_suppliers.map(m_s => em.softRemove(m_s)));
+      await em.softRemove(material);
+
+      return true;
+    });
+  }
+
   @ResolveField()
   suppliers(@Parent() parent: Material): Promise<Supplier[]> {
     const supplierLoader = new SupplierLoader(this.ds);

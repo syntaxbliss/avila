@@ -163,6 +163,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
   const { data: materialData } = useSuspenseQuery(MaterialFormContent.gql.queries.material, {
     variables: { materialId: String(materialId) },
     skip: !materialId,
+    fetchPolicy: 'network-only',
   });
   const { data: suppliersData } = useSuspenseQuery(MaterialFormContent.gql.queries.suppliers);
 

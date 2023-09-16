@@ -5,7 +5,7 @@ import { MaterialMeasureUnitEnum } from 'src/entities';
 
 export class PopulateMaterialTable1694602992720 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const materials = faker.helpers.uniqueArray(faker.commerce.productName, 500);
+    const materials = faker.helpers.uniqueArray(faker.commerce.productName, 100);
     const codes = new Set();
     const values = materials.map((material, index) => {
       const id = v4();

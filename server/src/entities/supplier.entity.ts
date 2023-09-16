@@ -18,7 +18,7 @@ export default class SupplierEntity {
   @Column({ type: 'varchar', nullable: true })
   phone: string | null;
 
-  @OneToMany(() => Material_SupplierEntity, material_supplier => material_supplier.material)
+  @OneToMany(() => Material_SupplierEntity, material_supplier => material_supplier.supplier)
   material_suppliers: Material_SupplierEntity[];
 
   @DeleteDateColumn()

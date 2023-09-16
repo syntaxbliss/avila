@@ -1,4 +1,5 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GraphQLError } from 'graphql';
 import { SupplierEntity } from 'src/entities';
 import { SaveSupplierInput, saveSupplierSchema } from 'src/input-types';
 import { mapSupplierEntityToSupplier } from 'src/mappers';
@@ -53,5 +54,26 @@ export default class SupplierResolver {
     await this.ds.manager.save(SupplierEntity, supplier);
 
     return mapSupplierEntityToSupplier(supplier);
+  }
+
+  @Mutation(() => Boolean)
+  async deleteSupplier(
+    @Args('supplierId', { type: () => ID }) supplierId: string
+  ): Promise<boolean> {
+    return this.ds.transaction(async em => {
+      const supplier = await em.findOne(SupplierEntity, {
+        where: { id: supplierId },
+        relations: { material_suppliers: true },
+      });
+
+      if (!supplier) {
+        throw new GraphQLError('BAD_REQUEST');
+      }
+
+      await Promise.all(supplier.material_suppliers.map(m_s => em.softRemove(m_s)));
+      await em.softRemove(supplier);
+
+      return true;
+    });
   }
 }

@@ -46,8 +46,10 @@ type Query {
 type Mutation {
   createMaterial(input: SaveMaterialInput!): Material!
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
+  deleteMaterial(materialId: ID!): Boolean!
   createSupplier(input: SaveSupplierInput!): Supplier!
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
+  deleteSupplier(supplierId: ID!): Boolean!
 }
 
 input SaveMaterialInput {

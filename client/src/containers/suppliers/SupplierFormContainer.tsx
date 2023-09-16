@@ -1,5 +1,5 @@
 import { Button, Container, Divider, Grid, GridItem, useToast } from '@chakra-ui/react';
-import { Card, FormInputText, PageHeader } from '../../components';
+import { Card, FormInputText, PageHeader, SuspenseSpinner } from '../../components';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { appRoutes } from '../../routes';
 import { MdOutlineArrowCircleLeft } from 'react-icons/md';
@@ -9,7 +9,6 @@ import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
-import SuspenseSpinner from '../../components/SuspenseSpinner';
 
 type FormState = {
   name: string;
