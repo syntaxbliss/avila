@@ -1,1 +1,1 @@
-export { default as useFilters } from './useFilters';
+export { default as useQueryFilteringAndPagination } from './useQueryFilteringAndPagination';

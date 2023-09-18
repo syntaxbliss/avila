@@ -1,9 +1,10 @@
 import {
+  Box,
   Button,
   Divider,
-  Grid,
-  GridItem,
+  Flex,
   IconButton,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -15,157 +16,27 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import {
-  Card,
-  DeleteDialog,
-  FormInputText,
-  FormSelect,
-  FormSwitch,
-  NoRecordsAlert,
-  PageHeader,
-  Pagination,
-  SuspenseSpinner,
-} from '../../components';
+import { Card, DeleteDialog, NoRecordsAlert, PageHeader, Pagination } from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdDelete, MdEdit, MdFilterAltOff } from 'react-icons/md';
+import { MdAddCircleOutline, MdDelete, MdEdit } from 'react-icons/md';
 import { gql } from '../../__generated__';
-import { useMutation, useSuspenseQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { formatMaterialQuantity } from '../../helpers';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   Material,
-  PaginationInput,
   QuerySortOrder,
   SearchMaterialQuerySortField,
 } from '../../__generated__/graphql';
 import _ from 'lodash';
-import { useFilters } from '../../hooks';
+import { useQueryFilteringAndPagination } from '../../hooks';
+import MaterialsContainerFilters, { type SearchParams } from './MaterialsContainerFilters';
 
-type SearchParams = {
-  code: string;
-  name: string;
-  lowQuantity: boolean;
-  sortField: SearchMaterialQuerySortField;
-  sortOrder: QuerySortOrder;
-};
-
-const sortFieldSelectOptions = [
-  { label: 'Nombre', value: SearchMaterialQuerySortField.Name },
-  { label: 'Código', value: SearchMaterialQuerySortField.Code },
-];
-
-const sortOrderSelectOptions = [
-  { label: 'Ascendente', value: QuerySortOrder.Asc },
-  { label: 'Descendente', value: QuerySortOrder.Desc },
-];
-
-const defaultFilters: SearchParams = {
-  code: '',
-  name: '',
-  lowQuantity: false,
-  sortField: SearchMaterialQuerySortField.Name,
-  sortOrder: QuerySortOrder.Asc,
-};
-
-export default function MaterialsContainer(): JSX.Element {
-  const [form, setForm] = useState<SearchParams>({ ...defaultFilters });
-  const searchParams = useFilters(defaultFilters, form);
-
-  return (
-    <>
-      <PageHeader title="Materiales" />
-
-      <Button
-        as={Link}
-        to={appRoutes.materials.create}
-        colorScheme="orange"
-        leftIcon={<MdAddCircleOutline />}
-      >
-        Nuevo material
-      </Button>
-
-      <Card mt="8" title="Filtros">
-        <Grid templateColumns="1fr auto 1fr auto auto" gap="5">
-          <GridItem>
-            <Grid templateColumns="1fr 1fr" gap="5">
-              <FormInputText
-                label="Código"
-                value={form.code}
-                onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
-              />
-
-              <FormInputText
-                label="Nombre"
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-              />
-
-              <FormSwitch
-                gridColumn="1 / 3"
-                label="Sólo materiales con bajas existencias"
-                id="materials-container__low-quantity"
-                value={form.lowQuantity}
-                onChange={e => setForm({ ...form, lowQuantity: e })}
-              />
-            </Grid>
-          </GridItem>
-
-          <GridItem>
-            <Divider orientation="vertical" />
-          </GridItem>
-
-          <GridItem>
-            <Grid templateColumns="1fr 1fr" gap="5">
-              <FormSelect
-                label="Ordenar por"
-                options={sortFieldSelectOptions}
-                value={form.sortField}
-                onChange={e =>
-                  setForm({ ...form, sortField: e.target.value as SearchMaterialQuerySortField })
-                }
-                placeholder=""
-              />
-
-              <FormSelect
-                label="Sentido"
-                options={sortOrderSelectOptions}
-                value={form.sortOrder}
-                onChange={e => setForm({ ...form, sortOrder: e.target.value as QuerySortOrder })}
-                placeholder=""
-              />
-            </Grid>
-          </GridItem>
-
-          <GridItem>
-            <Divider orientation="vertical" />
-          </GridItem>
-
-          <GridItem>
-            <IconButton
-              mt="6"
-              rounded="full"
-              aria-label="clear-filters"
-              icon={<MdFilterAltOff />}
-              colorScheme="orange"
-              onClick={() => setForm(defaultFilters)}
-              isDisabled={_.isEqual(defaultFilters, form)}
-            />
-          </GridItem>
-        </Grid>
-      </Card>
-
-      <SuspenseSpinner>
-        <MaterialsContent searchParams={searchParams} />
-      </SuspenseSpinner>
-    </>
-  );
-}
-
-MaterialsContent.gql = {
+MaterialsContainer.gql = {
   queries: {
     materials: gql(`
-      query MaterialsContentMaterialsQuery ($searchParams: SearchMaterialInput, $pagination: PaginationInput) {
+      query MaterialsContainerMaterialsQuery ($searchParams: SearchMaterialInput, $pagination: PaginationInput) {
         materials (searchParams: $searchParams, pagination: $pagination) {
           paginationInfo {
             count
@@ -186,32 +57,46 @@ MaterialsContent.gql = {
   },
   mutations: {
     deleteMaterial: gql(`
-      mutation MaterialsContentDeleteMaterialMutation ($materialId: ID!) {
+      mutation MaterialsContainerDeleteMaterialMutation ($materialId: ID!) {
         deleteMaterial (materialId: $materialId)
       }
     `),
   },
 };
 
-type MaterialsContentProps = {
-  searchParams: SearchParams;
+const defaultFilters: SearchParams = {
+  code: '',
+  name: '',
+  lowQuantity: false,
+  sortField: SearchMaterialQuerySortField.Name,
+  sortOrder: QuerySortOrder.Asc,
 };
 
-function MaterialsContent({ searchParams }: MaterialsContentProps): JSX.Element {
-  const pagination = useRef<PaginationInput>({ pageNumber: 1, pageSize: 10 });
+export default function MaterialsContainer(): JSX.Element {
+  const {
+    onDebouncedSearchParamsChange,
+    onImmediateSearchParamsChange,
+    onPaginationChange,
+    onResetFilters,
+    queryVariables,
+    searchParams,
+  } = useQueryFilteringAndPagination<SearchParams>(defaultFilters);
 
-  const { data, refetch } = useSuspenseQuery(MaterialsContent.gql.queries.materials, {
+  const materialsQuery = useQuery(MaterialsContainer.gql.queries.materials, {
     fetchPolicy: 'network-only',
-    variables: { searchParams, pagination: pagination.current },
+    variables: {
+      ...queryVariables,
+      searchParams: {
+        ...queryVariables.searchParams,
+        code: queryVariables.searchParams.code.trim(),
+        name: queryVariables.searchParams.name.trim(),
+      },
+    },
   });
 
   const [deleteMaterialMutation, deleteMaterialMutationStatus] = useMutation(
-    MaterialsContent.gql.mutations.deleteMaterial
+    MaterialsContainer.gql.mutations.deleteMaterial
   );
-
-  const refetchWithPersistedVariables = useCallback(() => {
-    refetch({ searchParams, pagination: pagination.current });
-  }, [refetch, searchParams]);
 
   const [toDelete, setToDelete] = useState<Partial<Material>>();
   const toast = useToast();
@@ -239,97 +124,130 @@ function MaterialsContent({ searchParams }: MaterialsContentProps): JSX.Element 
         onCompleted() {
           toast({ description: 'Material eliminado exitosamente.' });
           deleteDialog.onClose();
-          refetchWithPersistedVariables();
+          materialsQuery.refetch();
         },
       });
     }
-  }, [toDelete?.id, deleteMaterialMutation, toast, deleteDialog, refetchWithPersistedVariables]);
+  }, [toDelete?.id, deleteMaterialMutation, toast, deleteDialog, materialsQuery]);
 
   return (
-    <Card mt="8" px="3" py="2">
-      {data.materials.items.length > 0 ? (
-        <>
-          <TableContainer>
-            <Pagination
-              {...data.materials.paginationInfo}
-              onPageNumberChange={pageNumber => {
-                pagination.current = { ...pagination.current, pageNumber };
-                refetchWithPersistedVariables();
-              }}
-            />
+    <>
+      <PageHeader title="Materiales" />
 
-            <Divider my="5" />
+      <Button
+        as={Link}
+        to={appRoutes.materials.create}
+        colorScheme="orange"
+        leftIcon={<MdAddCircleOutline />}
+      >
+        Nuevo material
+      </Button>
 
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th textAlign="center" w="0">
-                    Código
-                  </Th>
-                  <Th w="75%">Nombre</Th>
-                  <Th textAlign="center" w="25%">
-                    Existencias
-                  </Th>
-                  <Th w="0" />
-                </Tr>
-              </Thead>
+      <MaterialsContainerFilters
+        onDebouncedChange={onDebouncedSearchParamsChange}
+        onImmediateChange={onImmediateSearchParamsChange}
+        onReset={onResetFilters}
+        searchParams={searchParams}
+      />
 
-              <Tbody>
-                {data.materials.items.map(material => (
-                  <Tr key={material.id} bgColor={getRowColor(material)}>
-                    <Td textAlign="center">{material.code}</Td>
-                    <Td>{material.name}</Td>
-                    <Td textAlign="center">
-                      {formatMaterialQuantity(material.currentQuantity, material.measureUnit)}
-                    </Td>
-                    <Td textAlign="center">
-                      <IconButton
-                        aria-label="edit"
-                        colorScheme="blue"
-                        rounded="full"
-                        icon={<MdEdit />}
-                        size="xs"
-                        as={Link}
-                        to={appRoutes.materials.edit.replace(':materialId', material.id)}
-                      />
-
-                      <IconButton
-                        aria-label="delete"
-                        colorScheme="red"
-                        rounded="full"
-                        icon={<MdDelete />}
-                        size="xs"
-                        ml="1"
-                        onClick={() => setToDelete(material)}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
-
-          <DeleteDialog
-            isLoading={deleteMaterialMutationStatus.loading}
-            isOpen={deleteDialog.isOpen}
-            onClose={deleteDialog.onClose}
-            onConfirm={handleDeleteMaterialClick}
-            title="Eliminar material"
-          >
-            ¿Confirma que desea eliminar el siguiente material?
-            <br />
-            <br />
-            <Text>
-              <b>Código:</b> {toDelete?.code}
-            </Text>
-            <Text>
-              <b>Nombre:</b> {toDelete?.name}
-            </Text>
-          </DeleteDialog>
-        </>
-      ) : (
-        <NoRecordsAlert entity="materiales" />
+      {materialsQuery.loading && (
+        <Flex justifyContent="center" my="8">
+          <Spinner
+            color="orange.500"
+            emptyColor="gray.200"
+            size="lg"
+            speed="0.65s"
+            thickness="3px"
+          />
+        </Flex>
       )}
-    </Card>
+
+      {!materialsQuery.loading && (
+        <Card mt="8" p="2">
+          {materialsQuery.data?.materials.items.length ? (
+            <>
+              <TableContainer>
+                <Box mt="4" mx="4">
+                  <Pagination
+                    {...materialsQuery.data.materials.paginationInfo}
+                    onChange={pagination => onPaginationChange(pagination)}
+                  />
+                </Box>
+
+                <Divider my="5" />
+
+                <Table size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th textAlign="center" w="0">
+                        Código
+                      </Th>
+                      <Th w="75%">Nombre</Th>
+                      <Th textAlign="center" w="25%">
+                        Existencias
+                      </Th>
+                      <Th w="0" />
+                    </Tr>
+                  </Thead>
+
+                  <Tbody>
+                    {materialsQuery.data.materials.items.map(material => (
+                      <Tr key={material.id} bgColor={getRowColor(material)}>
+                        <Td textAlign="center">{material.code}</Td>
+                        <Td>{material.name}</Td>
+                        <Td textAlign="center">
+                          {formatMaterialQuantity(material.currentQuantity, material.measureUnit)}
+                        </Td>
+                        <Td textAlign="center">
+                          <IconButton
+                            aria-label="edit"
+                            colorScheme="blue"
+                            rounded="full"
+                            icon={<MdEdit />}
+                            size="xs"
+                            as={Link}
+                            to={appRoutes.materials.edit.replace(':materialId', material.id)}
+                          />
+
+                          <IconButton
+                            aria-label="delete"
+                            colorScheme="red"
+                            rounded="full"
+                            icon={<MdDelete />}
+                            size="xs"
+                            ml="1"
+                            onClick={() => setToDelete(material)}
+                          />
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+
+              <DeleteDialog
+                isLoading={deleteMaterialMutationStatus.loading}
+                isOpen={deleteDialog.isOpen}
+                onClose={deleteDialog.onClose}
+                onConfirm={handleDeleteMaterialClick}
+                title="Eliminar material"
+              >
+                ¿Confirma que desea eliminar el siguiente material?
+                <br />
+                <br />
+                <Text>
+                  <b>Código:</b> {toDelete?.code}
+                </Text>
+                <Text>
+                  <b>Nombre:</b> {toDelete?.name}
+                </Text>
+              </DeleteDialog>
+            </>
+          ) : (
+            <NoRecordsAlert entity="materiales" />
+          )}
+        </Card>
+      )}
+    </>
   );
 }

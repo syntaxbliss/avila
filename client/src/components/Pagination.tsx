@@ -1,25 +1,20 @@
-import { Flex, HStack, IconButton, Text } from '@chakra-ui/react';
+import { Flex, HStack, IconButton, Select, Text } from '@chakra-ui/react';
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md';
-import { PaginationInfo } from '../__generated__/graphql';
+import { PaginationInfo, PaginationInput } from '../__generated__/graphql';
 import { useMemo } from 'react';
 
 const PAGES_DELTA = 3;
 
 type Props = PaginationInfo & {
-  onPageNumberChange: (pageNumber: number) => void;
+  onChange: (pagination: PaginationInput) => void;
 };
 
-export default function Pagination({
-  count,
-  onPageNumberChange,
-  pageNumber,
-  pageSize,
-}: Props): JSX.Element {
+export default function Pagination({ count, onChange, pageNumber, pageSize }: Props): JSX.Element {
   const totalPages = useMemo(() => {
     return Math.ceil(count / pageSize);
   }, [count, pageSize]);
@@ -47,11 +42,36 @@ export default function Pagination({
         {count} resultado{count > 1 ? 's' : null} | Página {pageNumber} de {totalPages}
       </Text>
 
+      <Flex align="center">
+        <Text
+          fontSize="xs"
+          color="gray.600"
+          fontWeight="bold"
+          textTransform="uppercase"
+          letterSpacing="wider"
+        >
+          Resultados por página:
+        </Text>
+
+        <Select
+          size="xs"
+          variant="filled"
+          value={pageSize}
+          onChange={e => onChange({ pageNumber: 1, pageSize: Number(e.target.value) })}
+          ml="1"
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+        </Select>
+      </Flex>
+
       <HStack gap="1">
         <IconButton
           aria-label="first-page"
           icon={<MdKeyboardDoubleArrowLeft />}
-          onClick={() => onPageNumberChange(1)}
+          onClick={() => onChange({ pageSize, pageNumber: 1 })}
           rounded="full"
           size="xs"
           colorScheme="orange"
@@ -61,7 +81,7 @@ export default function Pagination({
         <IconButton
           aria-label="previous-page"
           icon={<MdKeyboardArrowLeft />}
-          onClick={() => onPageNumberChange(pageNumber - 1)}
+          onClick={() => onChange({ pageSize, pageNumber: pageNumber - 1 })}
           rounded="full"
           size="xs"
           colorScheme="orange"
@@ -73,7 +93,7 @@ export default function Pagination({
             key={`page-${pn}`}
             aria-label={`page-${pn}`}
             icon={<Text fontWeight="normal">{pn}</Text>}
-            onClick={() => onPageNumberChange(pn)}
+            onClick={() => onChange({ pageSize, pageNumber: pn })}
             rounded="full"
             size="xs"
             colorScheme="orange"
@@ -84,7 +104,7 @@ export default function Pagination({
         <IconButton
           aria-label="next-page"
           icon={<MdKeyboardArrowRight />}
-          onClick={() => onPageNumberChange(pageNumber + 1)}
+          onClick={() => onChange({ pageSize, pageNumber: pageNumber + 1 })}
           rounded="full"
           size="xs"
           colorScheme="orange"
@@ -94,7 +114,7 @@ export default function Pagination({
         <IconButton
           aria-label="last-page"
           icon={<MdKeyboardDoubleArrowRight />}
-          onClick={() => onPageNumberChange(totalPages)}
+          onClick={() => onChange({ pageSize, pageNumber: totalPages })}
           rounded="full"
           size="xs"
           colorScheme="orange"
