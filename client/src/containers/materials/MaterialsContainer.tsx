@@ -2,9 +2,7 @@ import {
   Box,
   Button,
   Divider,
-  Flex,
   IconButton,
-  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -16,7 +14,14 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { Card, DeleteDialog, NoRecordsAlert, PageHeader, Pagination } from '../../components';
+import {
+  Card,
+  DeleteDialog,
+  LoadingSpinner,
+  NoRecordsAlert,
+  PageHeader,
+  Pagination,
+} from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
 import { MdAddCircleOutline, MdDelete, MdEdit } from 'react-icons/md';
@@ -150,17 +155,7 @@ export default function MaterialsContainer(): JSX.Element {
         searchParams={searchParams}
       />
 
-      {materialsQuery.loading && (
-        <Flex justifyContent="center" my="8">
-          <Spinner
-            color="orange.500"
-            emptyColor="gray.200"
-            size="lg"
-            speed="0.65s"
-            thickness="3px"
-          />
-        </Flex>
-      )}
+      <LoadingSpinner isVisible={materialsQuery.loading} />
 
       {!materialsQuery.loading && (
         <Card mt="8" p="2">

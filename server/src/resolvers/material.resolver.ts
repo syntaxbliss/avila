@@ -9,8 +9,7 @@ import {
 } from 'src/input-types';
 import { SupplierLoader } from 'src/loaders';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
-import { Material, Supplier } from 'src/object-types';
-import { PaginatedMaterials } from 'src/object-types/material.object-type';
+import { Material, PaginatedMaterials, Supplier } from 'src/object-types';
 import { DataSource, In } from 'typeorm';
 
 @Resolver(() => Material)

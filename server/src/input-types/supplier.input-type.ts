@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { z } from 'zod';
+import { QuerySortOrderEnum } from './commons';
 
 @InputType()
 export class SaveSupplierInput {
@@ -21,3 +22,12 @@ export const saveSupplierSchema = z.object({
   email: z.string().trim().email().optional(),
   phone: z.string().trim().max(250).optional(),
 });
+
+@InputType()
+export class SearchSupplierInput {
+  @Field(() => String, { nullable: true })
+  name: string | null;
+
+  @Field(() => QuerySortOrderEnum, { nullable: true })
+  sortOrder: QuerySortOrderEnum | null;
+}

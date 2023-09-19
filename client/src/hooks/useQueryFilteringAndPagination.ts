@@ -34,7 +34,7 @@ export default function useQueryFilteringAndPagination<T extends {}>(
 
       timeout.current = setTimeout(() => {
         setQueryVariables(qv => ({
-          pagination: { ...defaultPagination },
+          pagination: { ...qv.pagination, pageNumber: 1 },
           searchParams: { ...qv.searchParams, ...partialUpdate },
         }));
       }, interval);
@@ -47,7 +47,7 @@ export default function useQueryFilteringAndPagination<T extends {}>(
 
     setSearchParams(params => ({ ...params, ...partialUpdate }));
     setQueryVariables(qv => ({
-      pagination: { ...defaultPagination },
+      pagination: { ...qv.pagination, pageNumber: 1 },
       searchParams: { ...qv.searchParams, ...partialUpdate },
     }));
   }, []);

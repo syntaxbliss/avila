@@ -1,20 +1,47 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { SupplierEntity } from 'src/entities';
-import { SaveSupplierInput, saveSupplierSchema } from 'src/input-types';
+import {
+  PaginationInput,
+  SaveSupplierInput,
+  SearchSupplierInput,
+  saveSupplierSchema,
+} from 'src/input-types';
 import { mapSupplierEntityToSupplier } from 'src/mappers';
-import { Supplier } from 'src/object-types';
+import { PaginatedSuppliers, Supplier } from 'src/object-types';
 import { DataSource } from 'typeorm';
 
 @Resolver(() => Supplier)
 export default class SupplierResolver {
   constructor(private readonly ds: DataSource) {}
 
-  @Query(() => [Supplier])
-  async suppliers(): Promise<Supplier[]> {
-    const suppliers = await this.ds.manager.find(SupplierEntity, { order: { name: 'ASC' } });
+  @Query(() => PaginatedSuppliers)
+  async suppliers(
+    @Args('searchParams', { nullable: true }) searchParams?: SearchSupplierInput,
+    @Args('pagination', { nullable: true }) pagination?: PaginationInput
+  ): Promise<PaginatedSuppliers> {
+    const query = this.ds.manager.createQueryBuilder(SupplierEntity, 'supplier');
 
-    return suppliers.map(supplier => mapSupplierEntityToSupplier(supplier));
+    if (searchParams?.name) {
+      query.where('supplier.name LIKE :name', { name: `%${searchParams.name}%` });
+    }
+
+    if (pagination) {
+      query.offset((pagination.pageNumber - 1) * pagination.pageSize).limit(pagination.pageSize);
+    }
+
+    query.orderBy(`supplier.name`, searchParams?.sortOrder ?? 'ASC');
+
+    const [suppliers, count] = await query.getManyAndCount();
+
+    return {
+      items: suppliers.map(supplier => mapSupplierEntityToSupplier(supplier)),
+      paginationInfo: {
+        count,
+        pageNumber: pagination?.pageNumber ?? 1,
+        pageSize: pagination?.pageSize ?? count,
+      },
+    };
   }
 
   @Query(() => Supplier)

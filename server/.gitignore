@@ -37,4 +37,4 @@ lerna-debug.log*
 ### CUSTOM IGNORES ###
 
 # env
-.env.local
+.env

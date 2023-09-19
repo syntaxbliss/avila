@@ -1,7 +1,8 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { PaginatedResponse } from './commons';
 
 @ObjectType()
-export default class Supplier {
+export class Supplier {
   @Field(() => ID)
   id: string;
 
@@ -20,3 +21,6 @@ export default class Supplier {
   @Field(() => Date, { nullable: true })
   deletedAt: Date | null;
 }
+
+@ObjectType()
+export class PaginatedSuppliers extends PaginatedResponse(Supplier) {}

@@ -147,8 +147,10 @@ MaterialFormContent.gql = {
     suppliers: gql(`
       query MaterialFormContentSuppliersQuery {
         suppliers {
-          id
-          name
+          items {
+            id
+            name
+          }
         }
       }
     `),
@@ -199,7 +201,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
   const suppliersOptions: FormAutocompleteOption[] = useMemo(() => {
-    return suppliersData.suppliers.map(supplier => ({
+    return suppliersData.suppliers.items.map(supplier => ({
       label: String(supplier.name),
       value: supplier.id,
     }));

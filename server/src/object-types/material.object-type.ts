@@ -1,10 +1,10 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { MaterialMeasureUnitEnum } from 'src/entities';
-import Supplier from './supplier.object-type';
 import { PaginatedResponse } from './commons';
+import { Supplier } from './supplier.object-type';
 
 @ObjectType()
-export default class Material {
+export class Material {
   @Field(() => ID)
   id: string;
 

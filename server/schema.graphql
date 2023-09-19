@@ -22,6 +22,11 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type PaginatedSuppliers {
+  items: [Supplier!]!
+  paginationInfo: PaginationInfo!
+}
+
 type Material {
   id: ID!
   name: String!
@@ -50,7 +55,7 @@ type PaginatedMaterials {
 type Query {
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
-  suppliers: [Supplier!]!
+  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
 }
 
@@ -75,6 +80,11 @@ enum QuerySortOrder {
 input PaginationInput {
   pageNumber: Int!
   pageSize: Int!
+}
+
+input SearchSupplierInput {
+  name: String
+  sortOrder: QuerySortOrder
 }
 
 type Mutation {

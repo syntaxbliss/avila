@@ -16,7 +16,7 @@ const loaders = [SupplierLoader];
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.local' }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'mysql',
@@ -37,7 +37,10 @@ const loaders = [SupplierLoader];
 
         const ds = new DataSource(options);
         await ds.initialize();
-        await ds.runMigrations();
+
+        if (process.env.NODE_ENV === 'development') {
+          await ds.runMigrations();
+        }
 
         return ds;
       },

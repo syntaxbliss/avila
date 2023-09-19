@@ -6,6 +6,7 @@ export { default as FormInputText } from './FormInputText';
 export { default as FormSelect, type FormSelectOption } from './FormSelect';
 export { default as FormSwitch } from './FormSwitch';
 export { default as Layout } from './Layout';
+export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as MeasureUnitSelect } from './MeasureUnitSelect';
 export { default as NoRecordsAlert } from './NoRecordsAlert';
 export { default as PageHeader } from './PageHeader';
