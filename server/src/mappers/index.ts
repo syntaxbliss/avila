@@ -1,5 +1,10 @@
-import { MaterialEntity, SupplierEntity } from 'src/entities';
-import { Material, Supplier } from 'src/object-types';
+import {
+  MaterialEntity,
+  PurchaseOrderEntity,
+  PurchaseOrderMaterialEntity,
+  SupplierEntity,
+} from 'src/entities';
+import { Material, PurchaseOrder, PurchaseOrderMaterial, Supplier } from 'src/object-types';
 
 export const mapMaterialEntityToMaterial = (entity: MaterialEntity): Material => {
   const material = new Material();
@@ -24,4 +29,29 @@ export const mapSupplierEntityToSupplier = (entity: SupplierEntity): Supplier =>
   supplier.deletedAt = entity.deletedAt;
 
   return supplier;
+};
+
+export const mapPurchaseOrderEntityToPurchaseOrder = (
+  entity: PurchaseOrderEntity
+): PurchaseOrder => {
+  const purchaseOrder = new PurchaseOrder();
+  purchaseOrder.id = entity.id;
+  purchaseOrder.orderedAt = entity.orderedAt;
+  purchaseOrder.deliveredAt = entity.deliveredAt;
+  purchaseOrder.deliveryNote = entity.deliveryNote;
+  purchaseOrder.totalAmount = entity.totalAmount;
+  purchaseOrder.paidAmount = entity.paidAmount;
+
+  return purchaseOrder;
+};
+
+export const mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial = (
+  entity: PurchaseOrderMaterialEntity
+): PurchaseOrderMaterial => {
+  const purchaseOrderMaterial = new PurchaseOrderMaterial();
+  purchaseOrderMaterial.quantity = entity.quantity;
+  purchaseOrderMaterial.unitPrice = entity.unitPrice;
+  purchaseOrderMaterial.materialId = entity.material_supplier.materialId;
+
+  return purchaseOrderMaterial;
 };

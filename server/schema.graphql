@@ -10,11 +10,12 @@ type PaginationInfo {
 
 type Supplier {
   id: ID!
-  name: String
+  name: String!
   address: String
   email: String
   phone: String
   deletedAt: DateTime
+  materials: [Material!]!
 }
 
 """
@@ -50,6 +51,23 @@ enum MaterialMeasureUnit {
 type PaginatedMaterials {
   items: [Material!]!
   paginationInfo: PaginationInfo!
+}
+
+type PurchaseOrderMaterial {
+  material: Material!
+  quantity: Float!
+  unitPrice: Float!
+}
+
+type PurchaseOrder {
+  id: ID!
+  orderedAt: DateTime!
+  deliveredAt: DateTime
+  deliveryNote: String
+  totalAmount: Float!
+  paidAmount: Float!
+  supplier: Supplier!
+  materials: [PurchaseOrderMaterial!]!
 }
 
 type Query {
@@ -94,6 +112,7 @@ type Mutation {
   createSupplier(input: SaveSupplierInput!): Supplier!
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
   deleteSupplier(supplierId: ID!): Boolean!
+  createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
 }
 
 input SaveMaterialInput {
@@ -110,4 +129,18 @@ input SaveSupplierInput {
   address: String
   email: String
   phone: String
+}
+
+input CreatePurchaseOrderInput {
+  orderedAt: DateTime!
+  deliveredAt: DateTime
+  deliveryNote: String
+  supplierId: ID!
+  materials: [PurchaseOrderMaterialInput!]!
+}
+
+input PurchaseOrderMaterialInput {
+  materialId: ID!
+  quantity: Float!
+  unitPrice: Float!
 }

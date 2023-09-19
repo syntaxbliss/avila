@@ -2,7 +2,7 @@ import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } f
 import MaterialEntity from './material.entity';
 import SupplierEntity from './supplier.entity';
 
-@Entity('material_supplier')
+@Entity('material__supplier')
 export default class Material_SupplierEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

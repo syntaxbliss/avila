@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import { EnumLike, z } from 'zod';
 
@@ -75,5 +76,33 @@ export const validationRules = {
       },
       required ? schema : schema.optional()
     );
+  },
+
+  date: (required: boolean = true) => {
+    const schema = z.string();
+
+    return z
+      .preprocess(
+        val => {
+          const valAsString = String(val);
+          const date = dayjs(valAsString);
+
+          if (!date.isValid()) {
+            return '';
+          }
+
+          return valAsString;
+        },
+        required ? schema.min(1, 'Seleccione una fecha válida.') : schema
+      )
+      .transform(val => {
+        const date = dayjs(val);
+
+        if (!date.isValid()) {
+          return undefined;
+        }
+
+        return date.toDate();
+      });
   },
 };

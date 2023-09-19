@@ -1,7 +1,10 @@
 import _ from 'lodash';
 import { MaterialMeasureUnit } from '../__generated__/graphql';
 
-const descriptionByUnit: Record<MaterialMeasureUnit, string> = {
+export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
+  MaterialMeasureUnit,
+  string
+> = {
   [MaterialMeasureUnit.Gr]: 'gr',
   [MaterialMeasureUnit.Kg]: 'kg',
   [MaterialMeasureUnit.Tn]: 'tn',
@@ -20,5 +23,9 @@ export const formatMaterialQuantity = (
     return null;
   }
 
-  return `${currencyFormatter.format(quantity).substring(2)} ${descriptionByUnit[measureUnit]}`;
+  return `${currencyFormatter.format(quantity).substring(2)} ${
+    materialMeasureUnitAbbreviationByMaterialMeasureUnit[measureUnit]
+  }`;
 };
+
+export const formatCurrency = (input: number) => currencyFormatter.format(input);

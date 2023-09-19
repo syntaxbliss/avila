@@ -6,6 +6,7 @@ import MaterialsContainer from './materials/MaterialsContainer';
 import MaterialFormContainer from './materials/MaterialFormContainer';
 import SuppliersContainer from './suppliers/SuppliersContainer';
 import SupplierFormContainer from './suppliers/SupplierFormContainer';
+import PurchaseOrderFormContainer from './purchase-orders/PurchaseOrderFormContainer';
 
 const routes = [
   { path: appRoutes.dashboard.index, element: DashboardContainer },
@@ -15,6 +16,7 @@ const routes = [
   { path: appRoutes.suppliers.index, element: SuppliersContainer },
   { path: appRoutes.suppliers.create, element: SupplierFormContainer },
   { path: appRoutes.suppliers.edit, element: SupplierFormContainer },
+  { path: appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
 ];
 
 export default function AppContainer(): JSX.Element {

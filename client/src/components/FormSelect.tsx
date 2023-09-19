@@ -1,4 +1,11 @@
-import { FormControl, FormErrorMessage, FormLabel, GridItem, Select } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  GridItem,
+  Select,
+} from '@chakra-ui/react';
 
 export type FormSelectOption = {
   label: string;
@@ -8,6 +15,7 @@ export type FormSelectOption = {
 type Props = {
   error?: string;
   gridColumn?: React.ComponentProps<typeof GridItem>['gridColumn'];
+  helperText?: string;
   isDisabled?: React.ComponentProps<typeof Select>['isDisabled'];
   isRequired?: React.ComponentProps<typeof Select>['isRequired'];
   label?: string;
@@ -20,6 +28,7 @@ type Props = {
 export default function FormSelect({
   error,
   gridColumn,
+  helperText,
   isDisabled,
   isRequired,
   label,
@@ -48,6 +57,8 @@ export default function FormSelect({
         </Select>
 
         <FormErrorMessage>{error}</FormErrorMessage>
+
+        <FormHelperText>{helperText}</FormHelperText>
       </FormControl>
     </GridItem>
   );

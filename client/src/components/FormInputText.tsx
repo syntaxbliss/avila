@@ -5,6 +5,7 @@ type Props = {
   autoFocus?: React.ComponentProps<typeof Input>['autoFocus'];
   error?: string;
   gridColumn?: React.ComponentProps<typeof GridItem>['gridColumn'];
+  isDisabled?: React.ComponentProps<typeof Input>['isDisabled'];
   isRequired?: React.ComponentProps<typeof Input>['isRequired'];
   label?: string;
   leftElement?: {
@@ -24,6 +25,7 @@ export default function FormInputText({
   autoFocus,
   error,
   gridColumn,
+  isDisabled,
   isRequired,
   label,
   onChange,
@@ -37,6 +39,7 @@ export default function FormInputText({
 
         <Input
           autoFocus={autoFocus}
+          isDisabled={isDisabled}
           variant="filled"
           type={type}
           value={value}

@@ -1,4 +1,4 @@
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { SupplierEntity } from 'src/entities';
 import {
@@ -7,13 +7,14 @@ import {
   SearchSupplierInput,
   saveSupplierSchema,
 } from 'src/input-types';
+import { MaterialLoader } from 'src/loaders';
 import { mapSupplierEntityToSupplier } from 'src/mappers';
-import { PaginatedSuppliers, Supplier } from 'src/object-types';
+import { Material, PaginatedSuppliers, Supplier } from 'src/object-types';
 import { DataSource } from 'typeorm';
 
 @Resolver(() => Supplier)
 export default class SupplierResolver {
-  constructor(private readonly ds: DataSource) {}
+  constructor(private readonly ds: DataSource, private readonly materialLoader: MaterialLoader) {}
 
   @Query(() => PaginatedSuppliers)
   async suppliers(
@@ -30,7 +31,9 @@ export default class SupplierResolver {
       query.offset((pagination.pageNumber - 1) * pagination.pageSize).limit(pagination.pageSize);
     }
 
-    query.orderBy(`supplier.name`, searchParams?.sortOrder ?? 'ASC');
+    const sortOrder = searchParams?.sortOrder ?? 'ASC';
+    this.materialLoader.setMaterialsBySupplierOrder({ name: sortOrder });
+    query.orderBy(`supplier.name`, sortOrder);
 
     const [suppliers, count] = await query.getManyAndCount();
 
@@ -102,5 +105,10 @@ export default class SupplierResolver {
 
       return true;
     });
+  }
+
+  @ResolveField()
+  materials(@Parent() parent: Supplier): Promise<Material[]> {
+    return this.materialLoader.loadMaterialsBySupplier(parent.id);
   }
 }

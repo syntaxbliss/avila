@@ -1,12 +1,13 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { PaginatedResponse } from './commons';
+import { Material } from './material.object-type';
 
 @ObjectType()
 export class Supplier {
   @Field(() => ID)
   id: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   name: string;
 
   @Field(() => String, { nullable: true })
@@ -20,6 +21,9 @@ export class Supplier {
 
   @Field(() => Date, { nullable: true })
   deletedAt: Date | null;
+
+  @Field(() => [Material])
+  materials: Material[];
 }
 
 @ObjectType()
