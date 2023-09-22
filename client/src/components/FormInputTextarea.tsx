@@ -1,18 +1,17 @@
-import { FormControl, FormErrorMessage, FormLabel, GridItem, Input } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, GridItem, Textarea } from '@chakra-ui/react';
 
 type Props = {
-  autoFocus?: React.ComponentProps<typeof Input>['autoFocus'];
+  autoFocus?: React.ComponentProps<typeof Textarea>['autoFocus'];
   error?: string;
   gridColumn?: React.ComponentProps<typeof GridItem>['gridColumn'];
-  isDisabled?: React.ComponentProps<typeof Input>['isDisabled'];
-  isRequired?: React.ComponentProps<typeof Input>['isRequired'];
+  isDisabled?: React.ComponentProps<typeof Textarea>['isDisabled'];
+  isRequired?: React.ComponentProps<typeof Textarea>['isRequired'];
   label?: string;
-  onChange: React.ComponentProps<typeof Input>['onChange'];
-  type?: React.HTMLInputTypeAttribute;
-  value: React.ComponentProps<typeof Input>['value'];
+  onChange: React.ComponentProps<typeof Textarea>['onChange'];
+  value: React.ComponentProps<typeof Textarea>['value'];
 };
 
-export default function FormInputText({
+export default function FormInputTextarea({
   autoFocus,
   error,
   gridColumn,
@@ -20,7 +19,6 @@ export default function FormInputText({
   isRequired,
   label,
   onChange,
-  type = 'text',
   value,
 }: Props): JSX.Element {
   return (
@@ -28,13 +26,14 @@ export default function FormInputText({
       <FormControl isRequired={isRequired} isInvalid={Boolean(error)}>
         {label && <FormLabel>{label}</FormLabel>}
 
-        <Input
+        <Textarea
           autoFocus={autoFocus}
           isDisabled={isDisabled}
           variant="filled"
-          type={type}
           value={value}
           onChange={onChange}
+          resize="none"
+          rows={5}
         />
 
         <FormErrorMessage>{error}</FormErrorMessage>

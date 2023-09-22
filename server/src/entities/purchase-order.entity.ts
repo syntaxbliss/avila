@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import PurchaseOrderMaterialEntity from './purchase-order-material.entity';
+import PurchaseOrderPaymentEntity from './purchase-order-payment.entity';
 
 @Entity('purchase_order')
 export default class PurchaseOrderEntity {
@@ -27,4 +28,11 @@ export default class PurchaseOrderEntity {
     { nullable: false }
   )
   materials: PurchaseOrderMaterialEntity[];
+
+  @OneToMany(
+    () => PurchaseOrderPaymentEntity,
+    purchaseOrderPayment => purchaseOrderPayment.purchaseOrder,
+    { nullable: true }
+  )
+  payments: PurchaseOrderPaymentEntity[] | null;
 }

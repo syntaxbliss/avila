@@ -1,5 +1,5 @@
-import { Button, Container } from '@chakra-ui/react';
-import { useCallback, useRef } from 'react';
+import { Button, Container, Flex, useToast } from '@chakra-ui/react';
+import { useCallback, useRef, useState } from 'react';
 import { PageHeader } from '../../components';
 import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import PurchaseOrderFormContainerBasicInfo, {
@@ -10,6 +10,11 @@ import PurchaseOrderFormContainerMaterials, {
 } from './PurchaseOrderFormContainerMaterials';
 import { gql } from '../../__generated__';
 import { useMutation } from '@apollo/client';
+import PurchaseOrderFormContainerPayments, {
+  type PurchaseOrderFormContainerPaymentsHandler,
+} from './PurchaseOrderFormContainerPayments';
+import { Link, useNavigate } from 'react-router-dom';
+import { appRoutes } from '../../routes';
 
 PurchaseOrderFormContainer.gql = {
   mutations: {
@@ -34,6 +39,13 @@ PurchaseOrderFormContainer.gql = {
             quantity
             unitPrice
           }
+          payments {
+            id
+            amount
+            method
+            paidAt
+            notes
+          }
         }
       }
     `),
@@ -43,10 +55,16 @@ PurchaseOrderFormContainer.gql = {
 type FormHandlers = {
   basicInfo: PurchaseOrderFormContainerBasicInfoHandler | null;
   materials: PurchaseOrderFormContainerMaterialsHandler | null;
+  payments: PurchaseOrderFormContainerPaymentsHandler | null;
 };
 
 export default function PurchaseOrderFormContainer(): JSX.Element {
-  const handlers = useRef<FormHandlers>({ basicInfo: null, materials: null });
+  const handlers = useRef<FormHandlers>({ basicInfo: null, materials: null, payments: null });
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const [totalAmount, setTotalAmount] = useState(0);
+
   const [createPurchaseOrderMutation, createPurchaseOrderMutationStatus] = useMutation(
     PurchaseOrderFormContainer.gql.mutations.createPurchaseOrder
   );
@@ -58,8 +76,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
 
       const basicInfo = handlers.current.basicInfo?.();
       const materials = handlers.current.materials?.();
-
-      console.log('*** FORMS ***', { basicInfo, materials });
+      const payments = handlers.current.payments?.();
 
       if (basicInfo && materials) {
         createPurchaseOrderMutation({
@@ -69,13 +86,19 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
               deliveredAt: 'deliveredAt' in basicInfo ? basicInfo.deliveredAt : undefined,
               deliveryNote: 'deliveryNote' in basicInfo ? basicInfo.deliveryNote : undefined,
               supplierId: materials.supplierId,
+              updateStock: materials.updateStock,
               materials: materials.materials,
+              ...(payments ? { payments } : {}),
             },
+          },
+          onCompleted() {
+            toast({ description: 'Nueva orden de compra registrada exitosamente.' });
+            navigate(appRoutes.purchaseOrders.index);
           },
         });
       }
     },
-    [createPurchaseOrderMutation]
+    [createPurchaseOrderMutation, toast, navigate]
   );
 
   return (
@@ -83,8 +106,8 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
       <PageHeader title="Nueva orden de compra" />
 
       <Button
-        // as={Link}
-        // to={appRoutes.materials.index}
+        as={Link}
+        to={appRoutes.purchaseOrders.index}
         colorScheme="orange"
         leftIcon={<MdOutlineArrowCircleLeft />}
       >
@@ -109,6 +132,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
 
         <PurchaseOrderFormContainerMaterials
           mt="5"
+          onTotalAmountChange={amount => setTotalAmount(amount)}
           ref={e => {
             if (e) {
               handlers.current.materials = e;
@@ -116,16 +140,25 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
           }}
         />
 
-        <Button
-          type="submit"
-          colorScheme="orange"
-          isLoading={createPurchaseOrderMutationStatus.loading}
-          display="block"
-          ml="auto"
+        <PurchaseOrderFormContainerPayments
           mt="5"
-        >
-          Guardar
-        </Button>
+          totalAmount={totalAmount}
+          ref={e => {
+            if (e) {
+              handlers.current.payments = e;
+            }
+          }}
+        />
+
+        <Flex mt="5" justifyContent="flex-end">
+          <Button
+            type="submit"
+            colorScheme="orange"
+            isLoading={createPurchaseOrderMutationStatus.loading}
+          >
+            Guardar
+          </Button>
+        </Flex>
       </Container>
     </>
   );

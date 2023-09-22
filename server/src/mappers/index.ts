@@ -2,9 +2,16 @@ import {
   MaterialEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
+  PurchaseOrderPaymentEntity,
   SupplierEntity,
 } from 'src/entities';
-import { Material, PurchaseOrder, PurchaseOrderMaterial, Supplier } from 'src/object-types';
+import {
+  Material,
+  PurchaseOrder,
+  PurchaseOrderMaterial,
+  PurchaseOrderPayment,
+  Supplier,
+} from 'src/object-types';
 
 export const mapMaterialEntityToMaterial = (entity: MaterialEntity): Material => {
   const material = new Material();
@@ -54,4 +61,17 @@ export const mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial = (
   purchaseOrderMaterial.materialId = entity.material_supplier.materialId;
 
   return purchaseOrderMaterial;
+};
+
+export const mapPurchaseOrderPaymentEntityToPurchaseOrderPayment = (
+  entity: PurchaseOrderPaymentEntity
+): PurchaseOrderPayment => {
+  const purchaseOrderPayment = new PurchaseOrderPayment();
+  purchaseOrderPayment.id = entity.id;
+  purchaseOrderPayment.method = entity.method;
+  purchaseOrderPayment.amount = entity.amount;
+  purchaseOrderPayment.paidAt = entity.paidAt;
+  purchaseOrderPayment.notes = entity.notes;
+
+  return purchaseOrderPayment;
 };

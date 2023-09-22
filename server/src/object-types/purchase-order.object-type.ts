@@ -1,6 +1,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Supplier } from './supplier.object-type';
 import { PurchaseOrderMaterial } from './purchase-order-material.object-type';
+import { PurchaseOrderPayment } from './purchase-order-payment.object-type';
 
 @ObjectType()
 export class PurchaseOrder {
@@ -27,4 +28,7 @@ export class PurchaseOrder {
 
   @Field(() => [PurchaseOrderMaterial])
   materials: PurchaseOrderMaterial[];
+
+  @Field(() => [PurchaseOrderPayment], { nullable: true })
+  payments: PurchaseOrderPayment[] | null;
 }

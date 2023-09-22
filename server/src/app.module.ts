@@ -11,6 +11,7 @@ import {
   Material_SupplierEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
+  PurchaseOrderPaymentEntity,
   SupplierEntity,
 } from './entities';
 import {
@@ -19,13 +20,19 @@ import {
   PurchaseOrderResolver,
   SupplierResolver,
 } from './resolvers';
-import { MaterialLoader, PurchaseOrderMaterialLoader, SupplierLoader } from './loaders';
+import {
+  MaterialLoader,
+  PurchaseOrderMaterialLoader,
+  PurchaseOrderPaymentLoader,
+  SupplierLoader,
+} from './loaders';
 
 const entities = [
   MaterialEntity,
   Material_SupplierEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
+  PurchaseOrderPaymentEntity,
   SupplierEntity,
 ];
 const resolvers = [
@@ -34,7 +41,12 @@ const resolvers = [
   PurchaseOrderResolver,
   PurchaseOrderMaterialResolver,
 ];
-const loaders = [SupplierLoader, MaterialLoader, PurchaseOrderMaterialLoader];
+const loaders = [
+  MaterialLoader,
+  PurchaseOrderMaterialLoader,
+  PurchaseOrderPaymentLoader,
+  SupplierLoader,
+];
 
 @Module({
   imports: [

@@ -59,6 +59,21 @@ type PurchaseOrderMaterial {
   unitPrice: Float!
 }
 
+type PurchaseOrderPayment {
+  id: ID!
+  method: PurchaseOrderPaymentMethod!
+  amount: Float!
+  paidAt: DateTime!
+  notes: String
+}
+
+enum PurchaseOrderPaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CHECK
+  E_CHECK
+}
+
 type PurchaseOrder {
   id: ID!
   orderedAt: DateTime!
@@ -68,6 +83,7 @@ type PurchaseOrder {
   paidAmount: Float!
   supplier: Supplier!
   materials: [PurchaseOrderMaterial!]!
+  payments: [PurchaseOrderPayment!]
 }
 
 type Query {
@@ -137,11 +153,20 @@ input CreatePurchaseOrderInput {
   deliveredAt: DateTime
   deliveryNote: String
   supplierId: ID!
+  updateStock: Boolean!
   materials: [PurchaseOrderMaterialInput!]!
+  payments: [PurchaseOrderPaymentInput!]
 }
 
 input PurchaseOrderMaterialInput {
   materialId: ID!
   quantity: Float!
   unitPrice: Float!
+}
+
+input PurchaseOrderPaymentInput {
+  method: PurchaseOrderPaymentMethod!
+  amount: Float!
+  paidAt: DateTime!
+  notes: String
 }

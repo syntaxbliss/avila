@@ -19,6 +19,7 @@ type Props = {
   isDisabled?: React.ComponentProps<typeof Select>['isDisabled'];
   isRequired?: React.ComponentProps<typeof Select>['isRequired'];
   label?: string;
+  mt?: React.ComponentProps<typeof GridItem>['mt'];
   onChange: React.ComponentProps<typeof Select>['onChange'];
   options: FormSelectOption[];
   placeholder?: React.ComponentProps<typeof Select>['placeholder'];
@@ -32,13 +33,14 @@ export default function FormSelect({
   isDisabled,
   isRequired,
   label,
+  mt,
   onChange,
   options,
   placeholder = ' ',
   value,
 }: Props): JSX.Element {
   return (
-    <GridItem gridColumn={gridColumn}>
+    <GridItem gridColumn={gridColumn} mt={mt}>
       <FormControl isRequired={isRequired} isInvalid={Boolean(error)}>
         {label && <FormLabel>{label}</FormLabel>}
 

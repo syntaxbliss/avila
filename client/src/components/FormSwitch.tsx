@@ -22,7 +22,7 @@ export default function FormSwitch({
       <FormControl display="flex" alignItems="center">
         <Switch id={id} isChecked={value} onChange={e => onChange(e.target.checked)} />
 
-        <FormLabel htmlFor={id} mb="0" ml="3">
+        <FormLabel htmlFor={id} mb="0" ml="3" mr="0">
           {label}
         </FormLabel>
       </FormControl>

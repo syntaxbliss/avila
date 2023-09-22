@@ -40,7 +40,7 @@ export default function FormInputNumber({
   value,
 }: Props): JSX.Element {
   return (
-    <GridItem gridColumn={gridColumn}>
+    <GridItem gridColumn={gridColumn} w="full">
       <FormControl isInvalid={Boolean(error)}>
         {label && (
           <FormLabel>

@@ -336,7 +336,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
 
             <FormSwitch
               gridColumn="1 / 3"
-              label="Controlar stock"
+              label="Control de existencias"
               id="material-form-container__stockable"
               value={form.stockable}
               onChange={handleStockableChange}

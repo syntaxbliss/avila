@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { MaterialMeasureUnit } from '../__generated__/graphql';
+import { MaterialMeasureUnit, PurchaseOrderPaymentMethod } from '../__generated__/graphql';
+import dayjs from 'dayjs';
 
 export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
   MaterialMeasureUnit,
@@ -11,6 +12,16 @@ export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
   [MaterialMeasureUnit.Lt]: 'lt',
   [MaterialMeasureUnit.Mt]: 'mt',
   [MaterialMeasureUnit.Unit]: 'un',
+};
+
+export const purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod: Record<
+  PurchaseOrderPaymentMethod,
+  string
+> = {
+  [PurchaseOrderPaymentMethod.BankTransfer]: 'Transferencia bancaria',
+  [PurchaseOrderPaymentMethod.Cash]: 'Efectivo',
+  [PurchaseOrderPaymentMethod.Check]: 'Cheque',
+  [PurchaseOrderPaymentMethod.ECheck]: 'E-Check',
 };
 
 const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
@@ -29,3 +40,5 @@ export const formatMaterialQuantity = (
 };
 
 export const formatCurrency = (input: number) => currencyFormatter.format(input);
+
+export const humanReadableDate = (input?: Date) => dayjs(input).format('DD/MM/YYYY');

@@ -6,3 +6,10 @@ export enum MaterialMeasureUnitEnum {
   MT = 'mt',
   UNIT = 'un',
 }
+
+export enum PurchaseOrderPaymentMethodEnum {
+  CASH = 'cash',
+  BANK_TRANSFER = 'bank-transfer',
+  CHECK = 'check',
+  E_CHECK = 'e-check',
+}
