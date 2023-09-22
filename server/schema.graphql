@@ -75,6 +75,7 @@ type Query {
   material(materialId: ID!): Material!
   suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
+  puchaseOrdersTest: [PurchaseOrder!]!
 }
 
 input SearchMaterialInput {

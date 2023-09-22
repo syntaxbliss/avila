@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
-import { MaterialEntity } from 'src/entities';
+import { MaterialEntity, PurchaseOrderEntity } from 'src/entities';
 import { mapSupplierEntityToSupplier } from 'src/mappers';
 import { Supplier } from 'src/object-types';
 import { DataSource, FindManyOptions, In } from 'typeorm';
@@ -12,7 +12,16 @@ export default class SupplierLoader {
     findOptions: FindManyOptions<MaterialEntity>;
   };
 
+  private supplierByPurchaseOrder: {
+    loader: DataLoader<string, Supplier>;
+  };
+
   constructor(private readonly ds: DataSource) {
+    this.createSuppliersByMaterialLoader();
+    this.createSupplierByPurchaseOrderLoader();
+  }
+
+  private createSuppliersByMaterialLoader() {
     const findOptions: typeof this.suppliersByMaterial.findOptions = {
       relations: { material_suppliers: { supplier: true } },
       order: { name: 'ASC', material_suppliers: { supplier: { name: 'ASC' } } },
@@ -41,11 +50,33 @@ export default class SupplierLoader {
     this.suppliersByMaterial = { findOptions, loader };
   }
 
+  private createSupplierByPurchaseOrderLoader() {
+    const loader = new DataLoader(
+      async (ids: readonly string[]) => {
+        const purchaseOrders = await this.ds.manager.find(PurchaseOrderEntity, {
+          where: { id: In(ids) },
+          relations: { materials: { material_supplier: { supplier: true } } },
+        });
+
+        return purchaseOrders.map(po =>
+          mapSupplierEntityToSupplier(po.materials[0].material_supplier.supplier)
+        );
+      },
+      { cache: false }
+    );
+
+    this.supplierByPurchaseOrder = { loader };
+  }
+
   setSuppliersByMaterialOrder(order: FindManyOptions<MaterialEntity>['order']) {
     this.suppliersByMaterial.findOptions.order = order;
   }
 
   loadSuppliersByMaterial(id: string) {
     return this.suppliersByMaterial.loader.load(id);
+  }
+
+  loadSupplierByPurchaseOrder(id: string) {
+    return this.supplierByPurchaseOrder.loader.load(id);
   }
 }

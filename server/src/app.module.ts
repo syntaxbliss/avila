@@ -19,7 +19,7 @@ import {
   PurchaseOrderResolver,
   SupplierResolver,
 } from './resolvers';
-import { MaterialLoader, SupplierLoader } from './loaders';
+import { MaterialLoader, PurchaseOrderMaterialLoader, SupplierLoader } from './loaders';
 
 const entities = [
   MaterialEntity,
@@ -34,7 +34,7 @@ const resolvers = [
   PurchaseOrderResolver,
   PurchaseOrderMaterialResolver,
 ];
-const loaders = [SupplierLoader, MaterialLoader];
+const loaders = [SupplierLoader, MaterialLoader, PurchaseOrderMaterialLoader];
 
 @Module({
   imports: [

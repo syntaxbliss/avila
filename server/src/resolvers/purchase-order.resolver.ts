@@ -1,4 +1,4 @@
-import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import {
   Material_SupplierEntity,
@@ -6,17 +6,27 @@ import {
   PurchaseOrderMaterialEntity,
 } from 'src/entities';
 import { CreatePurchaseOrderInput, createPurchaseorderSchema } from 'src/input-types';
-import {
-  mapPurchaseOrderEntityToPurchaseOrder,
-  mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial,
-  mapSupplierEntityToSupplier,
-} from 'src/mappers';
+import { PurchaseOrderMaterialLoader, SupplierLoader } from 'src/loaders';
+import { mapPurchaseOrderEntityToPurchaseOrder } from 'src/mappers';
 import { PurchaseOrder, PurchaseOrderMaterial, Supplier } from 'src/object-types';
 import { DataSource, In } from 'typeorm';
 
 @Resolver(() => PurchaseOrder)
 export default class PurchaseOrderResolver {
-  constructor(private readonly ds: DataSource) {}
+  constructor(
+    private readonly ds: DataSource,
+    private readonly supplierLoader: SupplierLoader,
+    private readonly purchaseOrderMaterialLoader: PurchaseOrderMaterialLoader
+  ) {}
+
+  // FIXME
+  @Query(() => [PurchaseOrder])
+  async puchaseOrdersTest(): Promise<PurchaseOrder[]> {
+    const purchaseOrders = await this.ds.manager.find(PurchaseOrderEntity);
+
+    return purchaseOrders.map(po => mapPurchaseOrderEntityToPurchaseOrder(po));
+  }
+  // END OF FIXME
 
   @Mutation(() => PurchaseOrder)
   async createPurchaseOrder(
@@ -68,29 +78,11 @@ export default class PurchaseOrderResolver {
 
   @ResolveField()
   async supplier(@Parent() parent: PurchaseOrder): Promise<Supplier> {
-    // FIXME: move to a data loader
-    console.log('supplier field resolver @ parent', parent);
-
-    const purchaseOrderMaterial = await this.ds.manager.findOneOrFail(PurchaseOrderMaterialEntity, {
-      where: { purchaseOrderId: parent.id },
-      relations: { material_supplier: { supplier: true } },
-    });
-
-    return mapSupplierEntityToSupplier(purchaseOrderMaterial.material_supplier.supplier);
+    return this.supplierLoader.loadSupplierByPurchaseOrder(parent.id);
   }
 
   @ResolveField()
   async materials(@Parent() parent: PurchaseOrder): Promise<PurchaseOrderMaterial[]> {
-    // FIXME: move to a data loader
-    console.log('materials field resolver @ parent', parent);
-
-    const purchaseOrderMaterials = await this.ds.manager.find(PurchaseOrderMaterialEntity, {
-      where: { purchaseOrderId: parent.id },
-      relations: { material_supplier: { material: true } },
-    });
-
-    return purchaseOrderMaterials.map(pom =>
-      mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial(pom)
-    );
+    return this.purchaseOrderMaterialLoader.loadPurchaseOrderMaterialsByPurchaseOrder(parent.id);
   }
 }

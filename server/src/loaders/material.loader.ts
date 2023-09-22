@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
-import { SupplierEntity } from 'src/entities';
+import { MaterialEntity, SupplierEntity } from 'src/entities';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
 import { Material } from 'src/object-types';
 import { DataSource, FindManyOptions, In } from 'typeorm';
@@ -12,7 +12,16 @@ export default class MaterialLoader {
     findOptions: FindManyOptions<SupplierEntity>;
   };
 
+  private materialByPurchaseOrderMaterial: {
+    loader: DataLoader<string, Material>;
+  };
+
   constructor(private readonly ds: DataSource) {
+    this.createMaterialsBySupplierLoader();
+    this.createMaterialByPurchaseOrderMaterialLoader();
+  }
+
+  private createMaterialsBySupplierLoader() {
     const findOptions: typeof this.materialsBySupplier.findOptions = {
       relations: { material_suppliers: { material: true } },
       order: { name: 'ASC', material_suppliers: { material: { name: 'ASC' } } },
@@ -41,11 +50,32 @@ export default class MaterialLoader {
     this.materialsBySupplier = { findOptions, loader };
   }
 
+  private createMaterialByPurchaseOrderMaterialLoader() {
+    const loader = new DataLoader(
+      async (ids: readonly string[]) => {
+        const materials = await this.ds.manager.find(MaterialEntity, { where: { id: In(ids) } });
+
+        return ids.map(id => {
+          const material = materials.find(m => m.id === id) as MaterialEntity;
+
+          return mapMaterialEntityToMaterial(material);
+        });
+      },
+      { cache: false }
+    );
+
+    this.materialByPurchaseOrderMaterial = { loader };
+  }
+
   setMaterialsBySupplierOrder(order: FindManyOptions<SupplierEntity>['order']) {
     this.materialsBySupplier.findOptions.order = order;
   }
 
   loadMaterialsBySupplier(id: string) {
     return this.materialsBySupplier.loader.load(id);
+  }
+
+  loadMaterialByPurchaseOrderMaterial(id: string) {
+    return this.materialByPurchaseOrderMaterial.loader.load(id);
   }
 }
