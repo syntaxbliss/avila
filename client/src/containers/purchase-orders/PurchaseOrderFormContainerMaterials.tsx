@@ -10,14 +10,7 @@ import {
   Grid,
   GridItem,
   IconButton,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   UseDisclosureProps,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -43,13 +36,12 @@ import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useQuery, useSuspenseQuery } from '@apollo/client';
-import { MdAdd, MdDelete, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
-import {
-  formatCurrency,
-  formatMaterialQuantity,
-  materialMeasureUnitAbbreviationByMaterialMeasureUnit,
-} from '../../helpers';
+import { MdAdd, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
+import { materialMeasureUnitAbbreviationByMaterialMeasureUnit } from '../../helpers';
 import { Material, MaterialMeasureUnit } from '../../__generated__/graphql';
+import PurchaseOrderMaterialsTable, {
+  type PurchaseOrderMaterialsTableRow,
+} from './PurchaseOrderMaterialsTable';
 
 type Props = React.ComponentProps<typeof Card> & {
   onTotalAmountChange: (totalAmount: number) => void;
@@ -234,15 +226,23 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
     materialSelectRef.current?.focus();
   }, [form]);
 
-  const handleDeleteClick = useCallback((index: number) => {
-    setMaterialsList(list => {
-      const newList = [...list];
+  const handleDeleteClick = useCallback(
+    (code: string) => {
+      setMaterialsList(list => {
+        const materialId = (supplierQuery.data?.supplier.materials || []).find(
+          m => m.code === code
+        )?.id;
+        const index = list.findIndex(material => material.materialId === materialId);
 
-      newList.splice(index, 1);
+        const newList = [...list];
 
-      return newList;
-    });
-  }, []);
+        newList.splice(index, 1);
+
+        return newList;
+      });
+    },
+    [supplierQuery.data?.supplier.materials]
+  );
 
   const handleChangeSupplierClick = useCallback(() => {
     changeSupplierDialog.onClose();
@@ -322,59 +322,24 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
         <>
           <Divider my="5" />
 
-          <TableContainer>
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th w="25%">Material</Th>
-                  <Th w="25%" textAlign="center">
-                    Cantidad
-                  </Th>
-                  <Th w="25%" textAlign="center">
-                    Precio unitario
-                  </Th>
-                  <Th w="25%" textAlign="center">
-                    Subtotal
-                  </Th>
-                  <Th />
-                </Tr>
-              </Thead>
+          <PurchaseOrderMaterialsTable
+            onDelete={handleDeleteClick}
+            materials={materialsList.reduce((acc, m) => {
+              const material = materialsByMaterialId[m.materialId];
 
-              <Tbody>
-                {materialsList.map((m, index) => {
-                  const material = materialsByMaterialId[m.materialId];
+              if (material) {
+                acc.push({
+                  code: material.code as string,
+                  measureUnit: material.measureUnit as MaterialMeasureUnit,
+                  name: material.name as string,
+                  quantity: m.quantity,
+                  unitPrice: m.unitPrice,
+                });
+              }
 
-                  return (
-                    material && (
-                      <SelectedMatrialTableRow
-                        key={material.id}
-                        code={material.code as string}
-                        measureUnit={material.measureUnit as MaterialMeasureUnit}
-                        name={material.name as string}
-                        onDelete={() => handleDeleteClick(index)}
-                        quantity={m.quantity}
-                        unitPrice={m.unitPrice}
-                      />
-                    )
-                  );
-                })}
-
-                <Tr bgColor="gray.700">
-                  <Td colSpan={4} textAlign="right">
-                    <Text
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                      letterSpacing="wide"
-                      color="whiteAlpha.800"
-                    >
-                      <Text as="span">Total:</Text> {formatCurrency(totalAmount)}
-                    </Text>
-                  </Td>
-                  <Td />
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
+              return acc;
+            }, [] as PurchaseOrderMaterialsTableRow[])}
+          />
         </>
       )}
 
@@ -448,43 +413,6 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
     </>
   );
 });
-
-type SelectedMaterialTableRowProps = {
-  code: string;
-  measureUnit: MaterialMeasureUnit;
-  name: string;
-  onDelete: () => void;
-  quantity: number;
-  unitPrice: number;
-};
-
-function SelectedMatrialTableRow({
-  code,
-  measureUnit,
-  name,
-  onDelete,
-  quantity,
-  unitPrice,
-}: SelectedMaterialTableRowProps): JSX.Element {
-  return (
-    <Tr>
-      <Td>{`[${code}] ${name}`}</Td>
-      <Td textAlign="center">{formatMaterialQuantity(quantity, measureUnit)}</Td>
-      <Td textAlign="right">{formatCurrency(unitPrice)}</Td>
-      <Td textAlign="right">{formatCurrency(quantity * unitPrice)}</Td>
-      <Td>
-        <IconButton
-          aria-label="delete"
-          colorScheme="red"
-          rounded="full"
-          icon={<MdDelete />}
-          size="xs"
-          onClick={onDelete}
-        />
-      </Td>
-    </Tr>
-  );
-}
 
 type ChangeSupplierDialogProps = {
   isOpen: NonNullable<UseDisclosureProps['isOpen']>;

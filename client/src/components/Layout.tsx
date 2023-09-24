@@ -1,5 +1,10 @@
 import { Button, Divider, Flex, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
-import { MdOutlineAllInbox, MdOutlineDashboard, MdOutlineFireTruck } from 'react-icons/md';
+import {
+  MdOutlineAllInbox,
+  MdOutlineDashboard,
+  MdOutlineFireTruck,
+  MdOutlineShoppingCart,
+} from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { Fragment } from 'react';
 import { appRoutes } from '../routes';
@@ -12,6 +17,7 @@ const sections = [
   { path: appRoutes.dashboard.index, icon: MdOutlineDashboard, text: 'Escritorio' },
   { path: appRoutes.materials.index, icon: MdOutlineAllInbox, text: 'Materiales' },
   { path: appRoutes.suppliers.index, icon: MdOutlineFireTruck, text: 'Proveedores' },
+  { path: appRoutes.purchaseOrders.index, icon: MdOutlineShoppingCart, text: 'Compras' },
 ];
 
 export default function Layout({ children }: Props): JSX.Element {

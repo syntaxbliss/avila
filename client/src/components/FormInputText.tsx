@@ -3,6 +3,7 @@ import { FormControl, FormErrorMessage, FormLabel, GridItem, Input } from '@chak
 type Props = {
   autoFocus?: React.ComponentProps<typeof Input>['autoFocus'];
   error?: string;
+  flex?: React.ComponentProps<typeof GridItem>['flex'];
   gridColumn?: React.ComponentProps<typeof GridItem>['gridColumn'];
   isDisabled?: React.ComponentProps<typeof Input>['isDisabled'];
   isRequired?: React.ComponentProps<typeof Input>['isRequired'];
@@ -15,6 +16,7 @@ type Props = {
 export default function FormInputText({
   autoFocus,
   error,
+  flex,
   gridColumn,
   isDisabled,
   isRequired,
@@ -24,7 +26,7 @@ export default function FormInputText({
   value,
 }: Props): JSX.Element {
   return (
-    <GridItem gridColumn={gridColumn}>
+    <GridItem gridColumn={gridColumn} flex={flex}>
       <FormControl isRequired={isRequired} isInvalid={Boolean(error)}>
         {label && <FormLabel>{label}</FormLabel>}
 

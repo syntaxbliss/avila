@@ -86,12 +86,18 @@ type PurchaseOrder {
   payments: [PurchaseOrderPayment!]
 }
 
+type PaginatedPurchaseOrders {
+  items: [PurchaseOrder!]!
+  paginationInfo: PaginationInfo!
+}
+
 type Query {
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
   suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
-  puchaseOrdersTest: [PurchaseOrder!]!
+  purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
+  purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
 }
 
 input SearchMaterialInput {
@@ -120,6 +126,33 @@ input PaginationInput {
 input SearchSupplierInput {
   name: String
   sortOrder: QuerySortOrder
+}
+
+input SearchPurchaseOrderInput {
+  orderedAtFrom: DateTime
+  orderedAtTo: DateTime
+  supplierId: ID
+  paymentStatus: SearchPurchaseOrderPaymentStatus
+  deliveryStatus: SearchPurchaseOrderDeliveryStatus
+  sortField: SearchPurchaseOrderQuerySortField
+  sortOrder: QuerySortOrder
+}
+
+enum SearchPurchaseOrderPaymentStatus {
+  ALL
+  PAID
+  UNPAID
+}
+
+enum SearchPurchaseOrderDeliveryStatus {
+  ALL
+  DELIVERED
+  UNDELIVERED
+}
+
+enum SearchPurchaseOrderQuerySortField {
+  ORDERED_AT
+  DELIVERED_AT
 }
 
 type Mutation {

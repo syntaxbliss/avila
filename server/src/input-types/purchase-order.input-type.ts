@@ -1,6 +1,7 @@
-import { Field, Float, ID, InputType } from '@nestjs/graphql';
+import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
 import { PurchaseOrderPaymentMethodEnum } from 'src/entities';
 import { z } from 'zod';
+import { QuerySortOrderEnum } from './commons';
 
 @InputType()
 export class PurchaseOrderMaterialInput {
@@ -72,3 +73,53 @@ export const createPurchaseorderSchema = z.object({
   materials: z.array(purchaseOrderMaterialSchema).min(1),
   payments: z.array(purchaseOrderPaymentSchema).optional(),
 });
+
+export enum SearchPurchaseOrderPaymentStatusEnum {
+  ALL = 'all',
+  PAID = 'paid',
+  UNPAID = 'unpaid',
+}
+registerEnumType(SearchPurchaseOrderPaymentStatusEnum, {
+  name: 'SearchPurchaseOrderPaymentStatus',
+});
+
+export enum SearchPurchaseOrderDeliveryStatusEnum {
+  ALL = 'all',
+  DELIVERED = 'delivered',
+  UNDELIVERED = 'undelivered',
+}
+registerEnumType(SearchPurchaseOrderDeliveryStatusEnum, {
+  name: 'SearchPurchaseOrderDeliveryStatus',
+});
+
+enum SearchPurchaseOrderQuerySortFieldEnum {
+  ORDERED_AT = 'orderedAt',
+  DELIVERED_AT = 'deliveredAt',
+}
+registerEnumType(SearchPurchaseOrderQuerySortFieldEnum, {
+  name: 'SearchPurchaseOrderQuerySortField',
+});
+
+@InputType()
+export class SearchPurchaseOrderInput {
+  @Field(() => Date, { nullable: true })
+  orderedAtFrom: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  orderedAtTo: Date | null;
+
+  @Field(() => ID, { nullable: true })
+  supplierId: string | null;
+
+  @Field(() => SearchPurchaseOrderPaymentStatusEnum, { nullable: true })
+  paymentStatus: SearchPurchaseOrderPaymentStatusEnum | null;
+
+  @Field(() => SearchPurchaseOrderDeliveryStatusEnum, { nullable: true })
+  deliveryStatus: SearchPurchaseOrderDeliveryStatusEnum | null;
+
+  @Field(() => SearchPurchaseOrderQuerySortFieldEnum, { nullable: true })
+  sortField: SearchPurchaseOrderQuerySortFieldEnum | null;
+
+  @Field(() => QuerySortOrderEnum, { nullable: true })
+  sortOrder: QuerySortOrderEnum | null;
+}

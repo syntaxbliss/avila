@@ -14,6 +14,7 @@ export default class SupplierLoader {
 
   private supplierByPurchaseOrder: {
     loader: DataLoader<string, Supplier>;
+    findOptions: FindManyOptions<PurchaseOrderEntity>;
   };
 
   constructor(private readonly ds: DataSource) {
@@ -51,11 +52,16 @@ export default class SupplierLoader {
   }
 
   private createSupplierByPurchaseOrderLoader() {
+    const findOptions: typeof this.supplierByPurchaseOrder.findOptions = {
+      relations: { materials: { material_supplier: { supplier: true } } },
+      order: { orderedAt: 'DESC' },
+    };
+
     const loader = new DataLoader(
       async (ids: readonly string[]) => {
         const purchaseOrders = await this.ds.manager.find(PurchaseOrderEntity, {
           where: { id: In(ids) },
-          relations: { materials: { material_supplier: { supplier: true } } },
+          ...this.supplierByPurchaseOrder.findOptions,
         });
 
         return purchaseOrders.map(po =>
@@ -65,11 +71,15 @@ export default class SupplierLoader {
       { cache: false }
     );
 
-    this.supplierByPurchaseOrder = { loader };
+    this.supplierByPurchaseOrder = { findOptions, loader };
   }
 
   setSuppliersByMaterialOrder(order: FindManyOptions<MaterialEntity>['order']) {
     this.suppliersByMaterial.findOptions.order = order;
+  }
+
+  setSupplierByPurchaseOrderOrder(order: FindManyOptions<PurchaseOrderEntity>['order']) {
+    this.supplierByPurchaseOrder.findOptions.order = order;
   }
 
   loadSuppliersByMaterial(id: string) {

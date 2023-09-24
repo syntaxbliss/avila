@@ -42,3 +42,25 @@ export const formatMaterialQuantity = (
 export const formatCurrency = (input: number) => currencyFormatter.format(input);
 
 export const humanReadableDate = (input?: Date) => dayjs(input).format('DD/MM/YYYY');
+
+export const calculatePurchaseOrderMaterialsTotalAmount = (
+  materials: Array<{ quantity: number; unitPrice: number }>
+): number => {
+  const totalAmount = materials.reduce((sum, material) => {
+    sum += material.quantity * material.unitPrice;
+
+    return sum;
+  }, 0);
+
+  return Number(totalAmount.toFixed(2));
+};
+
+export const calculatePurchaseOrderPaymentsTotalPaid = (paidAmounts: number[]) => {
+  const totalPaid = paidAmounts.reduce((sum, amount) => {
+    sum += amount;
+
+    return sum;
+  }, 0);
+
+  return Number(totalPaid.toFixed(2));
+};

@@ -1,23 +1,4 @@
-import {
-  Divider,
-  Flex,
-  Grid,
-  GridItem,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
+import { Divider, Grid, GridItem, IconButton, Text } from '@chakra-ui/react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import {
   Card,
@@ -29,13 +10,9 @@ import {
 import { z } from 'zod';
 import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
-import { MdAdd, MdDelete, MdStickyNote2 } from 'react-icons/md';
+import { MdAdd } from 'react-icons/md';
 import { PurchaseOrderPaymentMethod } from '../../__generated__/graphql';
-import {
-  formatCurrency,
-  humanReadableDate,
-  purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod,
-} from '../../helpers';
+import PurchaseOrderPaymentsTable from './PurchaseOrderPaymentsTable';
 
 type Props = React.ComponentProps<typeof Card> & { totalAmount: number };
 
@@ -89,22 +66,6 @@ const PurchaseOrderFormContainerPayments = forwardRef<
     return !validation.success;
   }, [form]);
 
-  const getRowColor = useCallback<() => React.ComponentProps<typeof Tr>['bgColor']>(() => {
-    if (totalAmount === totalPaid) {
-      return 'green.700';
-    }
-
-    if (totalPaid === 0) {
-      return 'red.700';
-    }
-
-    if (totalAmount > totalPaid) {
-      return 'yellow.600';
-    }
-
-    return 'red.700';
-  }, [totalAmount, totalPaid]);
-
   const handleAddClick = useCallback(() => {
     const payment = formSchema.parse(form) as Payments[number];
 
@@ -151,118 +112,13 @@ const PurchaseOrderFormContainerPayments = forwardRef<
 
   return (
     <Card title="Pagos efectuados" {...rest}>
-      {paymentsList.length > 0 && (
-        <>
-          <TableContainer>
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th w="33%">Forma de pago</Th>
-                  <Th w="33%" textAlign="center">
-                    Fecha
-                  </Th>
-                  <Th w="33%" textAlign="center">
-                    Monto
-                  </Th>
-                  <Th />
-                </Tr>
-              </Thead>
+      <PurchaseOrderPaymentsTable
+        onDelete={handleDeleteClick}
+        payments={paymentsList}
+        totalAmount={totalAmount}
+      />
 
-              <Tbody>
-                {paymentsList.map((payment, index) => (
-                  <Tr key={index}>
-                    <Td>
-                      <Flex alignItems="center">
-                        {
-                          purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod[
-                            payment.method
-                          ]
-                        }
-
-                        {payment.notes && (
-                          <Popover placement="left">
-                            <PopoverTrigger>
-                              <IconButton
-                                ml="2"
-                                aria-label="add"
-                                colorScheme="green"
-                                rounded="full"
-                                icon={<MdStickyNote2 />}
-                                size="xs"
-                              />
-                            </PopoverTrigger>
-
-                            <PopoverContent bg="blue.800" borderColor="blue.800" color="white">
-                              <PopoverArrow bg="blue.800" />
-                              <PopoverBody whiteSpace="pre-wrap">{payment.notes}</PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                      </Flex>
-                    </Td>
-                    <Td textAlign="center">{humanReadableDate(payment.paidAt)}</Td>
-                    <Td textAlign="right">{formatCurrency(payment.amount)}</Td>
-                    <Td>
-                      <IconButton
-                        aria-label="delete"
-                        colorScheme="red"
-                        rounded="full"
-                        icon={<MdDelete />}
-                        size="xs"
-                        onClick={() => handleDeleteClick(index)}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-
-                <Tr bgColor="gray.200">
-                  <Td colSpan={3} textAlign="right">
-                    <Text
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                      letterSpacing="wide"
-                      color="blackAlpha.700"
-                    >
-                      <Text as="span">Total abonado:</Text> {formatCurrency(totalPaid)}
-                    </Text>
-                  </Td>
-                  <Td />
-                </Tr>
-
-                <Tr bgColor="gray.700">
-                  <Td colSpan={3} textAlign="right">
-                    <Text
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                      letterSpacing="wide"
-                      color="whiteAlpha.800"
-                    >
-                      <Text as="span">Total a pagar:</Text> {formatCurrency(totalAmount)}
-                    </Text>
-                  </Td>
-                  <Td />
-                </Tr>
-
-                <Tr bgColor={getRowColor()}>
-                  <Td colSpan={3} textAlign="right">
-                    <Text
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                      letterSpacing="wide"
-                      color="whiteAlpha.800"
-                    >
-                      <Text as="span">Balance:</Text> {formatCurrency(totalPaid - totalAmount)}
-                    </Text>
-                  </Td>
-                  <Td />
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-
-          <Divider my="5" />
-        </>
-      )}
+      {paymentsList.length > 0 && <Divider my="5" />}
 
       <Grid gridTemplateColumns="1fr auto" gap="5">
         <GridItem>

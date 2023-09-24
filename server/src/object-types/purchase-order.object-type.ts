@@ -2,6 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Supplier } from './supplier.object-type';
 import { PurchaseOrderMaterial } from './purchase-order-material.object-type';
 import { PurchaseOrderPayment } from './purchase-order-payment.object-type';
+import { PaginatedResponse } from './commons';
 
 @ObjectType()
 export class PurchaseOrder {
@@ -32,3 +33,6 @@ export class PurchaseOrder {
   @Field(() => [PurchaseOrderPayment], { nullable: true })
   payments: PurchaseOrderPayment[] | null;
 }
+
+@ObjectType()
+export class PaginatedPurchaseOrders extends PaginatedResponse(PurchaseOrder) {}

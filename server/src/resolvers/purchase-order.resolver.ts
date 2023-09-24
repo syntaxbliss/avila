@@ -1,4 +1,5 @@
-import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import * as dayjs from 'dayjs';
 import { GraphQLError } from 'graphql';
 import {
   MaterialEntity,
@@ -7,7 +8,14 @@ import {
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
 } from 'src/entities';
-import { CreatePurchaseOrderInput, createPurchaseorderSchema } from 'src/input-types';
+import {
+  CreatePurchaseOrderInput,
+  PaginationInput,
+  SearchPurchaseOrderDeliveryStatusEnum,
+  SearchPurchaseOrderInput,
+  SearchPurchaseOrderPaymentStatusEnum,
+  createPurchaseorderSchema,
+} from 'src/input-types';
 import {
   PurchaseOrderMaterialLoader,
   PurchaseOrderPaymentLoader,
@@ -15,6 +23,7 @@ import {
 } from 'src/loaders';
 import { mapPurchaseOrderEntityToPurchaseOrder } from 'src/mappers';
 import {
+  PaginatedPurchaseOrders,
   PurchaseOrder,
   PurchaseOrderMaterial,
   PurchaseOrderPayment,
@@ -31,14 +40,81 @@ export default class PurchaseOrderResolver {
     private readonly purchaseOrderPaymentLoader: PurchaseOrderPaymentLoader
   ) {}
 
-  // FIXME
-  @Query(() => [PurchaseOrder])
-  async puchaseOrdersTest(): Promise<PurchaseOrder[]> {
-    const purchaseOrders = await this.ds.manager.find(PurchaseOrderEntity);
+  @Query(() => PaginatedPurchaseOrders)
+  async purchaseOrders(
+    @Args('searchParams', { nullable: true }) searchParams?: SearchPurchaseOrderInput,
+    @Args('pagination', { nullable: true }) pagination?: PaginationInput
+  ): Promise<PaginatedPurchaseOrders> {
+    const query = this.ds.manager.createQueryBuilder(PurchaseOrderEntity, 'purchase_order');
 
-    return purchaseOrders.map(po => mapPurchaseOrderEntityToPurchaseOrder(po));
+    if (searchParams?.orderedAtFrom && searchParams?.orderedAtTo) {
+      query.where('purchase_order.orderedAt BETWEEN :from AND :to', {
+        from: dayjs(searchParams.orderedAtFrom).format('YYYY-MM-DD'),
+        to: dayjs(searchParams.orderedAtTo).format('YYYY-MM-DD'),
+      });
+    } else if (searchParams?.orderedAtFrom) {
+      query.where('purchase_order.orderedAt >= :from', {
+        from: dayjs(searchParams.orderedAtFrom).format('YYYY-MM-DD'),
+      });
+    } else if (searchParams?.orderedAtTo) {
+      query.where('purchase_order.orderedAt <= :to', {
+        to: dayjs(searchParams.orderedAtTo).format('YYYY-MM-DD'),
+      });
+    }
+
+    if (searchParams?.supplierId) {
+      query
+        .innerJoin('purchase_order.materials', 'purchase_order_material')
+        .innerJoin('purchase_order_material.material_supplier', 'material__supplier')
+        .andWhere('material__supplier.supplierId = :supplierId', {
+          supplierId: searchParams.supplierId,
+        })
+        .groupBy('purchase_order.id');
+    }
+
+    if (searchParams?.paymentStatus === SearchPurchaseOrderPaymentStatusEnum.PAID) {
+      query.andWhere('purchase_order.paidAmount = purchase_order.totalAmount');
+    } else if (searchParams?.paymentStatus === SearchPurchaseOrderPaymentStatusEnum.UNPAID) {
+      query.andWhere('purchase_order.paidAmount < purchase_order.totalAmount');
+    }
+
+    if (searchParams?.deliveryStatus === SearchPurchaseOrderDeliveryStatusEnum.DELIVERED) {
+      query.andWhere('purchase_order.deliveredAt IS NOT NULL');
+    } else if (searchParams?.deliveryStatus === SearchPurchaseOrderDeliveryStatusEnum.UNDELIVERED) {
+      query.andWhere('purchase_order.deliveredAt IS NULL');
+    }
+
+    if (pagination) {
+      query.offset((pagination.pageNumber - 1) * pagination.pageSize).limit(pagination.pageSize);
+    }
+
+    const sortField = searchParams?.sortField ?? 'orderedAt';
+    const sortOrder = searchParams?.sortOrder ?? 'DESC';
+    this.supplierLoader.setSupplierByPurchaseOrderOrder({ [sortField]: sortOrder });
+    query.orderBy(`purchase_order.${sortField}`, sortOrder);
+
+    const [purchaseOrders, count] = await query.getManyAndCount();
+
+    return {
+      items: purchaseOrders.map(purchaseOrder =>
+        mapPurchaseOrderEntityToPurchaseOrder(purchaseOrder)
+      ),
+      paginationInfo: {
+        count,
+        pageNumber: pagination?.pageNumber ?? 1,
+        pageSize: pagination?.pageSize ?? count,
+      },
+    };
   }
-  // END OF FIXME
+
+  @Query(() => PurchaseOrder)
+  async purchaseOrder(@Args('purchaseOrderId', { type: () => ID }) purchaseOrderId: string) {
+    const purchaseOrder = await this.ds.manager.findOneByOrFail(PurchaseOrderEntity, {
+      id: purchaseOrderId,
+    });
+
+    return mapPurchaseOrderEntityToPurchaseOrder(purchaseOrder);
+  }
 
   @Mutation(() => PurchaseOrder)
   async createPurchaseOrder(
