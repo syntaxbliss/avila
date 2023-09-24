@@ -5,6 +5,7 @@ import {
   FormLabel,
   GridItem,
   Select,
+  forwardRef,
 } from '@chakra-ui/react';
 
 export type FormSelectOption = {
@@ -26,42 +27,50 @@ type Props = {
   value: React.ComponentProps<typeof Select>['value'];
 };
 
-export default function FormSelect({
-  error,
-  gridColumn,
-  helperText,
-  isDisabled,
-  isRequired,
-  label,
-  mt,
-  onChange,
-  options,
-  placeholder = ' ',
-  value,
-}: Props): JSX.Element {
-  return (
-    <GridItem gridColumn={gridColumn} mt={mt}>
-      <FormControl isRequired={isRequired} isInvalid={Boolean(error)}>
-        {label && <FormLabel>{label}</FormLabel>}
+const FormSelect = forwardRef<Props, 'select'>(
+  (
+    {
+      error,
+      gridColumn,
+      helperText,
+      isDisabled,
+      isRequired,
+      label,
+      mt,
+      onChange,
+      options,
+      placeholder = ' ',
+      value,
+    },
+    ref
+  ) => {
+    return (
+      <GridItem gridColumn={gridColumn} mt={mt}>
+        <FormControl isRequired={isRequired} isInvalid={Boolean(error)}>
+          {label && <FormLabel>{label}</FormLabel>}
 
-        <Select
-          variant="filled"
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          isDisabled={isDisabled}
-        >
-          {options.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
+          <Select
+            ref={ref}
+            variant="filled"
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            isDisabled={isDisabled}
+          >
+            {options.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
 
-        <FormErrorMessage>{error}</FormErrorMessage>
+          <FormErrorMessage>{error}</FormErrorMessage>
 
-        <FormHelperText>{helperText}</FormHelperText>
-      </FormControl>
-    </GridItem>
-  );
-}
+          <FormHelperText>{helperText}</FormHelperText>
+        </FormControl>
+      </GridItem>
+    );
+  }
+);
+
+export default FormSelect;

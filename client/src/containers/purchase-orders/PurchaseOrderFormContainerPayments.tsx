@@ -18,7 +18,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import {
   Card,
   FormInputNumber,
@@ -71,6 +71,7 @@ const PurchaseOrderFormContainerPayments = forwardRef<
   const [form, setForm] = useState<FormState>({ ...initialValues });
   const [paymentsList, setPaymentsList] = useState<Payments>([]);
   const [showPaymentsError, setShowPaymentsError] = useState(false);
+  const methodSelectRef = useRef<HTMLSelectElement>(null);
 
   const totalPaid = useMemo(() => {
     const totalPaid = paymentsList.reduce((sum, payment) => {
@@ -117,6 +118,7 @@ const PurchaseOrderFormContainerPayments = forwardRef<
       },
     ]);
     setForm({ ...initialValues });
+    methodSelectRef.current?.focus();
   }, [form]);
 
   const handleDeleteClick = useCallback((index: number) => {
@@ -270,6 +272,7 @@ const PurchaseOrderFormContainerPayments = forwardRef<
               label="Forma de pago"
               value={form.method}
               onChange={e => setForm({ ...form, method: e })}
+              ref={methodSelectRef}
             />
 
             <GridItem display="flex">

@@ -1,3 +1,4 @@
+import { forwardRef } from '@chakra-ui/react';
 import { PurchaseOrderPaymentMethod } from '../__generated__/graphql';
 import FormSelect, { FormSelectOption } from './FormSelect';
 
@@ -22,13 +23,16 @@ const options: FormSelectOption[] = Object.values(PurchaseOrderPaymentMethod).ma
   value: method,
 }));
 
-export default function PaymentMethodSelect({ onChange, value, ...rest }: Props): JSX.Element {
+const PaymentMethodSelect = forwardRef<Props, 'select'>(({ onChange, value, ...rest }, ref) => {
   return (
     <FormSelect
+      ref={ref}
       value={value}
       onChange={e => onChange(e.target.value as ValueType)}
       options={options}
       {...rest}
     />
   );
-}
+});
+
+export default PaymentMethodSelect;

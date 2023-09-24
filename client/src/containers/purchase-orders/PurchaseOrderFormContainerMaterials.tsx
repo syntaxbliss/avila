@@ -138,6 +138,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
   const [form, setForm] = useState<FormState>({ ...initialValues });
   const [materialsList, setMaterialsList] = useState<Materials['materials']>([]);
   const [showEmptyListError, setShowEmptyListError] = useState(false);
+  const materialSelectRef = useRef<HTMLSelectElement>(null);
 
   const changeSupplierDialog = useDisclosure();
 
@@ -230,6 +231,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
       },
     ]);
     setForm({ ...initialValues });
+    materialSelectRef.current?.focus();
   }, [form]);
 
   const handleDeleteClick = useCallback((index: number) => {
@@ -380,6 +382,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
 
       <Grid gridTemplateColumns="2fr 1fr 1fr auto" gap="5">
         <FormSelect
+          ref={materialSelectRef}
           isRequired
           label="Material"
           options={materialsSelectOptions}
