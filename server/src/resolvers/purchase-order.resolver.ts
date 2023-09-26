@@ -7,6 +7,7 @@ import {
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
+  PurchaseOrderStatusEnum,
 } from 'src/entities';
 import {
   CreatePurchaseOrderInput,
@@ -78,6 +79,10 @@ export default class PurchaseOrderResolver {
     } else if (searchParams?.paymentStatus === SearchPurchaseOrderPaymentStatusEnum.UNPAID) {
       query.andWhere('purchase_order.paidAmount < purchase_order.totalAmount');
     }
+
+    query.andWhere('purchase_order.status = :status', {
+      status: searchParams?.status ?? PurchaseOrderStatusEnum.ACTIVE,
+    });
 
     if (searchParams?.deliveryStatus === SearchPurchaseOrderDeliveryStatusEnum.DELIVERED) {
       query.andWhere('purchase_order.deliveredAt IS NOT NULL');
@@ -206,6 +211,20 @@ export default class PurchaseOrderResolver {
 
       return mapPurchaseOrderEntityToPurchaseOrder(purchaseOrder);
     });
+  }
+
+  @Mutation(() => Boolean)
+  async cancelPurchaseOrder(
+    @Args('purchaseOrderId', { type: () => ID }) purchaseOrderId: string
+  ): Promise<boolean> {
+    const purchaseOrder = await this.ds.manager.findOneByOrFail(PurchaseOrderEntity, {
+      id: purchaseOrderId,
+    });
+
+    purchaseOrder.status = PurchaseOrderStatusEnum.CANCELLED;
+    await this.ds.manager.save(purchaseOrder);
+
+    return true;
   }
 
   @ResolveField()

@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import {
   Card,
-  DeleteDialog,
+  ConfirmationDialog,
   LoadingSpinner,
   NoRecordsAlert,
   PageHeader,
@@ -24,7 +24,7 @@ import {
 } from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdDelete, MdEdit } from 'react-icons/md';
+import { MdAddCircleOutline, MdDelete, MdEdit, MdOutlineDelete } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useMutation, useQuery } from '@apollo/client';
 import { useCallback, useState } from 'react';
@@ -187,7 +187,10 @@ export default function SuppliersContainer(): JSX.Element {
                 </Table>
               </TableContainer>
 
-              <DeleteDialog
+              <ConfirmationDialog
+                confirmButtonColorScheme="red"
+                confirmButtonIcon={<MdOutlineDelete />}
+                confirmButtonText="Eliminar"
                 isLoading={deleteSupplierMutationStatus.loading}
                 isOpen={deleteDialog.isOpen}
                 onClose={deleteDialog.onClose}
@@ -200,7 +203,7 @@ export default function SuppliersContainer(): JSX.Element {
                 <Text>
                   <b>Nombre:</b> {toDelete?.name}
                 </Text>
-              </DeleteDialog>
+              </ConfirmationDialog>
             </>
           ) : (
             <NoRecordsAlert entity="proveedores" />

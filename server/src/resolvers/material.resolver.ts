@@ -59,6 +59,10 @@ export default class MaterialResolver {
   @Query(() => Material)
   async material(@Args('materialId', { type: () => ID }) materialId: string): Promise<Material> {
     const material = await this.ds.manager.findOneByOrFail(MaterialEntity, { id: materialId });
+    this.supplierLoader.setSuppliersByMaterialOrder({
+      name: 'ASC',
+      material_suppliers: { supplier: { name: 'ASC' } },
+    });
 
     return mapMaterialEntityToMaterial(material);
   }

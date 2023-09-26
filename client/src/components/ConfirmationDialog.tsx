@@ -9,10 +9,12 @@ import {
   UseDisclosureProps,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
-import { MdOutlineDelete } from 'react-icons/md';
 
 type Props = {
   children?: React.ReactNode;
+  confirmButtonColorScheme: React.ComponentProps<typeof Button>['colorScheme'];
+  confirmButtonIcon: React.ComponentProps<typeof Button>['leftIcon'];
+  confirmButtonText: string;
   isLoading?: boolean;
   isOpen: NonNullable<UseDisclosureProps['isOpen']>;
   onClose: NonNullable<UseDisclosureProps['onClose']>;
@@ -20,8 +22,11 @@ type Props = {
   title: string;
 };
 
-export default function DeleteDialog({
+export default function ConfirmationDialog({
   children,
+  confirmButtonColorScheme,
+  confirmButtonIcon,
+  confirmButtonText,
   isLoading,
   isOpen,
   onClose,
@@ -46,13 +51,13 @@ export default function DeleteDialog({
             </Button>
 
             <Button
-              colorScheme="red"
+              colorScheme={confirmButtonColorScheme}
               onClick={onConfirm}
               isLoading={isLoading}
               ml="3"
-              leftIcon={<MdOutlineDelete />}
+              leftIcon={confirmButtonIcon}
             >
-              Eliminar
+              {confirmButtonText}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

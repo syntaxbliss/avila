@@ -1,5 +1,5 @@
 import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
-import { PurchaseOrderPaymentMethodEnum } from 'src/entities';
+import { PurchaseOrderPaymentMethodEnum, PurchaseOrderStatusEnum } from 'src/entities';
 import { z } from 'zod';
 import { QuerySortOrderEnum } from './commons';
 
@@ -116,6 +116,9 @@ export class SearchPurchaseOrderInput {
 
   @Field(() => SearchPurchaseOrderDeliveryStatusEnum, { nullable: true })
   deliveryStatus: SearchPurchaseOrderDeliveryStatusEnum | null;
+
+  @Field(() => PurchaseOrderStatusEnum, { nullable: true })
+  status: PurchaseOrderStatusEnum | null;
 
   @Field(() => SearchPurchaseOrderQuerySortFieldEnum, { nullable: true })
   sortField: SearchPurchaseOrderQuerySortFieldEnum | null;

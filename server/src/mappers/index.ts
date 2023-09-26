@@ -48,6 +48,7 @@ export const mapPurchaseOrderEntityToPurchaseOrder = (
   purchaseOrder.deliveryNote = entity.deliveryNote;
   purchaseOrder.totalAmount = entity.totalAmount;
   purchaseOrder.paidAmount = entity.paidAmount;
+  purchaseOrder.status = entity.status;
 
   return purchaseOrder;
 };

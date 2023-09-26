@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import PurchaseOrderMaterialEntity from './purchase-order-material.entity';
 import PurchaseOrderPaymentEntity from './purchase-order-payment.entity';
+import { PurchaseOrderStatusEnum } from './enums';
 
 @Entity('purchase_order')
 export default class PurchaseOrderEntity {
@@ -35,4 +36,7 @@ export default class PurchaseOrderEntity {
     { nullable: true }
   )
   payments: PurchaseOrderPaymentEntity[] | null;
+
+  @Column({ type: 'enum', enum: PurchaseOrderStatusEnum, default: PurchaseOrderStatusEnum.ACTIVE })
+  status: PurchaseOrderStatusEnum;
 }

@@ -13,3 +13,8 @@ export enum PurchaseOrderPaymentMethodEnum {
   CHECK = 'check',
   E_CHECK = 'e-check',
 }
+
+export enum PurchaseOrderStatusEnum {
+  ACTIVE = 'active',
+  CANCELLED = 'cancelled',
+}

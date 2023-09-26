@@ -82,8 +82,14 @@ type PurchaseOrder {
   totalAmount: Float!
   paidAmount: Float!
   supplier: Supplier!
+  status: PurchaseOrderStatus!
   materials: [PurchaseOrderMaterial!]!
   payments: [PurchaseOrderPayment!]
+}
+
+enum PurchaseOrderStatus {
+  ACTIVE
+  CANCELLED
 }
 
 type PaginatedPurchaseOrders {
@@ -134,6 +140,7 @@ input SearchPurchaseOrderInput {
   supplierId: ID
   paymentStatus: SearchPurchaseOrderPaymentStatus
   deliveryStatus: SearchPurchaseOrderDeliveryStatus
+  status: PurchaseOrderStatus
   sortField: SearchPurchaseOrderQuerySortField
   sortOrder: QuerySortOrder
 }
@@ -163,6 +170,7 @@ type Mutation {
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
   deleteSupplier(supplierId: ID!): Boolean!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
+  cancelPurchaseOrder(purchaseOrderId: ID!): Boolean!
 }
 
 input SaveMaterialInput {

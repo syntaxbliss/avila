@@ -1,10 +1,11 @@
 import { Divider, Grid, GridItem, IconButton } from '@chakra-ui/react';
-import { Card, FormDateRange, FormSelect, SuspenseSpinner } from '../../components';
+import { Card, FormDateRange, FormSelect, FormSwitch, SuspenseSpinner } from '../../components';
 import { MdFilterAltOff } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useSuspenseQuery } from '@apollo/client';
 import { useMemo } from 'react';
 import {
+  PurchaseOrderStatus,
   QuerySortOrder,
   SearchPurchaseOrderDeliveryStatus,
   SearchPurchaseOrderPaymentStatus,
@@ -17,6 +18,7 @@ export type SearchParams = {
   supplierId: string;
   paymentStatus: SearchPurchaseOrderPaymentStatus;
   deliveryStatus: SearchPurchaseOrderDeliveryStatus;
+  status: PurchaseOrderStatus;
   sortField: SearchPurchaseOrderQuerySortField;
   sortOrder: QuerySortOrder;
 };
@@ -58,24 +60,17 @@ export default function PurchaseOrdersContainerFilters({
 }: Props): JSX.Element {
   return (
     <Card mt="8" title="Filtros">
-      <Grid templateColumns="1fr auto 1fr auto auto" gap="5">
+      <Grid templateColumns="3fr auto 2fr auto auto" gap="5">
         <GridItem>
-          <Grid templateColumns="1fr 1fr 1fr" gap="5">
+          <Grid templateColumns="1fr 1fr" gap="5">
             <FormDateRange
-              gridColumn="1 / 4"
+              gridColumn="1 / 3"
               label="Fecha de pedido"
               value={[searchParams.orderedAtFrom, searchParams.orderedAtTo]}
               onChange={value =>
                 onImmediateChange({ orderedAtFrom: value[0] || '', orderedAtTo: value[1] || '' })
               }
             />
-
-            <SuspenseSpinner>
-              <SuppliersSelect
-                onChange={supplierId => onImmediateChange({ supplierId })}
-                supplierId={searchParams.supplierId}
-              />
-            </SuspenseSpinner>
 
             <FormSelect
               placeholder=""
@@ -97,6 +92,25 @@ export default function PurchaseOrdersContainerFilters({
               onChange={e =>
                 onImmediateChange({
                   deliveryStatus: e.target.value as SearchPurchaseOrderDeliveryStatus,
+                })
+              }
+            />
+
+            <SuspenseSpinner>
+              <SuppliersSelect
+                onChange={supplierId => onImmediateChange({ supplierId })}
+                supplierId={searchParams.supplierId}
+              />
+            </SuspenseSpinner>
+
+            <FormSwitch
+              mt="9"
+              id="purchase-orders-container-filters__cancelled"
+              label="Sólo órdenes anuladas"
+              value={searchParams.status === PurchaseOrderStatus.Cancelled}
+              onChange={e =>
+                onImmediateChange({
+                  status: e ? PurchaseOrderStatus.Cancelled : PurchaseOrderStatus.Active,
                 })
               }
             />

@@ -12,15 +12,25 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
-import { Card, LoadingSpinner, NoRecordsAlert, PageHeader, Pagination } from '../../components';
+import {
+  Card,
+  ConfirmationDialog,
+  LoadingSpinner,
+  NoRecordsAlert,
+  PageHeader,
+  Pagination,
+} from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdList } from 'react-icons/md';
+import { MdAddCircleOutline, MdClose, MdList } from 'react-icons/md';
 import { gql } from '../../__generated__';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { formatCurrency, humanReadableDate } from '../../helpers';
 import {
+  PurchaseOrder,
+  PurchaseOrderStatus,
   QuerySortOrder,
   SearchPurchaseOrderDeliveryStatus,
   SearchPurchaseOrderPaymentStatus,
@@ -32,7 +42,7 @@ import PurchaseOrdersContainerFilters, {
   type SearchParams,
 } from './PurchaseOrdersContainerFilters';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import PurchaseOrdersContainerDetail from './PurchaseOrdersContainerDetail';
 
 PurchaseOrdersContainer.gql = {
@@ -51,12 +61,20 @@ PurchaseOrdersContainer.gql = {
             deliveredAt
             totalAmount
             paidAmount
+            status
             supplier {
               id
               name
             }
           }
         }
+      }
+    `),
+  },
+  mutations: {
+    cancelPurchaseOrder: gql(`
+      mutation PurchaseOrdersContainerCancelPurchaseOrderMutation ($purchaseOrderId: ID!) {
+        cancelPurchaseOrder (purchaseOrderId: $purchaseOrderId)
       }
     `),
   },
@@ -68,6 +86,7 @@ const defaultFilters: SearchParams = {
   supplierId: '',
   paymentStatus: SearchPurchaseOrderPaymentStatus.All,
   deliveryStatus: SearchPurchaseOrderDeliveryStatus.All,
+  status: PurchaseOrderStatus.Active,
   sortField: SearchPurchaseOrderQuerySortField.OrderedAt,
   sortOrder: QuerySortOrder.Desc,
 };
@@ -98,11 +117,35 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     },
   });
 
+  const [cancelPurchaseOrderMutation, cancelPurchaseOrderMutationStatus] = useMutation(
+    PurchaseOrdersContainer.gql.mutations.cancelPurchaseOrder
+  );
+
+  const [toCancel, setToCancel] = useState<Partial<PurchaseOrder>>();
+  const toast = useToast();
+  const cancelDialog = useDisclosure({
+    isOpen: Boolean(toCancel),
+    onClose: () => setToCancel(undefined),
+  });
+
   const [showDetail, setShowDetail] = useState<string>();
   const detailDialog = useDisclosure({
     isOpen: Boolean(showDetail),
     onClose: () => setShowDetail(undefined),
   });
+
+  const handleCancelPurchaseOrderClick = useCallback(() => {
+    if (toCancel?.id) {
+      cancelPurchaseOrderMutation({
+        variables: { purchaseOrderId: toCancel.id },
+        onCompleted() {
+          toast({ description: 'Orden de compra anulada exitosamente.' });
+          cancelDialog.onClose();
+          purchaseOrdersQuery.refetch();
+        },
+      });
+    }
+  }, [cancelDialog, cancelPurchaseOrderMutation, purchaseOrdersQuery, toCancel, toast]);
 
   return (
     <>
@@ -140,7 +183,12 @@ export default function PurchaseOrdersContainer(): JSX.Element {
 
                 <Divider my="5" />
 
-                <Table size="sm" variant="striped" colorScheme="gray">
+                <Table
+                  size="sm"
+                  {...(searchParams?.status === PurchaseOrderStatus.Cancelled
+                    ? {}
+                    : { variant: 'striped', colorScheme: 'gray' })}
+                >
                   <Thead>
                     <Tr>
                       <Th textAlign="center" w="20%">
@@ -162,7 +210,14 @@ export default function PurchaseOrdersContainer(): JSX.Element {
 
                   <Tbody>
                     {purchaseOrdersQuery.data.purchaseOrders.items.map(purchaseOrder => (
-                      <Tr key={purchaseOrder.id}>
+                      <Tr
+                        key={purchaseOrder.id}
+                        bgColor={
+                          purchaseOrder.status === PurchaseOrderStatus.Cancelled
+                            ? 'red.200'
+                            : undefined
+                        }
+                      >
                         <Td textAlign="center">{humanReadableDate(purchaseOrder.orderedAt)}</Td>
                         <Td textAlign="center">
                           {purchaseOrder.deliveredAt ? (
@@ -200,6 +255,17 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             size="xs"
                             onClick={() => setShowDetail(purchaseOrder.id)}
                           />
+
+                          <IconButton
+                            aria-label="delete"
+                            colorScheme="red"
+                            rounded="full"
+                            icon={<MdClose />}
+                            size="xs"
+                            ml="1"
+                            onClick={() => setToCancel(purchaseOrder as PurchaseOrder)}
+                            isDisabled={purchaseOrder.status === PurchaseOrderStatus.Cancelled}
+                          />
                         </Td>
                       </Tr>
                     ))}
@@ -212,6 +278,33 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                 onClose={detailDialog.onClose}
                 purchaseOrderId={showDetail}
               />
+
+              <ConfirmationDialog
+                confirmButtonColorScheme="red"
+                confirmButtonIcon={<MdClose />}
+                confirmButtonText="Anular"
+                isLoading={cancelPurchaseOrderMutationStatus.loading}
+                isOpen={cancelDialog.isOpen}
+                onClose={cancelDialog.onClose}
+                onConfirm={handleCancelPurchaseOrderClick}
+                title="Anular orden de compra"
+              >
+                ¿Confirma que desea anular la siguiente orden de compra?
+                <br />
+                <br />
+                <Text>
+                  <b>Proveedor:</b> {toCancel?.supplier?.name}
+                </Text>
+                <Text>
+                  <b>Fecha de pedido:</b> {toCancel ? humanReadableDate(toCancel.orderedAt) : null}
+                </Text>
+                {toCancel?.deliveredAt && (
+                  <Text>
+                    <b>Fecha de entrega:</b>{' '}
+                    {toCancel ? humanReadableDate(toCancel.deliveredAt) : null}
+                  </Text>
+                )}
+              </ConfirmationDialog>
             </>
           ) : (
             <NoRecordsAlert entity="órdenes de compra" />

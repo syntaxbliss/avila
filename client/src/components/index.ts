@@ -1,5 +1,5 @@
 export { default as Card } from './Card';
-export { default as DeleteDialog } from './DeleteDialog';
+export { default as ConfirmationDialog } from './ConfirmationDialog';
 export { default as DividerWithText } from './DividerWithText';
 export { default as FormAutocomplete, type FormAutocompleteOption } from './FormAutocomplete';
 export { default as FormDateRange } from './FormDateRange';

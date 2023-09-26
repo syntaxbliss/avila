@@ -142,6 +142,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
   );
 
   const supplierQuery = useQuery(PurchaseOrderFormContainerMaterialsContentGql.queries.supplier, {
+    fetchPolicy: 'network-only',
     variables: { supplierId: selectedSupplier },
     skip: !selectedSupplier,
   });

@@ -55,6 +55,10 @@ export default class SupplierResolver {
   @Query(() => Supplier)
   async supplier(@Args('supplierId', { type: () => ID }) supplierId: string): Promise<Supplier> {
     const supplier = await this.ds.manager.findOneByOrFail(SupplierEntity, { id: supplierId });
+    this.materialLoader.setMaterialsBySupplierOrder({
+      name: 'ASC',
+      material_suppliers: { material: { name: 'ASC' } },
+    });
 
     return mapSupplierEntityToSupplier(supplier);
   }
