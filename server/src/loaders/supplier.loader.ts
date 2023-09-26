@@ -78,8 +78,12 @@ export default class SupplierLoader {
     this.suppliersByMaterial.findOptions.order = order;
   }
 
-  setSupplierByPurchaseOrderOrder(order: FindManyOptions<PurchaseOrderEntity>['order']) {
+  setSupplierByPurchaseOrderOrder(
+    order: FindManyOptions<PurchaseOrderEntity>['order'],
+    includeDeleted = false
+  ) {
     this.supplierByPurchaseOrder.findOptions.order = order;
+    this.supplierByPurchaseOrder.findOptions.withDeleted = includeDeleted;
   }
 
   loadSuppliersByMaterial(id: string) {

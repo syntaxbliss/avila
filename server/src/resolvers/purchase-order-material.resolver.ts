@@ -8,6 +8,8 @@ export default class PurchaseOrderMaterialResolver {
 
   @ResolveField()
   async material(@Parent() parent: PurchaseOrderMaterial): Promise<Material> {
+    this.materialLoader.setMaterialByPurchaseOrderMaterialOrder(true);
+
     return this.materialLoader.loadMaterialByPurchaseOrderMaterial(parent.materialId);
   }
 }

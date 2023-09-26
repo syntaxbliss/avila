@@ -19,9 +19,14 @@ export default class SupplierResolver {
   @Query(() => PaginatedSuppliers)
   async suppliers(
     @Args('searchParams', { nullable: true }) searchParams?: SearchSupplierInput,
-    @Args('pagination', { nullable: true }) pagination?: PaginationInput
+    @Args('pagination', { nullable: true }) pagination?: PaginationInput,
+    @Args('includeDeleted', { nullable: true }) includeDeleted?: boolean
   ): Promise<PaginatedSuppliers> {
     const query = this.ds.manager.createQueryBuilder(SupplierEntity, 'supplier');
+
+    if (includeDeleted) {
+      query.withDeleted();
+    }
 
     if (searchParams?.name) {
       query.where('supplier.name LIKE :name', { name: `%${searchParams.name}%` });

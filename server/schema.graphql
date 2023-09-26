@@ -94,7 +94,7 @@ type PaginatedPurchaseOrders {
 type Query {
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
-  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput): PaginatedSuppliers!
+  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!

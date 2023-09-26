@@ -14,6 +14,7 @@ export default class MaterialLoader {
 
   private materialByPurchaseOrderMaterial: {
     loader: DataLoader<string, Material>;
+    findOptions: FindManyOptions<MaterialEntity>;
   };
 
   constructor(private readonly ds: DataSource) {
@@ -51,9 +52,14 @@ export default class MaterialLoader {
   }
 
   private createMaterialByPurchaseOrderMaterialLoader() {
+    const findOptions: typeof this.materialByPurchaseOrderMaterial.findOptions = {};
+
     const loader = new DataLoader(
       async (ids: readonly string[]) => {
-        const materials = await this.ds.manager.find(MaterialEntity, { where: { id: In(ids) } });
+        const materials = await this.ds.manager.find(MaterialEntity, {
+          where: { id: In(ids) },
+          ...this.materialByPurchaseOrderMaterial.findOptions,
+        });
 
         return ids.map(id => {
           const material = materials.find(m => m.id === id) as MaterialEntity;
@@ -64,11 +70,15 @@ export default class MaterialLoader {
       { cache: false }
     );
 
-    this.materialByPurchaseOrderMaterial = { loader };
+    this.materialByPurchaseOrderMaterial = { findOptions, loader };
   }
 
   setMaterialsBySupplierOrder(order: FindManyOptions<SupplierEntity>['order']) {
     this.materialsBySupplier.findOptions.order = order;
+  }
+
+  setMaterialByPurchaseOrderMaterialOrder(includeDeleted = false) {
+    this.materialByPurchaseOrderMaterial.findOptions.withDeleted = includeDeleted;
   }
 
   loadMaterialsBySupplier(id: string) {

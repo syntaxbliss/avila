@@ -65,6 +65,7 @@ export default class PurchaseOrderResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('purchase_order.materials', 'purchase_order_material')
+        .withDeleted()
         .innerJoin('purchase_order_material.material_supplier', 'material__supplier')
         .andWhere('material__supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,
@@ -90,7 +91,8 @@ export default class PurchaseOrderResolver {
 
     const sortField = searchParams?.sortField ?? 'orderedAt';
     const sortOrder = searchParams?.sortOrder ?? 'DESC';
-    this.supplierLoader.setSupplierByPurchaseOrderOrder({ [sortField]: sortOrder });
+    this.supplierLoader.setSupplierByPurchaseOrderOrder({ [sortField]: sortOrder }, true);
+    this.purchaseOrderMaterialLoader.setPurchaseOrderMaterialsByPurchaseOrderOrder(true);
     query.orderBy(`purchase_order.${sortField}`, sortOrder);
 
     const [purchaseOrders, count] = await query.getManyAndCount();
