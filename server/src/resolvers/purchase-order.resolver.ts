@@ -1,6 +1,7 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import * as dayjs from 'dayjs';
 import { GraphQLError } from 'graphql';
+import * as _ from 'lodash';
 import {
   MaterialEntity,
   Material_SupplierEntity,
@@ -12,10 +13,12 @@ import {
 import {
   CreatePurchaseOrderInput,
   PaginationInput,
+  PurchaseOrderDeliveredInput,
   SearchPurchaseOrderDeliveryStatusEnum,
   SearchPurchaseOrderInput,
   SearchPurchaseOrderPaymentStatusEnum,
   createPurchaseorderSchema,
+  purchaseOrderDeliveredSchema,
 } from 'src/input-types';
 import {
   PurchaseOrderMaterialLoader,
@@ -30,7 +33,7 @@ import {
   PurchaseOrderPayment,
   Supplier,
 } from 'src/object-types';
-import { DataSource, In, IsNull, Not } from 'typeorm';
+import { DataSource, FindOneOptions, In, IsNull, Not } from 'typeorm';
 
 @Resolver(() => PurchaseOrder)
 export default class PurchaseOrderResolver {
@@ -184,7 +187,7 @@ export default class PurchaseOrderResolver {
         await Promise.all(purchaseOrderPayments.map(pop => em.save(pop)));
       }
 
-      // update stock values if the order has been flagged as delivered
+      // update stock values
       if (parsedData.updateStock && parsedData.deliveredAt) {
         const materialsToUpdate = await em.find(MaterialEntity, {
           where: {
@@ -225,6 +228,49 @@ export default class PurchaseOrderResolver {
     await this.ds.manager.save(purchaseOrder);
 
     return true;
+  }
+
+  @Mutation(() => Boolean)
+  async purchaseOrderDelivered(
+    @Args('input') input: PurchaseOrderDeliveredInput
+  ): Promise<boolean> {
+    const parsedData = purchaseOrderDeliveredSchema.parse(input);
+    const findOptions: FindOneOptions<PurchaseOrderEntity> = {
+      where: { id: parsedData.purchaseOrderId, deliveredAt: IsNull() },
+    };
+
+    if (parsedData.updateStock) {
+      findOptions.relations = { materials: { material_supplier: { material: true } } };
+    }
+
+    const purchaseOrder = await this.ds.manager.findOneOrFail(PurchaseOrderEntity, findOptions);
+
+    return this.ds.transaction(async em => {
+      // purchase order
+      purchaseOrder.deliveredAt = parsedData.deliveredAt;
+      purchaseOrder.deliveryNote = parsedData.deliveryNote || null;
+      await em.save(purchaseOrder);
+
+      // update stock values
+      if (parsedData.updateStock) {
+        const updatedMaterials = purchaseOrder.materials.reduce((acc, pom) => {
+          const { material } = pom.material_supplier;
+
+          if (!_.isNull(material.currentQuantity)) {
+            const newCurrentQuantity =
+              parseFloat(String(material.currentQuantity)) + parseFloat(String(pom.quantity));
+            material.currentQuantity = newCurrentQuantity;
+
+            acc.push(material);
+          }
+
+          return acc;
+        }, [] as MaterialEntity[]);
+        await Promise.all(updatedMaterials.map(um => em.save(um)));
+      }
+
+      return true;
+    });
   }
 
   @ResolveField()

@@ -24,7 +24,7 @@ import {
 } from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdClose, MdList } from 'react-icons/md';
+import { MdAddCircleOutline, MdClose, MdList, MdLocalShipping, MdPayments } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useMutation, useQuery } from '@apollo/client';
 import { formatCurrency, humanReadableDate } from '../../helpers';
@@ -44,6 +44,7 @@ import PurchaseOrdersContainerFilters, {
 import dayjs from 'dayjs';
 import { useCallback, useState } from 'react';
 import PurchaseOrdersContainerDetail from './PurchaseOrdersContainerDetail';
+import PurchaseOrderContainerOrderDeliveredForm from './PurchaseOrderContainerOrderDeliveredForm';
 
 PurchaseOrdersContainer.gql = {
   queries: {
@@ -121,11 +122,24 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     PurchaseOrdersContainer.gql.mutations.cancelPurchaseOrder
   );
 
-  const [toCancel, setToCancel] = useState<Partial<PurchaseOrder>>();
   const toast = useToast();
+
+  const [toCancel, setToCancel] = useState<Partial<PurchaseOrder>>();
   const cancelDialog = useDisclosure({
     isOpen: Boolean(toCancel),
     onClose: () => setToCancel(undefined),
+  });
+
+  const [toFlagAsDelivered, setToFlagAsDelivered] = useState<PurchaseOrder>();
+  const flagAsDeliveredDialog = useDisclosure({
+    isOpen: Boolean(toFlagAsDelivered),
+    onClose: () => setToFlagAsDelivered(undefined),
+  });
+
+  const [toRegisterPayment, setToRegisterPayment] = useState<PurchaseOrder>();
+  const registerPaymentDialog = useDisclosure({
+    isOpen: Boolean(toRegisterPayment),
+    onClose: () => setToRegisterPayment(undefined),
   });
 
   const [showDetail, setShowDetail] = useState<string>();
@@ -257,6 +271,28 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                           />
 
                           <IconButton
+                            aria-label="delivered"
+                            colorScheme="purple"
+                            rounded="full"
+                            icon={<MdLocalShipping />}
+                            size="xs"
+                            ml="1"
+                            onClick={() => setToFlagAsDelivered(purchaseOrder as PurchaseOrder)}
+                            isDisabled={Boolean(purchaseOrder.deliveredAt)}
+                          />
+
+                          <IconButton
+                            aria-label="register-payment"
+                            colorScheme="yellow"
+                            rounded="full"
+                            icon={<MdPayments />}
+                            size="xs"
+                            ml="1"
+                            onClick={() => setToRegisterPayment(purchaseOrder as PurchaseOrder)}
+                            isDisabled={purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0}
+                          />
+
+                          <IconButton
                             aria-label="delete"
                             colorScheme="red"
                             rounded="full"
@@ -305,6 +341,16 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                   </Text>
                 )}
               </ConfirmationDialog>
+
+              <PurchaseOrderContainerOrderDeliveredForm
+                isOpen={flagAsDeliveredDialog.isOpen}
+                onClose={flagAsDeliveredDialog.onClose}
+                onConfirm={() => {
+                  flagAsDeliveredDialog.onClose();
+                  purchaseOrdersQuery.refetch();
+                }}
+                purchaseOrder={toFlagAsDelivered}
+              />
             </>
           ) : (
             <NoRecordsAlert entity="órdenes de compra" />

@@ -98,13 +98,18 @@ const PurchaseOrderFormContainerPayments = forwardRef<
       return () => {
         setShowPaymentsError(false);
 
+        console.log('totalPaid', totalPaid);
+        console.log('totalAmount', totalAmount);
+
         if (totalPaid > totalAmount) {
+          console.log('aca!');
+
           setShowPaymentsError(true);
 
           return undefined;
         }
 
-        return paymentsList.length ? paymentsList : undefined;
+        return paymentsList;
       };
     },
     [paymentsList, totalPaid, totalAmount]

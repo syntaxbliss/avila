@@ -112,10 +112,10 @@ export default function MaterialsContainer(): JSX.Element {
     onClose: () => setToDelete(undefined),
   });
 
-  const [toUpdate, setToUpdate] = useState<Partial<Material>>();
+  const [toUpdateStock, setToUpdateStock] = useState<Material>();
   const updateStockDialog = useDisclosure({
-    isOpen: Boolean(toUpdate),
-    onClose: () => setToUpdate(undefined),
+    isOpen: Boolean(toUpdateStock),
+    onClose: () => setToUpdateStock(undefined),
   });
 
   const getRowColor = useCallback<
@@ -219,7 +219,7 @@ export default function MaterialsContainer(): JSX.Element {
                             icon={<MdShelves />}
                             size="xs"
                             ml="1"
-                            onClick={() => setToUpdate(material)}
+                            onClick={() => setToUpdateStock(material as Material)}
                             isDisabled={!Number.isFinite(material.currentQuantity)}
                           />
 
@@ -261,12 +261,8 @@ export default function MaterialsContainer(): JSX.Element {
               </ConfirmationDialog>
 
               <MaterialsContainerUpdateStockForm
-                code={toUpdate?.code}
-                currentQuantity={toUpdate?.currentQuantity ?? undefined}
                 isOpen={updateStockDialog.isOpen}
-                materialId={toUpdate?.id}
-                measureUnit={toUpdate?.measureUnit}
-                name={toUpdate?.name}
+                material={toUpdateStock}
                 onClose={updateStockDialog.onClose}
                 onConfirm={() => {
                   updateStockDialog.onClose();

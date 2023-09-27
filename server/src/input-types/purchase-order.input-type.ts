@@ -126,3 +126,24 @@ export class SearchPurchaseOrderInput {
   @Field(() => QuerySortOrderEnum, { nullable: true })
   sortOrder: QuerySortOrderEnum | null;
 }
+
+@InputType()
+export class PurchaseOrderDeliveredInput {
+  @Field(() => ID)
+  purchaseOrderId: string;
+
+  @Field(() => Date)
+  deliveredAt: Date;
+
+  @Field(() => String, { nullable: true })
+  deliveryNote: string | null;
+
+  @Field(() => Boolean)
+  updateStock: boolean;
+}
+export const purchaseOrderDeliveredSchema = z.object({
+  purchaseOrderId: z.string().trim().uuid(),
+  deliveredAt: z.date(),
+  deliveryNote: z.string().trim().optional(),
+  updateStock: z.boolean(),
+});

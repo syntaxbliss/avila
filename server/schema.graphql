@@ -172,6 +172,7 @@ type Mutation {
   deleteSupplier(supplierId: ID!): Boolean!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
   cancelPurchaseOrder(purchaseOrderId: ID!): Boolean!
+  purchaseOrderDelivered(input: PurchaseOrderDeliveredInput!): Boolean!
 }
 
 input SaveMaterialInput {
@@ -216,4 +217,11 @@ input PurchaseOrderPaymentInput {
   amount: Float!
   paidAt: DateTime!
   notes: String
+}
+
+input PurchaseOrderDeliveredInput {
+  purchaseOrderId: ID!
+  deliveredAt: DateTime!
+  deliveryNote: String
+  updateStock: Boolean!
 }

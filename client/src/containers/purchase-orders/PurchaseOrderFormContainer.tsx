@@ -78,7 +78,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
       const materials = handlers.current.materials?.();
       const payments = handlers.current.payments?.();
 
-      if (basicInfo && materials) {
+      if (basicInfo && materials && payments) {
         createPurchaseOrderMutation({
           variables: {
             input: {
@@ -88,7 +88,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
               supplierId: materials.supplierId,
               updateStock: materials.updateStock,
               materials: materials.materials,
-              ...(payments ? { payments } : {}),
+              ...(payments.length ? { payments } : {}),
             },
           },
           onCompleted() {
