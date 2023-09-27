@@ -1,19 +1,4 @@
-import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Button,
-  Divider,
-  Grid,
-  GridItem,
-  IconButton,
-  Text,
-  UseDisclosureProps,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Divider, Grid, GridItem, IconButton, Text, useDisclosure } from '@chakra-ui/react';
 import {
   forwardRef,
   useCallback,
@@ -25,6 +10,7 @@ import {
 } from 'react';
 import {
   Card,
+  ConfirmationDialog,
   FormInputNumber,
   FormSelect,
   FormSelectOption,
@@ -102,6 +88,8 @@ const PurchaseOrderFormContainerMaterialsContentGql = {
     `),
   },
 };
+
+export default PurchaseOrderFormContainerMaterials;
 
 type PurchaseOrderFormContainerMaterialsContentProps = {
   onTotalAmountChange: Props['onTotalAmountChange'];
@@ -245,16 +233,9 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
     [supplierQuery.data?.supplier.materials]
   );
 
-  const handleChangeSupplierClick = useCallback(() => {
-    changeSupplierDialog.onClose();
-    setSelectedSupplier('');
-  }, [changeSupplierDialog]);
-
   useEffect(() => {
-    if (!selectedSupplier) {
-      setMaterialsList([]);
-      setForm({ ...initialValues });
-    }
+    setMaterialsList([]);
+    setForm({ ...initialValues });
   }, [selectedSupplier]);
 
   useEffect(() => {
@@ -291,7 +272,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
           options={supplierSelectOptions}
           value={selectedSupplier}
           onChange={e => setSelectedSupplier(e.target.value)}
-          isDisabled={Boolean(selectedSupplier)}
+          isDisabled={materialsList.length > 0}
           helperText={supplierSelectHelperText}
         />
 
@@ -303,10 +284,8 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
             rounded="full"
             icon={<MdRefresh />}
             size="xs"
-            onClick={
-              materialsList.length ? changeSupplierDialog.onOpen : () => setSelectedSupplier('')
-            }
-            isDisabled={!selectedSupplier}
+            onClick={changeSupplierDialog.onOpen}
+            isDisabled={!materialsList.length}
           />
         </GridItem>
 
@@ -410,49 +389,20 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
         </Text>
       )}
 
-      <ChangeSupplierDialog {...changeSupplierDialog} onConfirm={handleChangeSupplierClick} />
+      <ConfirmationDialog
+        confirmButtonColorScheme="green"
+        confirmButtonIcon={<MdOutlineRefresh />}
+        confirmButtonText="Cambiar"
+        isOpen={changeSupplierDialog.isOpen}
+        onClose={changeSupplierDialog.onClose}
+        onConfirm={() => {
+          changeSupplierDialog.onClose();
+          setSelectedSupplier('');
+        }}
+        title="Cambiar de proveedor"
+      >
+        ¿Confirma que desea seleccionar otro proveedor y crear una nueva lista de materiales?
+      </ConfirmationDialog>
     </>
   );
 });
-
-type ChangeSupplierDialogProps = {
-  isOpen: NonNullable<UseDisclosureProps['isOpen']>;
-  onClose: NonNullable<UseDisclosureProps['onClose']>;
-  onConfirm: () => void;
-};
-
-function ChangeSupplierDialog({
-  isOpen,
-  onClose,
-  onConfirm,
-}: ChangeSupplierDialogProps): JSX.Element {
-  const cancelRef = useRef(null);
-
-  return (
-    <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Cambiar de proveedor
-          </AlertDialogHeader>
-
-          <AlertDialogBody>
-            ¿Confirma que desea seleccionar otro proveedor y crear una nueva lista de materiales?
-          </AlertDialogBody>
-
-          <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose}>
-              Cancelar
-            </Button>
-
-            <Button colorScheme="green" onClick={onConfirm} ml="3" leftIcon={<MdOutlineRefresh />}>
-              Cambiar
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-    </AlertDialog>
-  );
-}
-
-export default PurchaseOrderFormContainerMaterials;
