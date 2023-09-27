@@ -13,30 +13,40 @@ import { useRef } from 'react';
 type Props = {
   children?: React.ReactNode;
   confirmButtonColorScheme: React.ComponentProps<typeof Button>['colorScheme'];
+  confirmButtonDisabled?: React.ComponentProps<typeof Button>['isDisabled'];
   confirmButtonIcon: React.ComponentProps<typeof Button>['leftIcon'];
   confirmButtonText: string;
   isLoading?: boolean;
   isOpen: NonNullable<UseDisclosureProps['isOpen']>;
   onClose: NonNullable<UseDisclosureProps['onClose']>;
   onConfirm: () => void;
+  size?: React.ComponentProps<typeof AlertDialog>['size'];
   title: string;
 };
 
 export default function ConfirmationDialog({
   children,
   confirmButtonColorScheme,
+  confirmButtonDisabled,
   confirmButtonIcon,
   confirmButtonText,
   isLoading,
   isOpen,
   onClose,
   onConfirm,
+  size = 'md',
   title,
 }: Props): JSX.Element {
   const dialogCancelRef = useRef(null);
 
   return (
-    <AlertDialog isOpen={isOpen} leastDestructiveRef={dialogCancelRef} onClose={onClose} isCentered>
+    <AlertDialog
+      isCentered
+      isOpen={isOpen}
+      leastDestructiveRef={dialogCancelRef}
+      onClose={onClose}
+      size={size}
+    >
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -52,10 +62,11 @@ export default function ConfirmationDialog({
 
             <Button
               colorScheme={confirmButtonColorScheme}
-              onClick={onConfirm}
+              isDisabled={isLoading || confirmButtonDisabled}
               isLoading={isLoading}
-              ml="3"
               leftIcon={confirmButtonIcon}
+              ml="3"
+              onClick={onConfirm}
             >
               {confirmButtonText}
             </Button>

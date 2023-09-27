@@ -5,12 +5,14 @@ import {
   PaginationInput,
   SaveMaterialInput,
   SearchMaterialInput,
+  UpdateMaterialQuantityInput,
   saveMaterialSchema,
+  updateMaterialQuantitySchema,
 } from 'src/input-types';
 import { SupplierLoader } from 'src/loaders';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
 import { Material, PaginatedMaterials, Supplier } from 'src/object-types';
-import { DataSource, In } from 'typeorm';
+import { DataSource, In, IsNull, Not } from 'typeorm';
 
 @Resolver(() => Material)
 export default class MaterialResolver {
@@ -180,6 +182,22 @@ export default class MaterialResolver {
 
       return true;
     });
+  }
+
+  @Mutation(() => Boolean)
+  async updateMaterialQuantity(
+    @Args('input') input: UpdateMaterialQuantityInput
+  ): Promise<boolean> {
+    const parsedData = updateMaterialQuantitySchema.parse(input);
+
+    const material = await this.ds.manager.findOneOrFail(MaterialEntity, {
+      where: { id: parsedData.materialId, currentQuantity: Not(IsNull()) },
+    });
+
+    material.currentQuantity = input.quantity;
+    await this.ds.manager.save(material);
+
+    return true;
   }
 
   @ResolveField()

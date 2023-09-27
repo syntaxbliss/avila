@@ -55,3 +55,16 @@ export class SearchMaterialInput {
   @Field(() => QuerySortOrderEnum, { nullable: true })
   sortOrder: QuerySortOrderEnum | null;
 }
+
+@InputType()
+export class UpdateMaterialQuantityInput {
+  @Field(() => ID)
+  materialId: string;
+
+  @Field(() => Float)
+  quantity: number;
+}
+export const updateMaterialQuantitySchema = z.object({
+  materialId: z.string().trim().uuid(),
+  quantity: z.number().nonnegative(),
+});

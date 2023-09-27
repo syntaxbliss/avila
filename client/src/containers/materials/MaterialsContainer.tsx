@@ -24,7 +24,7 @@ import {
 } from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdDelete, MdEdit, MdOutlineDelete } from 'react-icons/md';
+import { MdAddCircleOutline, MdDelete, MdEdit, MdOutlineDelete, MdShelves } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useMutation, useQuery } from '@apollo/client';
 import { formatMaterialQuantity } from '../../helpers';
@@ -37,6 +37,7 @@ import {
 import _ from 'lodash';
 import { useQueryFilteringAndPagination } from '../../hooks';
 import MaterialsContainerFilters, { type SearchParams } from './MaterialsContainerFilters';
+import MaterialsContainerUpdateStockForm from './MaterialsContainerUpdateStockForm';
 
 MaterialsContainer.gql = {
   queries: {
@@ -103,11 +104,18 @@ export default function MaterialsContainer(): JSX.Element {
     MaterialsContainer.gql.mutations.deleteMaterial
   );
 
-  const [toDelete, setToDelete] = useState<Partial<Material>>();
   const toast = useToast();
+
+  const [toDelete, setToDelete] = useState<Partial<Material>>();
   const deleteDialog = useDisclosure({
     isOpen: Boolean(toDelete),
     onClose: () => setToDelete(undefined),
+  });
+
+  const [toUpdate, setToUpdate] = useState<Partial<Material>>();
+  const updateStockDialog = useDisclosure({
+    isOpen: Boolean(toUpdate),
+    onClose: () => setToUpdate(undefined),
   });
 
   const getRowColor = useCallback<
@@ -205,6 +213,17 @@ export default function MaterialsContainer(): JSX.Element {
                           />
 
                           <IconButton
+                            aria-label="update-stock"
+                            colorScheme="purple"
+                            rounded="full"
+                            icon={<MdShelves />}
+                            size="xs"
+                            ml="1"
+                            onClick={() => setToUpdate(material)}
+                            isDisabled={!Number.isFinite(material.currentQuantity)}
+                          />
+
+                          <IconButton
                             aria-label="delete"
                             colorScheme="red"
                             rounded="full"
@@ -240,6 +259,20 @@ export default function MaterialsContainer(): JSX.Element {
                   <b>Nombre:</b> {toDelete?.name}
                 </Text>
               </ConfirmationDialog>
+
+              <MaterialsContainerUpdateStockForm
+                code={toUpdate?.code}
+                currentQuantity={toUpdate?.currentQuantity ?? undefined}
+                isOpen={updateStockDialog.isOpen}
+                materialId={toUpdate?.id}
+                measureUnit={toUpdate?.measureUnit}
+                name={toUpdate?.name}
+                onClose={updateStockDialog.onClose}
+                onConfirm={() => {
+                  updateStockDialog.onClose();
+                  materialsQuery.refetch();
+                }}
+              />
             </>
           ) : (
             <NoRecordsAlert entity="materiales" />

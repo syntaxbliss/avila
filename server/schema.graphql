@@ -166,6 +166,7 @@ type Mutation {
   createMaterial(input: SaveMaterialInput!): Material!
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
+  updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
   createSupplier(input: SaveSupplierInput!): Supplier!
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
   deleteSupplier(supplierId: ID!): Boolean!
@@ -180,6 +181,11 @@ input SaveMaterialInput {
   currentQuantity: Float
   alertQuantity: Float
   suppliers: [ID!]!
+}
+
+input UpdateMaterialQuantityInput {
+  materialId: ID!
+  quantity: Float!
 }
 
 input SaveSupplierInput {

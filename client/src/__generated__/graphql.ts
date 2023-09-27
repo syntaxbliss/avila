@@ -58,6 +58,7 @@ export type Mutation = {
   deleteMaterial: Scalars['Boolean']['output'];
   deleteSupplier: Scalars['Boolean']['output'];
   updateMaterial: Material;
+  updateMaterialQuantity: Scalars['Boolean']['output'];
   updateSupplier: Supplier;
 };
 
@@ -95,6 +96,11 @@ export type MutationDeleteSupplierArgs = {
 export type MutationUpdateMaterialArgs = {
   input: SaveMaterialInput;
   materialId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateMaterialQuantityArgs = {
+  input: UpdateMaterialQuantityInput;
 };
 
 
@@ -279,6 +285,7 @@ export type SearchPurchaseOrderInput = {
   paymentStatus?: InputMaybe<SearchPurchaseOrderPaymentStatus>;
   sortField?: InputMaybe<SearchPurchaseOrderQuerySortField>;
   sortOrder?: InputMaybe<QuerySortOrder>;
+  status?: InputMaybe<PurchaseOrderStatus>;
   supplierId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -307,6 +314,11 @@ export type Supplier = {
   materials: Array<Material>;
   name: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
+};
+
+export type UpdateMaterialQuantityInput = {
+  materialId: Scalars['ID']['input'];
+  quantity: Scalars['Float']['input'];
 };
 
 export type MaterialFormContentCreateMaterialMutationMutationVariables = Exact<{
@@ -350,6 +362,13 @@ export type MaterialsContainerDeleteMaterialMutationMutationVariables = Exact<{
 
 
 export type MaterialsContainerDeleteMaterialMutationMutation = { __typename?: 'Mutation', deleteMaterial: boolean };
+
+export type MaterialsContainerUpdateStockFormUpdateMaterialQuantityMutationMutationVariables = Exact<{
+  input: UpdateMaterialQuantityInput;
+}>;
+
+
+export type MaterialsContainerUpdateStockFormUpdateMaterialQuantityMutationMutation = { __typename?: 'Mutation', updateMaterialQuantity: boolean };
 
 export type PurchaseOrderFormContainerCreatePurchaseOrderMutationMutationVariables = Exact<{
   input: CreatePurchaseOrderInput;
@@ -443,6 +462,7 @@ export const MaterialFormContentMaterialQueryDocument = {"kind":"Document","defi
 export const MaterialFormContentSuppliersQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MaterialFormContentSuppliersQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<MaterialFormContentSuppliersQueryQuery, MaterialFormContentSuppliersQueryQueryVariables>;
 export const MaterialsContainerMaterialsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MaterialsContainerMaterialsQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchMaterialInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"materials"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchParams"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paginationInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"pageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}},{"kind":"Field","name":{"kind":"Name","value":"currentQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"alertQuantity"}}]}}]}}]}}]} as unknown as DocumentNode<MaterialsContainerMaterialsQueryQuery, MaterialsContainerMaterialsQueryQueryVariables>;
 export const MaterialsContainerDeleteMaterialMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MaterialsContainerDeleteMaterialMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"materialId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMaterial"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"materialId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"materialId"}}}]}]}}]} as unknown as DocumentNode<MaterialsContainerDeleteMaterialMutationMutation, MaterialsContainerDeleteMaterialMutationMutationVariables>;
+export const MaterialsContainerUpdateStockFormUpdateMaterialQuantityMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MaterialsContainerUpdateStockFormUpdateMaterialQuantityMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMaterialQuantityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMaterialQuantity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<MaterialsContainerUpdateStockFormUpdateMaterialQuantityMutationMutation, MaterialsContainerUpdateStockFormUpdateMaterialQuantityMutationMutationVariables>;
 export const PurchaseOrderFormContainerCreatePurchaseOrderMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PurchaseOrderFormContainerCreatePurchaseOrderMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePurchaseOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPurchaseOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveredAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryNote"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"paidAmount"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"material"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"paidAt"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrderFormContainerCreatePurchaseOrderMutationMutation, PurchaseOrderFormContainerCreatePurchaseOrderMutationMutationVariables>;
 export const PurchaseOrderFormContainerMaterialsContentSuppliersQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseOrderFormContainerMaterialsContentSuppliersQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrderFormContainerMaterialsContentSuppliersQueryQuery, PurchaseOrderFormContainerMaterialsContentSuppliersQueryQueryVariables>;
 export const PurchaseOrderFormContainerMaterialsContentSupplierQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseOrderFormContainerMaterialsContentSupplierQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"supplier"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"supplierId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrderFormContainerMaterialsContentSupplierQueryQuery, PurchaseOrderFormContainerMaterialsContentSupplierQueryQueryVariables>;
