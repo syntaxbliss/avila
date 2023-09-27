@@ -14,11 +14,13 @@ import {
   CreatePurchaseOrderInput,
   PaginationInput,
   PurchaseOrderDeliveredInput,
+  PurchaseOrderPaymentInput,
   SearchPurchaseOrderDeliveryStatusEnum,
   SearchPurchaseOrderInput,
   SearchPurchaseOrderPaymentStatusEnum,
   createPurchaseorderSchema,
   purchaseOrderDeliveredSchema,
+  purchaseOrderPaymentSchema,
 } from 'src/input-types';
 import {
   PurchaseOrderMaterialLoader,
@@ -232,11 +234,12 @@ export default class PurchaseOrderResolver {
 
   @Mutation(() => Boolean)
   async purchaseOrderDelivered(
+    @Args('purchaseOrderId', { type: () => ID }) purchaseOrderId: string,
     @Args('input') input: PurchaseOrderDeliveredInput
   ): Promise<boolean> {
     const parsedData = purchaseOrderDeliveredSchema.parse(input);
     const findOptions: FindOneOptions<PurchaseOrderEntity> = {
-      where: { id: parsedData.purchaseOrderId, deliveredAt: IsNull() },
+      where: { id: purchaseOrderId, deliveredAt: IsNull() },
     };
 
     if (parsedData.updateStock) {
@@ -268,6 +271,41 @@ export default class PurchaseOrderResolver {
         }, [] as MaterialEntity[]);
         await Promise.all(updatedMaterials.map(um => em.save(um)));
       }
+
+      return true;
+    });
+  }
+
+  @Mutation(() => Boolean)
+  async registerPurchaseOrderPayment(
+    @Args('purchaseOrderId', { type: () => ID }) purchaseOrderId: string,
+    @Args('input') input: PurchaseOrderPaymentInput
+  ): Promise<boolean> {
+    const parsedData = purchaseOrderPaymentSchema.parse(input);
+    const purchaseOrder = await this.ds.manager.findOneOrFail(PurchaseOrderEntity, {
+      where: { id: purchaseOrderId },
+    });
+
+    return this.ds.transaction(async em => {
+      // purchase order
+      const newPaidAmount = parseFloat(String(purchaseOrder.paidAmount)) + parsedData.amount;
+      purchaseOrder.paidAmount = newPaidAmount;
+
+      if (newPaidAmount > parseFloat(String(purchaseOrder.totalAmount))) {
+        throw new GraphQLError('BAD_REQUEST');
+      }
+
+      await em.save(purchaseOrder);
+
+      // payments
+      const purcahseOrderPayment = em.create(PurchaseOrderPaymentEntity, {
+        purchaseOrder,
+        amount: parsedData.amount,
+        method: parsedData.method,
+        paidAt: parsedData.paidAt,
+        notes: parsedData.notes || null,
+      });
+      await em.save(purcahseOrderPayment);
 
       return true;
     });

@@ -20,6 +20,7 @@ export default class PurchaseOrderPaymentLoader {
       async (ids: readonly string[]) => {
         const purchaseOrders = await this.ds.manager.find(PurchaseOrderEntity, {
           where: { id: In(ids) },
+          order: { payments: { paidAt: 'DESC' } },
           relations: { payments: true },
         });
 

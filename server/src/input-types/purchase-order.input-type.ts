@@ -129,9 +129,6 @@ export class SearchPurchaseOrderInput {
 
 @InputType()
 export class PurchaseOrderDeliveredInput {
-  @Field(() => ID)
-  purchaseOrderId: string;
-
   @Field(() => Date)
   deliveredAt: Date;
 
@@ -142,7 +139,6 @@ export class PurchaseOrderDeliveredInput {
   updateStock: boolean;
 }
 export const purchaseOrderDeliveredSchema = z.object({
-  purchaseOrderId: z.string().trim().uuid(),
   deliveredAt: z.date(),
   deliveryNote: z.string().trim().optional(),
   updateStock: z.boolean(),

@@ -54,7 +54,7 @@ export default function MaterialsContainerUpdateStockForm({
     return !validatedForm.success;
   }, [material?.currentQuantity, quantity, validatedForm]);
 
-  const handleAcceptClick = useCallback(() => {
+  const handleConfirmButtonClick = useCallback(() => {
     if (material?.id && validatedForm.success) {
       updateMaterialQuantityMutation({
         variables: {
@@ -80,11 +80,11 @@ export default function MaterialsContainerUpdateStockForm({
       confirmButtonColorScheme="green"
       confirmButtonDisabled={shouldDisableAcceptButton}
       confirmButtonIcon={<MdCheck />}
-      confirmButtonText="Aceptar"
+      confirmButtonText="Actualizar"
       isLoading={updateMaterialQuantityMutationStatus.loading}
       isOpen={isOpen}
       onClose={onClose}
-      onConfirm={handleAcceptClick}
+      onConfirm={handleConfirmButtonClick}
       size="xl"
       title="Actualizar existencias"
     >

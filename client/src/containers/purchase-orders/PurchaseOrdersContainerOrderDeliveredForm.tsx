@@ -9,11 +9,14 @@ import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useMutation } from '@apollo/client';
 
-PurchaseOrderContainerOrderDeliveredForm.gql = {
+PurchaseOrdersContainerOrderDeliveredForm.gql = {
   mutations: {
     purchaseOrderDelivered: gql(`
-      mutation PurchaseOrderContainerOrderDeliveredFormPurchaseOrderDeliveredMutation ($input: PurchaseOrderDeliveredInput!) {
-        purchaseOrderDelivered (input: $input)
+      mutation PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutation (
+        $purchaseOrderId: ID!,
+        $input: PurchaseOrderDeliveredInput!
+      ) {
+        purchaseOrderDelivered (purchaseOrderId: $purchaseOrderId, input: $input)
       }
     `),
   },
@@ -38,7 +41,7 @@ const formSchema = z.object({
   updateStock: z.boolean(),
 });
 
-export default function PurchaseOrderContainerOrderDeliveredForm({
+export default function PurchaseOrdersContainerOrderDeliveredForm({
   isOpen,
   onClose,
   onConfirm,
@@ -53,7 +56,7 @@ export default function PurchaseOrderContainerOrderDeliveredForm({
   });
 
   const [orderDeliveredMutation, orderDeliveredMutationStatus] = useMutation(
-    PurchaseOrderContainerOrderDeliveredForm.gql.mutations.purchaseOrderDelivered
+    PurchaseOrdersContainerOrderDeliveredForm.gql.mutations.purchaseOrderDelivered
   );
 
   const validatedForm = useMemo(() => {
@@ -68,8 +71,8 @@ export default function PurchaseOrderContainerOrderDeliveredForm({
     if (purchaseOrder?.id && validatedForm.success) {
       orderDeliveredMutation({
         variables: {
+          purchaseOrderId: purchaseOrder.id,
           input: {
-            purchaseOrderId: purchaseOrder.id,
             deliveredAt: validatedForm.data.deliveredAt,
             deliveryNote: validatedForm.data.deliveryNote,
             updateStock: validatedForm.data.updateStock,

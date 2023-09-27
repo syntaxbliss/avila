@@ -98,12 +98,7 @@ const PurchaseOrderFormContainerPayments = forwardRef<
       return () => {
         setShowPaymentsError(false);
 
-        console.log('totalPaid', totalPaid);
-        console.log('totalAmount', totalAmount);
-
         if (totalPaid > totalAmount) {
-          console.log('aca!');
-
           setShowPaymentsError(true);
 
           return undefined;
@@ -119,7 +114,9 @@ const PurchaseOrderFormContainerPayments = forwardRef<
     <Card title="Pagos efectuados" {...rest}>
       <PurchaseOrderPaymentsTable
         onDelete={handleDeleteClick}
-        payments={paymentsList}
+        payments={paymentsList.sort((a, b) => {
+          return b.paidAt.getTime() - a.paidAt.getTime();
+        })}
         totalAmount={totalAmount}
       />
 

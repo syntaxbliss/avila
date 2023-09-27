@@ -44,7 +44,8 @@ import PurchaseOrdersContainerFilters, {
 import dayjs from 'dayjs';
 import { useCallback, useState } from 'react';
 import PurchaseOrdersContainerDetail from './PurchaseOrdersContainerDetail';
-import PurchaseOrderContainerOrderDeliveredForm from './PurchaseOrderContainerOrderDeliveredForm';
+import PurchaseOrdersContainerOrderDeliveredForm from './PurchaseOrdersContainerOrderDeliveredForm';
+import PurchaseOrdersContainerRegisterPaymentForm from './PurchaseOrdersContainerRegisterPaymentForm';
 
 PurchaseOrdersContainer.gql = {
   queries: {
@@ -289,7 +290,10 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             size="xs"
                             ml="1"
                             onClick={() => setToRegisterPayment(purchaseOrder as PurchaseOrder)}
-                            isDisabled={purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0}
+                            isDisabled={
+                              purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0 ||
+                              purchaseOrder.status === PurchaseOrderStatus.Cancelled
+                            }
                           />
 
                           <IconButton
@@ -342,7 +346,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                 )}
               </ConfirmationDialog>
 
-              <PurchaseOrderContainerOrderDeliveredForm
+              <PurchaseOrdersContainerOrderDeliveredForm
                 isOpen={flagAsDeliveredDialog.isOpen}
                 onClose={flagAsDeliveredDialog.onClose}
                 onConfirm={() => {
@@ -350,6 +354,16 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                   purchaseOrdersQuery.refetch();
                 }}
                 purchaseOrder={toFlagAsDelivered}
+              />
+
+              <PurchaseOrdersContainerRegisterPaymentForm
+                isOpen={registerPaymentDialog.isOpen}
+                onClose={registerPaymentDialog.onClose}
+                onConfirm={() => {
+                  registerPaymentDialog.onClose();
+                  purchaseOrdersQuery.refetch();
+                }}
+                purchaseOrder={toRegisterPayment}
               />
             </>
           ) : (

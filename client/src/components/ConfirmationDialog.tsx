@@ -45,6 +45,7 @@ export default function ConfirmationDialog({
       isOpen={isOpen}
       leastDestructiveRef={dialogCancelRef}
       onClose={onClose}
+      scrollBehavior="inside"
       size={size}
     >
       <AlertDialogOverlay>
