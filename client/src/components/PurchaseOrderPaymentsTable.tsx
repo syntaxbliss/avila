@@ -20,8 +20,8 @@ import {
   formatCurrency,
   humanReadableDate,
   purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod,
-} from '../../helpers';
-import { PurchaseOrderPaymentMethod } from '../../__generated__/graphql';
+} from '../helpers';
+import { PurchaseOrderPaymentMethod } from '../__generated__/graphql';
 import { useCallback, useMemo } from 'react';
 import { MdDelete, MdStickyNote2 } from 'react-icons/md';
 

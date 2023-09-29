@@ -15,4 +15,9 @@ export { default as NoRecordsAlert } from './NoRecordsAlert';
 export { default as PageHeader } from './PageHeader';
 export { default as Pagination } from './Pagination';
 export { default as PaymentMethodSelect } from './PaymentMethodSelect';
+export { default as PurchaseOrderMaterialsTable } from './PurchaseOrderMaterialsTable';
+export { default as PurchaseOrderPaymentsTable } from './PurchaseOrderPaymentsTable';
 export { default as SuspenseSpinner } from './SuspenseSpinner';
+
+export type { PurchaseOrderMaterialsTableRow } from './PurchaseOrderMaterialsTable';
+export type { PurchaseOrderPaymentsTableRow } from './PurchaseOrderPaymentsTable';

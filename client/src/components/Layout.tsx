@@ -1,10 +1,5 @@
 import { Button, Divider, Flex, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
-import {
-  MdLocalShipping,
-  MdOutlineDashboard,
-  MdOutlineShoppingCart,
-  MdShelves,
-} from 'react-icons/md';
+import { MdLocalShipping, MdOutlineShoppingCart, MdShelves } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { Fragment } from 'react';
 import { appRoutes } from '../routes';
@@ -14,7 +9,6 @@ type Props = {
 };
 
 const sections = [
-  { path: appRoutes.dashboard.index, icon: MdOutlineDashboard, text: 'Escritorio' },
   { path: appRoutes.materials.index, icon: MdShelves, text: 'Materiales' },
   { path: appRoutes.suppliers.index, icon: MdLocalShipping, text: 'Proveedores' },
   { path: appRoutes.purchaseOrders.index, icon: MdOutlineShoppingCart, text: 'Compras' },

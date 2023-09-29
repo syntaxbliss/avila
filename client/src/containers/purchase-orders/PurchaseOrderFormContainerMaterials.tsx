@@ -15,7 +15,9 @@ import {
   FormSelect,
   FormSelectOption,
   FormSwitch,
+  PurchaseOrderMaterialsTable,
   SuspenseSpinner,
+  type PurchaseOrderMaterialsTableRow,
 } from '../../components';
 import { z } from 'zod';
 import _ from 'lodash';
@@ -25,9 +27,6 @@ import { useQuery, useSuspenseQuery } from '@apollo/client';
 import { MdAdd, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
 import { materialMeasureUnitAbbreviationByMaterialMeasureUnit } from '../../helpers';
 import { Material, MaterialMeasureUnit } from '../../__generated__/graphql';
-import PurchaseOrderMaterialsTable, {
-  type PurchaseOrderMaterialsTableRow,
-} from './PurchaseOrderMaterialsTable';
 
 type Props = React.ComponentProps<typeof Card> & {
   onTotalAmountChange: (totalAmount: number) => void;

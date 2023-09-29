@@ -6,7 +6,9 @@ import {
   FormInputText,
   FormInputTextarea,
   PaymentMethodSelect,
+  PurchaseOrderPaymentsTable,
   SuspenseSpinner,
+  type PurchaseOrderPaymentsTableRow,
 } from '../../components';
 import { MdCheck } from 'react-icons/md';
 import {
@@ -20,9 +22,6 @@ import { z } from 'zod';
 import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
-import PurchaseOrderPaymentsTable, {
-  type PurchaseOrderPaymentsTableRow,
-} from './PurchaseOrderPaymentsTable';
 
 PurchaseOrdersContainerRegisterPaymentForm.gql = {
   queries: {

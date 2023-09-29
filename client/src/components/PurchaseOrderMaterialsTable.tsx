@@ -13,8 +13,8 @@ import {
   calculatePurchaseOrderMaterialsTotalAmount,
   formatCurrency,
   formatMaterialQuantity,
-} from '../../helpers';
-import { MaterialMeasureUnit } from '../../__generated__/graphql';
+} from '../helpers';
+import { MaterialMeasureUnit } from '../__generated__/graphql';
 import { useMemo } from 'react';
 import { MdDelete } from 'react-icons/md';
 

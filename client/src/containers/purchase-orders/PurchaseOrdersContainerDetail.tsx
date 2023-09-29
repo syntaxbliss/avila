@@ -11,13 +11,15 @@ import {
   Text,
   UseDisclosureProps,
 } from '@chakra-ui/react';
-import { DividerWithText, SuspenseSpinner } from '../../components';
+import {
+  DividerWithText,
+  PurchaseOrderPaymentsTable,
+  SuspenseSpinner,
+  type PurchaseOrderPaymentsTableRow,
+} from '../../components';
 import { gql } from '../../__generated__';
 import { humanReadableDate } from '../../helpers';
-import PurchaseOrderMaterialsTable from './PurchaseOrderMaterialsTable';
-import PurchaseOrderPaymentsTable, {
-  type PurchaseOrderPaymentsTableRow,
-} from './PurchaseOrderPaymentsTable';
+import PurchaseOrderMaterialsTable from '../../components/PurchaseOrderMaterialsTable';
 
 type Props = {
   isOpen: NonNullable<UseDisclosureProps['isOpen']>;

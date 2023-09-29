@@ -6,13 +6,13 @@ import {
   FormInputText,
   FormInputTextarea,
   PaymentMethodSelect,
+  PurchaseOrderPaymentsTable,
 } from '../../components';
 import { z } from 'zod';
 import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { MdAdd } from 'react-icons/md';
 import { PurchaseOrderPaymentMethod } from '../../__generated__/graphql';
-import PurchaseOrderPaymentsTable from './PurchaseOrderPaymentsTable';
 
 type Props = React.ComponentProps<typeof Card> & { totalAmount: number };
 
