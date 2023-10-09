@@ -25,7 +25,7 @@ export default class RequestForQuotationEntity {
   @Column({
     type: 'enum',
     enum: RequestForQuotationStatusEnum,
-    default: RequestForQuotationStatusEnum.SUBMITTED,
+    default: RequestForQuotationStatusEnum.UNANSWERED,
   })
   status: RequestForQuotationStatusEnum;
 }

@@ -16,9 +16,9 @@ type Props = {
 const sections = [
   { path: appRoutes.materials.index, icon: MdShelves, text: 'Materiales' },
   { path: appRoutes.suppliers.index, icon: MdLocalShipping, text: 'Proveedores' },
-  { path: appRoutes.purchaseOrders.index, icon: MdOutlineShoppingCart, text: 'Compras' },
+  { path: appRoutes.purchaseOrders.index, icon: MdOutlineShoppingCart, text: 'Órdenes de compra' },
   {
-    path: appRoutes.requestForQuotations.index,
+    path: appRoutes.requestsForQuotation.index,
     icon: MdOutlineListAlt,
     text: 'Pedidos de cotización',
   },

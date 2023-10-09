@@ -27,8 +27,10 @@ import {
   MaterialLoader,
   PurchaseOrderMaterialLoader,
   PurchaseOrderPaymentLoader,
+  RequestForQuotationMaterialLoader,
   SupplierLoader,
 } from './loaders';
+import RequestForQuotationMaterialResolver from './resolvers/request-for-quotation-material.resolver';
 
 const entities = [
   MaterialEntity,
@@ -44,6 +46,7 @@ const resolvers = [
   MaterialResolver,
   PurchaseOrderMaterialResolver,
   PurchaseOrderResolver,
+  RequestForQuotationMaterialResolver,
   RequestForQuotationResolver,
   SupplierResolver,
 ];
@@ -51,6 +54,7 @@ const loaders = [
   MaterialLoader,
   PurchaseOrderMaterialLoader,
   PurchaseOrderPaymentLoader,
+  RequestForQuotationMaterialLoader,
   SupplierLoader,
 ];
 

@@ -95,7 +95,6 @@ const defaultFilters: SearchParams = {
 
 export default function PurchaseOrdersContainer(): JSX.Element {
   const {
-    onDebouncedSearchParamsChange,
     onImmediateSearchParamsChange,
     onPaginationChange,
     onResetFilters,
@@ -176,7 +175,6 @@ export default function PurchaseOrdersContainer(): JSX.Element {
       </Button>
 
       <PurchaseOrdersContainerFilters
-        onDebouncedChange={onDebouncedSearchParamsChange}
         onImmediateChange={onImmediateSearchParamsChange}
         onReset={onResetFilters}
         searchParams={searchParams}

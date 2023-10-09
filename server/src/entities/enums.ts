@@ -21,6 +21,6 @@ export enum PurchaseOrderStatusEnum {
 }
 
 export enum RequestForQuotationStatusEnum {
-  SUBMITTED = 'submitted',
   ANSWERED = 'answered',
+  UNANSWERED = 'unanswered',
 }

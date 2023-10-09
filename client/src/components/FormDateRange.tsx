@@ -8,6 +8,7 @@ type Props = {
   isDisabled?: React.ComponentProps<typeof Input>['isDisabled'];
   isRequired?: React.ComponentProps<typeof Input>['isRequired'];
   label?: string;
+  maxW?: React.ComponentProps<typeof GridItem>['maxW'];
   onChange: ([from, to]: [string, string]) => void;
   value: [string, string];
 };
@@ -19,11 +20,12 @@ export default function FormDateRange({
   isDisabled,
   isRequired,
   label,
+  maxW,
   onChange,
   value,
 }: Props): JSX.Element {
   return (
-    <GridItem gridColumn={gridColumn} w="full">
+    <GridItem gridColumn={gridColumn} w="full" maxW={maxW}>
       {label && (
         <FormLabel>
           {label}

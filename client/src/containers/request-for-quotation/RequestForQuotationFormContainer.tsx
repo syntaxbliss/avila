@@ -73,7 +73,7 @@ export default function RequestForQuotationFormContainer(): JSX.Element {
           },
           onCompleted() {
             toast({ description: 'Nuevo pedido de cotización registrado exitosamente.' });
-            navigate(appRoutes.requestForQuotations.index);
+            navigate(appRoutes.requestsForQuotation.index);
           },
         });
       }
@@ -87,7 +87,7 @@ export default function RequestForQuotationFormContainer(): JSX.Element {
 
       <Button
         as={Link}
-        to={appRoutes.requestForQuotations.index}
+        to={appRoutes.requestsForQuotation.index}
         colorScheme="orange"
         leftIcon={<MdOutlineArrowCircleLeft />}
       >

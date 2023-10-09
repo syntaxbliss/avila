@@ -2,6 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Supplier } from './supplier.object-type';
 import { PaymentMethodEnum, RequestForQuotationStatusEnum } from 'src/entities';
 import { RequestForQuotationMaterial } from './request-for-quotation-material.object-type';
+import { PaginatedResponse } from './commons';
 
 @ObjectType()
 export class RequestForQuotation {
@@ -23,3 +24,6 @@ export class RequestForQuotation {
   @Field(() => PaymentMethodEnum)
   paymentMethod: PaymentMethodEnum;
 }
+
+@ObjectType()
+export class PaginatedRequestsForQuotation extends PaginatedResponse(RequestForQuotation) {}

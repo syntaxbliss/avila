@@ -1,25 +1,16 @@
 import { Divider, Grid, GridItem, IconButton } from '@chakra-ui/react';
-import { Card, FormDateRange, FormSelect, FormSwitch, SuspenseSpinner } from '../../components';
+import { QuerySortOrder, SearchRequestForQuotationStatus } from '../../__generated__/graphql';
+import { Card, FormDateRange, FormSelect, SuspenseSpinner } from '../../components';
 import { MdFilterAltOff } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useSuspenseQuery } from '@apollo/client';
 import { useMemo } from 'react';
-import {
-  PurchaseOrderStatus,
-  QuerySortOrder,
-  SearchPurchaseOrderDeliveryStatus,
-  SearchPurchaseOrderPaymentStatus,
-  SearchPurchaseOrderQuerySortField,
-} from '../../__generated__/graphql';
 
 export type SearchParams = {
   orderedAtFrom: string;
   orderedAtTo: string;
   supplierId: string;
-  paymentStatus: SearchPurchaseOrderPaymentStatus;
-  deliveryStatus: SearchPurchaseOrderDeliveryStatus;
-  status: PurchaseOrderStatus;
-  sortField: SearchPurchaseOrderQuerySortField;
+  status: SearchRequestForQuotationStatus;
   sortOrder: QuerySortOrder;
 };
 
@@ -29,21 +20,10 @@ type Props = {
   searchParams: SearchParams;
 };
 
-const paymentStatusSelectOptions = [
-  { label: 'Todas', value: SearchPurchaseOrderPaymentStatus.All },
-  { label: 'Pagas', value: SearchPurchaseOrderPaymentStatus.Paid },
-  { label: 'Impagas', value: SearchPurchaseOrderPaymentStatus.Unpaid },
-];
-
-const deliveryStatusSelectOptions = [
-  { label: 'Todas', value: SearchPurchaseOrderDeliveryStatus.All },
-  { label: 'Entregadas', value: SearchPurchaseOrderDeliveryStatus.Delivered },
-  { label: 'No entregadas', value: SearchPurchaseOrderDeliveryStatus.Undelivered },
-];
-
-const sortFieldSelectOptions = [
-  { label: 'Fecha de pedido', value: SearchPurchaseOrderQuerySortField.OrderedAt },
-  { label: 'Fecha de entrega', value: SearchPurchaseOrderQuerySortField.DeliveredAt },
+const statusSelectOptions = [
+  { label: 'Todas', value: SearchRequestForQuotationStatus.All },
+  { label: 'Contestadas', value: SearchRequestForQuotationStatus.Answered },
+  { label: 'Sin contestar', value: SearchRequestForQuotationStatus.Unanswered },
 ];
 
 const sortOrderSelectOptions = [
@@ -51,14 +31,14 @@ const sortOrderSelectOptions = [
   { label: 'Descendente', value: QuerySortOrder.Desc },
 ];
 
-export default function PurchaseOrdersContainerFilters({
+export default function RequestsForQuotationContainerFilters({
   onImmediateChange,
   onReset,
   searchParams,
 }: Props): JSX.Element {
   return (
     <Card mt="8" title="Filtros">
-      <Grid templateColumns="3fr auto 2fr auto auto" gap="5">
+      <Grid templateColumns="3fr auto 1fr auto auto" gap="5">
         <GridItem>
           <Grid templateColumns="1fr 1fr" gap="5">
             <FormDateRange
@@ -73,24 +53,12 @@ export default function PurchaseOrdersContainerFilters({
 
             <FormSelect
               placeholder=""
-              label="Estado de pago"
-              options={paymentStatusSelectOptions}
-              value={searchParams.paymentStatus}
+              label="Estado"
+              options={statusSelectOptions}
+              value={searchParams.status}
               onChange={e =>
                 onImmediateChange({
-                  paymentStatus: e.target.value as SearchPurchaseOrderPaymentStatus,
-                })
-              }
-            />
-
-            <FormSelect
-              placeholder=""
-              label="Estado de entrega"
-              options={deliveryStatusSelectOptions}
-              value={searchParams.deliveryStatus}
-              onChange={e =>
-                onImmediateChange({
-                  deliveryStatus: e.target.value as SearchPurchaseOrderDeliveryStatus,
+                  status: e.target.value as SearchRequestForQuotationStatus,
                 })
               }
             />
@@ -101,18 +69,6 @@ export default function PurchaseOrdersContainerFilters({
                 supplierId={searchParams.supplierId}
               />
             </SuspenseSpinner>
-
-            <FormSwitch
-              mt="9"
-              id="purchase-orders-container-filters__cancelled"
-              label="Sólo órdenes anuladas"
-              value={searchParams.status === PurchaseOrderStatus.Cancelled}
-              onChange={e =>
-                onImmediateChange({
-                  status: e ? PurchaseOrderStatus.Cancelled : PurchaseOrderStatus.Active,
-                })
-              }
-            />
           </Grid>
         </GridItem>
 
@@ -121,19 +77,7 @@ export default function PurchaseOrdersContainerFilters({
         </GridItem>
 
         <GridItem>
-          <Grid templateColumns="1fr 1fr" gap="5">
-            <FormSelect
-              label="Ordenar por"
-              options={sortFieldSelectOptions}
-              value={searchParams.sortField}
-              onChange={e =>
-                onImmediateChange({
-                  sortField: e.target.value as SearchPurchaseOrderQuerySortField,
-                })
-              }
-              placeholder=""
-            />
-
+          <Grid templateColumns="1fr" gap="5">
             <FormSelect
               label="Sentido"
               options={sortOrderSelectOptions}

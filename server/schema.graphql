@@ -114,8 +114,13 @@ type RequestForQuotation {
 }
 
 enum RequestForQuotationStatus {
-  SUBMITTED
   ANSWERED
+  UNANSWERED
+}
+
+type PaginatedRequestsForQuotation {
+  items: [RequestForQuotation!]!
+  paginationInfo: PaginationInfo!
 }
 
 type Query {
@@ -123,6 +128,7 @@ type Query {
   material(materialId: ID!): Material!
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
+  requestsForQuotation(searchParams: SearchRequestForQuotationInput, pagination: PaginationInput): PaginatedRequestsForQuotation!
   suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
 }
@@ -176,6 +182,20 @@ enum SearchPurchaseOrderDeliveryStatus {
 enum SearchPurchaseOrderQuerySortField {
   ORDERED_AT
   DELIVERED_AT
+}
+
+input SearchRequestForQuotationInput {
+  orderedAtFrom: DateTime
+  orderedAtTo: DateTime
+  supplierId: ID
+  status: SearchRequestForQuotationStatus
+  sortOrder: QuerySortOrder
+}
+
+enum SearchRequestForQuotationStatus {
+  ALL
+  ANSWERED
+  UNANSWERED
 }
 
 input SearchSupplierInput {

@@ -1,6 +1,7 @@
-import { Field, Float, ID, InputType } from '@nestjs/graphql';
-import { PaymentMethodEnum } from 'src/entities';
+import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
+import { PaymentMethodEnum, RequestForQuotationStatusEnum } from 'src/entities';
 import { z } from 'zod';
+import { QuerySortOrderEnum } from './commons';
 
 @InputType()
 export class RequestForQuotationMaterialInput {
@@ -35,3 +36,30 @@ export const createRequestForQuotationSchema = z.object({
   materials: z.array(requestForQuotationMaterialSchema).min(1),
   paymentMethod: z.nativeEnum(PaymentMethodEnum),
 });
+
+export enum SearchRequestForQuotationStatusEnum {
+  ALL = 'all',
+  ANSWERED = 'answered',
+  UNANSWERED = 'unanswered',
+}
+registerEnumType(SearchRequestForQuotationStatusEnum, {
+  name: 'SearchRequestForQuotationStatus',
+});
+
+@InputType()
+export class SearchRequestForQuotationInput {
+  @Field(() => Date, { nullable: true })
+  orderedAtFrom: Date | null;
+
+  @Field(() => Date, { nullable: true })
+  orderedAtTo: Date | null;
+
+  @Field(() => ID, { nullable: true })
+  supplierId: string | null;
+
+  @Field(() => SearchRequestForQuotationStatusEnum, { nullable: true })
+  status: SearchRequestForQuotationStatusEnum | null;
+
+  @Field(() => QuerySortOrderEnum, { nullable: true })
+  sortOrder: QuerySortOrderEnum | null;
+}

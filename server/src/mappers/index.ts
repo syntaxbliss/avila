@@ -4,6 +4,7 @@ import {
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
   RequestForQuotationEntity,
+  RequestForQuotationMaterialEntity,
   SupplierEntity,
 } from 'src/entities';
 import {
@@ -12,6 +13,7 @@ import {
   PurchaseOrderMaterial,
   PurchaseOrderPayment,
   RequestForQuotation,
+  RequestForQuotationMaterial,
   Supplier,
 } from 'src/object-types';
 
@@ -89,4 +91,15 @@ export const mapRequestForQuotationEntityToRequestForQuotation = (
   requestForQuotation.status = entity.status;
 
   return requestForQuotation;
+};
+
+export const mapRequestForQuotationMaterialEntityToRequestForQuotationMaterial = (
+  entity: RequestForQuotationMaterialEntity
+): RequestForQuotationMaterial => {
+  const requestForQuotationMaterial = new RequestForQuotationMaterial();
+  requestForQuotationMaterial.quantity = entity.quantity;
+  requestForQuotationMaterial.unitPrice = entity.unitPrice;
+  requestForQuotationMaterial.materialId = entity.material_supplier.materialId;
+
+  return requestForQuotationMaterial;
 };
