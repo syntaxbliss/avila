@@ -19,15 +19,15 @@ import {
   calculatePurchaseOrderPaymentsTotalPaid,
   formatCurrency,
   humanReadableDate,
-  purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod,
+  paymentMethodAbbreviationByPaymentMethod,
 } from '../helpers';
-import { PurchaseOrderPaymentMethod } from '../__generated__/graphql';
 import { useCallback, useMemo } from 'react';
 import { MdDelete, MdStickyNote2 } from 'react-icons/md';
+import { PaymentMethod } from '../__generated__/graphql';
 
 export type PurchaseOrderPaymentsTableRow = {
   amount: number;
-  method: PurchaseOrderPaymentMethod;
+  method: PaymentMethod;
   notes?: string;
   paidAt: Date;
 };
@@ -89,11 +89,7 @@ export default function PurchaseOrderPaymentsTable({
             <Tr key={index}>
               <Td>
                 <Flex alignItems="center">
-                  {
-                    purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod[
-                      payment.method
-                    ]
-                  }
+                  {paymentMethodAbbreviationByPaymentMethod[payment.method]}
 
                   {payment.notes && (
                     <Popover placement="left">

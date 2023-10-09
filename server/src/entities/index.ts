@@ -3,6 +3,8 @@ export { default as Material_SupplierEntity } from './material_supplier.entity';
 export { default as PurchaseOrderEntity } from './purchase-order.entity';
 export { default as PurchaseOrderMaterialEntity } from './purchase-order-material.entity';
 export { default as PurchaseOrderPaymentEntity } from './purchase-order-payment.entity';
+export { default as RequestForQuotationEntity } from './request-for-quotation.entity';
+export { default as RequestForQuotationMaterialEntity } from './request-form-quotation-material.entity';
 export { default as SupplierEntity } from './supplier.entity';
 
 export * from './enums';

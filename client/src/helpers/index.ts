@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MaterialMeasureUnit, PurchaseOrderPaymentMethod } from '../__generated__/graphql';
+import { MaterialMeasureUnit, PaymentMethod } from '../__generated__/graphql';
 import dayjs from 'dayjs';
 
 export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
@@ -14,14 +14,12 @@ export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
   [MaterialMeasureUnit.Unit]: 'un',
 };
 
-export const purchaseOrderPaymentMethodAbbreviationByPurchaseOrderPaymentMethod: Record<
-  PurchaseOrderPaymentMethod,
-  string
-> = {
-  [PurchaseOrderPaymentMethod.BankTransfer]: 'Transferencia bancaria',
-  [PurchaseOrderPaymentMethod.Cash]: 'Efectivo',
-  [PurchaseOrderPaymentMethod.Check]: 'Cheque',
-  [PurchaseOrderPaymentMethod.ECheck]: 'E-Check',
+export const paymentMethodAbbreviationByPaymentMethod: Record<PaymentMethod, string> = {
+  [PaymentMethod.BankTransfer]: 'Transferencia bancaria',
+  [PaymentMethod.Cash]: 'Efectivo',
+  [PaymentMethod.Check]: 'Cheque',
+  [PaymentMethod.CurrentAccount]: 'Cuenta corriente',
+  [PaymentMethod.ECheck]: 'E-Check',
 };
 
 const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });

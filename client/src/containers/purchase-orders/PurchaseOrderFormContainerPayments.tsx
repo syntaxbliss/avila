@@ -12,19 +12,19 @@ import { z } from 'zod';
 import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { MdAdd } from 'react-icons/md';
-import { PurchaseOrderPaymentMethod } from '../../__generated__/graphql';
+import { PaymentMethod } from '../../__generated__/graphql';
 
 type Props = React.ComponentProps<typeof Card> & { totalAmount: number };
 
 type FormState = {
-  method: PurchaseOrderPaymentMethod | '';
+  method: PaymentMethod | '';
   amount: string;
   paidAt: string;
   notes: string;
 };
 
 type Payments = Array<{
-  method: PurchaseOrderPaymentMethod;
+  method: PaymentMethod;
   amount: number;
   paidAt: Date;
   notes?: string;
@@ -33,7 +33,7 @@ type Payments = Array<{
 export type PurchaseOrderFormContainerPaymentsHandler = () => Payments | undefined;
 
 const formSchema = z.object({
-  method: validationRules.enum(PurchaseOrderPaymentMethod),
+  method: validationRules.enum(PaymentMethod),
   amount: validationRules.decimal(0.01, 99999999.99),
   paidAt: validationRules.date(),
   notes: validationRules.string(true, undefined, 1500),

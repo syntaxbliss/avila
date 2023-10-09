@@ -1,13 +1,13 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
-import { PurchaseOrderPaymentMethodEnum } from 'src/entities';
+import { PaymentMethodEnum } from 'src/entities';
 
 @ObjectType()
 export class PurchaseOrderPayment {
   @Field(() => ID)
   id: string;
 
-  @Field(() => PurchaseOrderPaymentMethodEnum)
-  method: PurchaseOrderPaymentMethodEnum;
+  @Field(() => PaymentMethodEnum)
+  method: PaymentMethodEnum;
 
   @Field(() => Float)
   amount: number;

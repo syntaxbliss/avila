@@ -7,6 +7,7 @@ import SuppliersContainer from './suppliers/SuppliersContainer';
 import SupplierFormContainer from './suppliers/SupplierFormContainer';
 import PurchaseOrdersContainer from './purchase-orders/PurchaseOrdersContainer';
 import PurchaseOrderFormContainer from './purchase-orders/PurchaseOrderFormContainer';
+import RequestForQuotationFormContainer from './request-for-quotation/RequestForQuotationFormContainer';
 
 const routesList = [
   { path: routes.appRoutes.materials.index, element: MaterialsContainer },
@@ -17,6 +18,7 @@ const routesList = [
   { path: routes.appRoutes.suppliers.edit, element: SupplierFormContainer },
   { path: routes.appRoutes.purchaseOrders.index, element: PurchaseOrdersContainer },
   { path: routes.appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
+  { path: routes.appRoutes.requestForQuotations.create, element: RequestForQuotationFormContainer },
 ];
 
 export default function AppContainer(): JSX.Element {

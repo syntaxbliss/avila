@@ -7,14 +7,20 @@ export enum MaterialMeasureUnitEnum {
   UNIT = 'un',
 }
 
-export enum PurchaseOrderPaymentMethodEnum {
-  CASH = 'cash',
+export enum PaymentMethodEnum {
   BANK_TRANSFER = 'bank-transfer',
+  CASH = 'cash',
   CHECK = 'check',
+  CURRENT_ACCOUNT = 'current-account',
   E_CHECK = 'e-check',
 }
 
 export enum PurchaseOrderStatusEnum {
   ACTIVE = 'active',
   CANCELLED = 'cancelled',
+}
+
+export enum RequestForQuotationStatusEnum {
+  SUBMITTED = 'submitted',
+  ANSWERED = 'answered',
 }

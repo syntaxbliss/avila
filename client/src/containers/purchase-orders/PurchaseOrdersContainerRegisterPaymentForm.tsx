@@ -12,9 +12,9 @@ import {
 } from '../../components';
 import { MdCheck } from 'react-icons/md';
 import {
+  PaymentMethod,
   PurchaseOrder,
   PurchaseOrderPaymentInput,
-  PurchaseOrderPaymentMethod,
 } from '../../__generated__/graphql';
 import { formatCurrency, humanReadableDate } from '../../helpers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -58,14 +58,14 @@ type Props = {
 };
 
 type FormState = {
-  method: PurchaseOrderPaymentMethod | '';
+  method: PaymentMethod | '';
   amount: string;
   paidAt: string;
   notes: string;
 };
 
 const formSchema = z.object({
-  method: validationRules.enum(PurchaseOrderPaymentMethod),
+  method: validationRules.enum(PaymentMethod),
   amount: validationRules.decimal(0.01, 99999999.99),
   paidAt: validationRules.date(),
   notes: validationRules.string(true, undefined, 1500),

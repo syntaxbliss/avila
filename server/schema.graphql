@@ -61,16 +61,17 @@ type PurchaseOrderMaterial {
 
 type PurchaseOrderPayment {
   id: ID!
-  method: PurchaseOrderPaymentMethod!
+  method: PaymentMethod!
   amount: Float!
   paidAt: DateTime!
   notes: String
 }
 
-enum PurchaseOrderPaymentMethod {
-  CASH
+enum PaymentMethod {
   BANK_TRANSFER
+  CASH
   CHECK
+  CURRENT_ACCOUNT
   E_CHECK
 }
 
@@ -97,13 +98,33 @@ type PaginatedPurchaseOrders {
   paginationInfo: PaginationInfo!
 }
 
+type RequestForQuotationMaterial {
+  material: Material!
+  quantity: Float!
+  unitPrice: Float
+}
+
+type RequestForQuotation {
+  id: ID!
+  orderedAt: DateTime!
+  supplier: Supplier!
+  status: RequestForQuotationStatus!
+  materials: [RequestForQuotationMaterial!]!
+  paymentMethod: PaymentMethod!
+}
+
+enum RequestForQuotationStatus {
+  SUBMITTED
+  ANSWERED
+}
+
 type Query {
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
-  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
-  supplier(supplierId: ID!): Supplier!
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
+  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
+  supplier(supplierId: ID!): Supplier!
 }
 
 input SearchMaterialInput {
@@ -127,11 +148,6 @@ enum QuerySortOrder {
 input PaginationInput {
   pageNumber: Int!
   pageSize: Int!
-}
-
-input SearchSupplierInput {
-  name: String
-  sortOrder: QuerySortOrder
 }
 
 input SearchPurchaseOrderInput {
@@ -162,18 +178,24 @@ enum SearchPurchaseOrderQuerySortField {
   DELIVERED_AT
 }
 
+input SearchSupplierInput {
+  name: String
+  sortOrder: QuerySortOrder
+}
+
 type Mutation {
   createMaterial(input: SaveMaterialInput!): Material!
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
   updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
-  createSupplier(input: SaveSupplierInput!): Supplier!
-  updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
-  deleteSupplier(supplierId: ID!): Boolean!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
   cancelPurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!
   registerPurchaseOrderPayment(purchaseOrderId: ID!, input: PurchaseOrderPaymentInput!): Boolean!
+  createRequestForQuotation(input: CreateRequestForQuotationInput!): RequestForQuotation!
+  createSupplier(input: SaveSupplierInput!): Supplier!
+  updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
+  deleteSupplier(supplierId: ID!): Boolean!
 }
 
 input SaveMaterialInput {
@@ -188,13 +210,6 @@ input SaveMaterialInput {
 input UpdateMaterialQuantityInput {
   materialId: ID!
   quantity: Float!
-}
-
-input SaveSupplierInput {
-  name: String!
-  address: String
-  email: String
-  phone: String
 }
 
 input CreatePurchaseOrderInput {
@@ -214,7 +229,7 @@ input PurchaseOrderMaterialInput {
 }
 
 input PurchaseOrderPaymentInput {
-  method: PurchaseOrderPaymentMethod!
+  method: PaymentMethod!
   amount: Float!
   paidAt: DateTime!
   notes: String
@@ -224,4 +239,23 @@ input PurchaseOrderDeliveredInput {
   deliveredAt: DateTime!
   deliveryNote: String
   updateStock: Boolean!
+}
+
+input CreateRequestForQuotationInput {
+  orderedAt: DateTime!
+  supplierId: ID!
+  materials: [RequestForQuotationMaterialInput!]!
+  paymentMethod: PaymentMethod!
+}
+
+input RequestForQuotationMaterialInput {
+  materialId: ID!
+  quantity: Float!
+}
+
+input SaveSupplierInput {
+  name: String!
+  address: String
+  email: String
+  phone: String
 }

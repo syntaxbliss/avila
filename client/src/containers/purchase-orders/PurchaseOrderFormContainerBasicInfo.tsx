@@ -47,8 +47,8 @@ const validateForm = (input: FormState) => {
   return { success: true, data: validation.data };
 };
 
-const PurchaseOrderFormContainerBasicInfoBasicInfo =
-  forwardRef<PurchaseOrderFormContainerBasicInfoHandler>((_props, ref) => {
+const PurchaseOrderFormContainerBasicInfo = forwardRef<PurchaseOrderFormContainerBasicInfoHandler>(
+  (_props, ref) => {
     const [form, setForm] = useState<FormState>({
       orderedAt: '',
       delivered: false,
@@ -130,6 +130,7 @@ const PurchaseOrderFormContainerBasicInfoBasicInfo =
         </Grid>
       </Card>
     );
-  });
+  }
+);
 
-export default PurchaseOrderFormContainerBasicInfoBasicInfo;
+export default PurchaseOrderFormContainerBasicInfo;

@@ -12,12 +12,15 @@ import {
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
+  RequestForQuotationEntity,
+  RequestForQuotationMaterialEntity,
   SupplierEntity,
 } from './entities';
 import {
   MaterialResolver,
   PurchaseOrderMaterialResolver,
   PurchaseOrderResolver,
+  RequestForQuotationResolver,
   SupplierResolver,
 } from './resolvers';
 import {
@@ -33,13 +36,16 @@ const entities = [
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
+  RequestForQuotationEntity,
+  RequestForQuotationMaterialEntity,
   SupplierEntity,
 ];
 const resolvers = [
   MaterialResolver,
-  SupplierResolver,
-  PurchaseOrderResolver,
   PurchaseOrderMaterialResolver,
+  PurchaseOrderResolver,
+  RequestForQuotationResolver,
+  SupplierResolver,
 ];
 const loaders = [
   MaterialLoader,

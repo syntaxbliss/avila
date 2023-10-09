@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import PurchaseOrderEntity from './purchase-order.entity';
-import { PurchaseOrderPaymentMethodEnum } from './enums';
+import { PaymentMethodEnum } from './enums';
 
 @Entity('purchase_order_payment')
 export default class PurchaseOrderPaymentEntity {
@@ -15,8 +15,8 @@ export default class PurchaseOrderPaymentEntity {
   @Column()
   purchaseOrderId: string;
 
-  @Column({ type: 'enum', enum: PurchaseOrderPaymentMethodEnum })
-  method: PurchaseOrderPaymentMethodEnum;
+  @Column({ type: 'enum', enum: PaymentMethodEnum })
+  method: PaymentMethodEnum;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;

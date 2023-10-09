@@ -1,5 +1,5 @@
 import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
-import { PurchaseOrderPaymentMethodEnum, PurchaseOrderStatusEnum } from 'src/entities';
+import { PaymentMethodEnum, PurchaseOrderStatusEnum } from 'src/entities';
 import { z } from 'zod';
 import { QuerySortOrderEnum } from './commons';
 
@@ -22,8 +22,8 @@ export const purchaseOrderMaterialSchema = z.object({
 
 @InputType()
 export class PurchaseOrderPaymentInput {
-  @Field(() => PurchaseOrderPaymentMethodEnum)
-  method: PurchaseOrderPaymentMethodEnum;
+  @Field(() => PaymentMethodEnum)
+  method: PaymentMethodEnum;
 
   @Field(() => Float)
   amount: number;
@@ -35,7 +35,7 @@ export class PurchaseOrderPaymentInput {
   notes: string | null;
 }
 export const purchaseOrderPaymentSchema = z.object({
-  method: z.nativeEnum(PurchaseOrderPaymentMethodEnum),
+  method: z.nativeEnum(PaymentMethodEnum),
   amount: z.number().positive(),
   paidAt: z.date(),
   notes: z.string().trim().max(1500).optional(),

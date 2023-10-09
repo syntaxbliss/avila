@@ -13,10 +13,10 @@ import {
   ConfirmationDialog,
   FormInputNumber,
   FormSelect,
-  FormSelectOption,
   FormSwitch,
   PurchaseOrderMaterialsTable,
   SuspenseSpinner,
+  type FormSelectOption,
   type PurchaseOrderMaterialsTableRow,
 } from '../../components';
 import { z } from 'zod';
