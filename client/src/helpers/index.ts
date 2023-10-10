@@ -1,11 +1,12 @@
 import _ from 'lodash';
-import { MaterialMeasureUnit, PaymentMethod } from '../__generated__/graphql';
+import {
+  MaterialMeasureUnit,
+  PaymentMethod,
+  RequestForQuotationStatus,
+} from '../__generated__/graphql';
 import dayjs from 'dayjs';
 
-export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
-  MaterialMeasureUnit,
-  string
-> = {
+export const materialMeasureUnitAbbreviationText: Record<MaterialMeasureUnit, string> = {
   [MaterialMeasureUnit.Gr]: 'gr',
   [MaterialMeasureUnit.Kg]: 'kg',
   [MaterialMeasureUnit.Tn]: 'tn',
@@ -14,12 +15,18 @@ export const materialMeasureUnitAbbreviationByMaterialMeasureUnit: Record<
   [MaterialMeasureUnit.Unit]: 'un',
 };
 
-export const paymentMethodAbbreviationByPaymentMethod: Record<PaymentMethod, string> = {
+export const paymentMethodText: Record<PaymentMethod, string> = {
   [PaymentMethod.BankTransfer]: 'Transferencia bancaria',
   [PaymentMethod.Cash]: 'Efectivo',
   [PaymentMethod.Check]: 'Cheque',
   [PaymentMethod.CurrentAccount]: 'Cuenta corriente',
   [PaymentMethod.ECheck]: 'E-Check',
+};
+
+export const requestForQuotationStatusText: Record<RequestForQuotationStatus, string> = {
+  [RequestForQuotationStatus.Answered]: 'Contestado',
+  [RequestForQuotationStatus.Cancelled]: 'Cancelado',
+  [RequestForQuotationStatus.Unanswered]: 'Sin contestar',
 };
 
 const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
@@ -33,7 +40,7 @@ export const formatMaterialQuantity = (
   }
 
   return `${currencyFormatter.format(quantity).substring(2)} ${
-    materialMeasureUnitAbbreviationByMaterialMeasureUnit[measureUnit]
+    materialMeasureUnitAbbreviationText[measureUnit]
   }`;
 };
 

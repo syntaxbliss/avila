@@ -224,6 +224,7 @@ export default class PurchaseOrderResolver {
   ): Promise<boolean> {
     const purchaseOrder = await this.ds.manager.findOneByOrFail(PurchaseOrderEntity, {
       id: purchaseOrderId,
+      deliveredAt: IsNull(),
     });
 
     purchaseOrder.status = PurchaseOrderStatusEnum.CANCELLED;
@@ -239,7 +240,11 @@ export default class PurchaseOrderResolver {
   ): Promise<boolean> {
     const parsedData = purchaseOrderDeliveredSchema.parse(input);
     const findOptions: FindOneOptions<PurchaseOrderEntity> = {
-      where: { id: purchaseOrderId, deliveredAt: IsNull() },
+      where: {
+        id: purchaseOrderId,
+        deliveredAt: IsNull(),
+        status: Not(PurchaseOrderStatusEnum.CANCELLED),
+      },
     };
 
     if (parsedData.updateStock) {

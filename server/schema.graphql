@@ -115,6 +115,7 @@ type RequestForQuotation {
 
 enum RequestForQuotationStatus {
   ANSWERED
+  CANCELLED
   UNANSWERED
 }
 
@@ -129,6 +130,7 @@ type Query {
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
   requestsForQuotation(searchParams: SearchRequestForQuotationInput, pagination: PaginationInput): PaginatedRequestsForQuotation!
+  requestForQuotation(requestForQuotationId: ID!): RequestForQuotation!
   suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
 }
@@ -195,6 +197,8 @@ input SearchRequestForQuotationInput {
 enum SearchRequestForQuotationStatus {
   ALL
   ANSWERED
+  ANSWERED_AND_UNANSWERED
+  CANCELLED
   UNANSWERED
 }
 
@@ -213,6 +217,8 @@ type Mutation {
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!
   registerPurchaseOrderPayment(purchaseOrderId: ID!, input: PurchaseOrderPaymentInput!): Boolean!
   createRequestForQuotation(input: CreateRequestForQuotationInput!): RequestForQuotation!
+  saveRequestForQuotationAnswer(requestForQuotationId: ID!, input: SaveRequestForQuotationAnswerInput!): Boolean!
+  cancelRequestForQuotation(requestForQuotationId: ID!): Boolean!
   createSupplier(input: SaveSupplierInput!): Supplier!
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
   deleteSupplier(supplierId: ID!): Boolean!
@@ -271,6 +277,15 @@ input CreateRequestForQuotationInput {
 input RequestForQuotationMaterialInput {
   materialId: ID!
   quantity: Float!
+}
+
+input SaveRequestForQuotationAnswerInput {
+  materials: [RequestForQuotationAnswerMaterialInput!]!
+}
+
+input RequestForQuotationAnswerMaterialInput {
+  materialId: ID!
+  unitPrice: Float!
 }
 
 input SaveSupplierInput {

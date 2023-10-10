@@ -148,7 +148,7 @@ export default function SuppliersContainer(): JSX.Element {
 
                 <Divider my="5" />
 
-                <Table size="sm" variant="striped" colorScheme="gray">
+                <Table size="sm">
                   <Thead>
                     <Tr>
                       <Th>Nombre</Th>

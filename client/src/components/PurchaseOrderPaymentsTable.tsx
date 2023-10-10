@@ -19,7 +19,7 @@ import {
   calculatePurchaseOrderPaymentsTotalPaid,
   formatCurrency,
   humanReadableDate,
-  paymentMethodAbbreviationByPaymentMethod,
+  paymentMethodText,
 } from '../helpers';
 import { useCallback, useMemo } from 'react';
 import { MdDelete, MdStickyNote2 } from 'react-icons/md';
@@ -89,7 +89,7 @@ export default function PurchaseOrderPaymentsTable({
             <Tr key={index}>
               <Td>
                 <Flex alignItems="center">
-                  {paymentMethodAbbreviationByPaymentMethod[payment.method]}
+                  {paymentMethodText[payment.method]}
 
                   {payment.notes && (
                     <Popover placement="left">

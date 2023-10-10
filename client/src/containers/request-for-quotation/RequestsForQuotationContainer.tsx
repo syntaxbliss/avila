@@ -12,10 +12,13 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { gql } from '../../__generated__';
 import {
   QuerySortOrder,
+  RequestForQuotation,
   RequestForQuotationStatus,
   SearchRequestForQuotationStatus,
 } from '../../__generated__/graphql';
@@ -25,12 +28,21 @@ import RequestsForQuotationContainerFilters, {
 } from './RequestsForQuotationContainerFilters';
 import _ from 'lodash';
 import dayjs from 'dayjs';
-import { LoadingSpinner, NoRecordsAlert, PageHeader, Pagination } from '../../components';
+import {
+  ConfirmationDialog,
+  LoadingSpinner,
+  NoRecordsAlert,
+  PageHeader,
+  Pagination,
+} from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdList, MdMarkEmailRead } from 'react-icons/md';
-import { humanReadableDate, paymentMethodAbbreviationByPaymentMethod } from '../../helpers';
-import { useQuery } from '@apollo/client';
+import { MdAddCircleOutline, MdClose, MdList, MdMarkEmailRead } from 'react-icons/md';
+import { humanReadableDate, paymentMethodText, requestForQuotationStatusText } from '../../helpers';
+import { useMutation, useQuery } from '@apollo/client';
+import { useCallback, useState } from 'react';
+import RequestForQuotationAnswerForm from './RequestForQuotationAnswerForm';
+import RequestForQuotationContainerDetail from './RequestForQuotationContainerDetail';
 
 RequestsForQuotationContainer.gql = {
   queries: {
@@ -56,13 +68,21 @@ RequestsForQuotationContainer.gql = {
       }
     `),
   },
+
+  mutations: {
+    cancelRequestForQuotation: gql(`
+      mutation RequestsForQuotationContainerCancelRequestForQuotationMutation ($requestForQuotationId: ID!) {
+        cancelRequestForQuotation (requestForQuotationId: $requestForQuotationId)
+      }
+    `),
+  },
 };
 
 const defaultFilters: SearchParams = {
   orderedAtFrom: '',
   orderedAtTo: '',
   supplierId: '',
-  status: SearchRequestForQuotationStatus.All,
+  status: SearchRequestForQuotationStatus.AnsweredAndUnanswered,
   sortOrder: QuerySortOrder.Desc,
 };
 
@@ -93,6 +113,44 @@ export default function RequestsForQuotationContainer(): JSX.Element {
       },
     }
   );
+
+  const [cancelRequestForQuotationMutation, cancelRequestForQuotationMutationStatus] = useMutation(
+    RequestsForQuotationContainer.gql.mutations.cancelRequestForQuotation
+  );
+
+  const toast = useToast();
+
+  const [toAnswer, setToAnswer] = useState<string>();
+  const answerDialog = useDisclosure({
+    isOpen: Boolean(toAnswer),
+    onClose: () => setToAnswer(undefined),
+  });
+
+  const [showDetail, setShowDetail] = useState<string>();
+  const detailDialog = useDisclosure({
+    isOpen: Boolean(showDetail),
+    onClose: () => setShowDetail(undefined),
+  });
+
+  const [toCancel, setToCancel] = useState<Partial<RequestForQuotation>>();
+  const cancelDialog = useDisclosure({
+    isOpen: Boolean(toCancel),
+    onClose: () => setToCancel(undefined),
+  });
+
+  const handleCancelRequestForQuotationClick = useCallback(async () => {
+    if (toCancel?.id) {
+      const response = await cancelRequestForQuotationMutation({
+        variables: { requestForQuotationId: toCancel.id },
+      });
+
+      if (response.data?.cancelRequestForQuotation) {
+        toast({ description: 'Pedido de cotización anulado exitosamente.' });
+        cancelDialog.onClose();
+        requestsForQuotationQuery.refetch();
+      }
+    }
+  }, [cancelDialog, cancelRequestForQuotationMutation, requestsForQuotationQuery, toCancel, toast]);
 
   return (
     <>
@@ -149,26 +207,29 @@ export default function RequestsForQuotationContainer(): JSX.Element {
                   <Tbody>
                     {requestsForQuotationQuery.data.requestsForQuotation.items.map(
                       requestForQuotation => (
-                        <Tr key={requestForQuotation.id}>
+                        <Tr
+                          key={requestForQuotation.id}
+                          bgColor={
+                            requestForQuotation.status === RequestForQuotationStatus.Cancelled
+                              ? 'red.200'
+                              : undefined
+                          }
+                        >
                           <Td textAlign="center">
                             {humanReadableDate(requestForQuotation.orderedAt)}
                           </Td>
                           <Td textAlign="center">
                             {requestForQuotation.status === RequestForQuotationStatus.Answered ? (
-                              'Contestada'
+                              requestForQuotationStatusText[requestForQuotation.status]
                             ) : (
                               <Text color="red.500" fontWeight="bold">
-                                Sin contestar
+                                {requestForQuotationStatusText[requestForQuotation.status]}
                               </Text>
                             )}
                           </Td>
                           <Td>{requestForQuotation.supplier.name}</Td>
                           <Td textAlign="center">
-                            {
-                              paymentMethodAbbreviationByPaymentMethod[
-                                requestForQuotation.paymentMethod
-                              ]
-                            }
+                            {paymentMethodText[requestForQuotation.paymentMethod]}
                           </Td>
                           <Td>
                             <IconButton
@@ -177,7 +238,7 @@ export default function RequestsForQuotationContainer(): JSX.Element {
                               rounded="full"
                               icon={<MdList />}
                               size="xs"
-                              onClick={() => {}}
+                              onClick={() => setShowDetail(requestForQuotation.id)}
                             />
 
                             <IconButton
@@ -187,9 +248,25 @@ export default function RequestsForQuotationContainer(): JSX.Element {
                               icon={<MdMarkEmailRead />}
                               size="xs"
                               ml="1"
-                              onClick={() => {}}
+                              onClick={() => setToAnswer(requestForQuotation.id)}
+                              isDisabled={[
+                                RequestForQuotationStatus.Cancelled,
+                                RequestForQuotationStatus.Answered,
+                              ].includes(requestForQuotation.status)}
+                            />
+
+                            <IconButton
+                              aria-label="cancel"
+                              colorScheme="red"
+                              rounded="full"
+                              icon={<MdClose />}
+                              size="xs"
+                              ml="1"
+                              onClick={() =>
+                                setToCancel(requestForQuotation as RequestForQuotation)
+                              }
                               isDisabled={
-                                requestForQuotation.status === RequestForQuotationStatus.Answered
+                                requestForQuotation.status === RequestForQuotationStatus.Cancelled
                               }
                             />
                           </Td>
@@ -199,6 +276,47 @@ export default function RequestsForQuotationContainer(): JSX.Element {
                   </Tbody>
                 </Table>
               </TableContainer>
+
+              <RequestForQuotationAnswerForm
+                isOpen={answerDialog.isOpen}
+                onClose={answerDialog.onClose}
+                onConfirm={() => {
+                  answerDialog.onClose();
+                  requestsForQuotationQuery.refetch();
+                }}
+                requestForQuotationId={toAnswer}
+              />
+
+              <RequestForQuotationContainerDetail
+                isOpen={detailDialog.isOpen}
+                onClose={detailDialog.onClose}
+                requestForQuotationId={showDetail}
+              />
+
+              <ConfirmationDialog
+                confirmButtonColorScheme="red"
+                confirmButtonIcon={<MdClose />}
+                confirmButtonText="Anular"
+                isLoading={cancelRequestForQuotationMutationStatus.loading}
+                isOpen={cancelDialog.isOpen}
+                onClose={cancelDialog.onClose}
+                onConfirm={handleCancelRequestForQuotationClick}
+                title="Anular pedido de cotización"
+              >
+                ¿Confirma que desea anular el siguiente pedido de cotización?
+                <br />
+                <br />
+                <Text>
+                  <b>Fecha de pedido:</b> {toCancel ? humanReadableDate(toCancel.orderedAt) : null}
+                </Text>
+                <Text>
+                  <b>Forma de pago:</b>{' '}
+                  {toCancel?.paymentMethod ? paymentMethodText[toCancel.paymentMethod] : null}
+                </Text>
+                <Text>
+                  <b>Proveedor:</b> {toCancel?.supplier?.name}
+                </Text>
+              </ConfirmationDialog>
             </>
           ) : (
             <NoRecordsAlert entity="pedidos de cotización" />

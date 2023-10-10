@@ -59,6 +59,7 @@ export enum MaterialMeasureUnit {
 export type Mutation = {
   __typename?: 'Mutation';
   cancelPurchaseOrder: Scalars['Boolean']['output'];
+  cancelRequestForQuotation: Scalars['Boolean']['output'];
   createMaterial: Material;
   createPurchaseOrder: PurchaseOrder;
   createRequestForQuotation: RequestForQuotation;
@@ -67,6 +68,7 @@ export type Mutation = {
   deleteSupplier: Scalars['Boolean']['output'];
   purchaseOrderDelivered: Scalars['Boolean']['output'];
   registerPurchaseOrderPayment: Scalars['Boolean']['output'];
+  saveRequestForQuotationAnswer: Scalars['Boolean']['output'];
   updateMaterial: Material;
   updateMaterialQuantity: Scalars['Boolean']['output'];
   updateSupplier: Supplier;
@@ -75,6 +77,11 @@ export type Mutation = {
 
 export type MutationCancelPurchaseOrderArgs = {
   purchaseOrderId: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelRequestForQuotationArgs = {
+  requestForQuotationId: Scalars['ID']['input'];
 };
 
 
@@ -117,6 +124,12 @@ export type MutationPurchaseOrderDeliveredArgs = {
 export type MutationRegisterPurchaseOrderPaymentArgs = {
   input: PurchaseOrderPaymentInput;
   purchaseOrderId: Scalars['ID']['input'];
+};
+
+
+export type MutationSaveRequestForQuotationAnswerArgs = {
+  input: SaveRequestForQuotationAnswerInput;
+  requestForQuotationId: Scalars['ID']['input'];
 };
 
 
@@ -240,6 +253,7 @@ export type Query = {
   materials: PaginatedMaterials;
   purchaseOrder: PurchaseOrder;
   purchaseOrders: PaginatedPurchaseOrders;
+  requestForQuotation: RequestForQuotation;
   requestsForQuotation: PaginatedRequestsForQuotation;
   supplier: Supplier;
   suppliers: PaginatedSuppliers;
@@ -265,6 +279,11 @@ export type QueryPurchaseOrderArgs = {
 export type QueryPurchaseOrdersArgs = {
   pagination?: InputMaybe<PaginationInput>;
   searchParams?: InputMaybe<SearchPurchaseOrderInput>;
+};
+
+
+export type QueryRequestForQuotationArgs = {
+  requestForQuotationId: Scalars['ID']['input'];
 };
 
 
@@ -300,6 +319,11 @@ export type RequestForQuotation = {
   supplier: Supplier;
 };
 
+export type RequestForQuotationAnswerMaterialInput = {
+  materialId: Scalars['ID']['input'];
+  unitPrice: Scalars['Float']['input'];
+};
+
 export type RequestForQuotationMaterial = {
   __typename?: 'RequestForQuotationMaterial';
   material: Material;
@@ -314,6 +338,7 @@ export type RequestForQuotationMaterialInput = {
 
 export enum RequestForQuotationStatus {
   Answered = 'ANSWERED',
+  Cancelled = 'CANCELLED',
   Unanswered = 'UNANSWERED'
 }
 
@@ -324,6 +349,10 @@ export type SaveMaterialInput = {
   measureUnit: MaterialMeasureUnit;
   name: Scalars['String']['input'];
   suppliers: Array<Scalars['ID']['input']>;
+};
+
+export type SaveRequestForQuotationAnswerInput = {
+  materials: Array<RequestForQuotationAnswerMaterialInput>;
 };
 
 export type SaveSupplierInput = {
@@ -385,6 +414,8 @@ export type SearchRequestForQuotationInput = {
 export enum SearchRequestForQuotationStatus {
   All = 'ALL',
   Answered = 'ANSWERED',
+  AnsweredAndUnanswered = 'ANSWERED_AND_UNANSWERED',
+  Cancelled = 'CANCELLED',
   Unanswered = 'UNANSWERED'
 }
 
@@ -529,6 +560,28 @@ export type PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPayme
 
 export type PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationMutation = { __typename?: 'Mutation', registerPurchaseOrderPayment: boolean };
 
+export type RequestForQuotationAnswerFormSaveRequestForQuotationAnswerMutationMutationVariables = Exact<{
+  requestForQuotationId: Scalars['ID']['input'];
+  input: SaveRequestForQuotationAnswerInput;
+}>;
+
+
+export type RequestForQuotationAnswerFormSaveRequestForQuotationAnswerMutationMutation = { __typename?: 'Mutation', saveRequestForQuotationAnswer: boolean };
+
+export type RequestForQuotationAnswerFormContentRequestForQuotationQueryQueryVariables = Exact<{
+  requestForQuotationId: Scalars['ID']['input'];
+}>;
+
+
+export type RequestForQuotationAnswerFormContentRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MaterialMeasureUnit } }> } };
+
+export type RequestForQuotationContainerDetailRequestForQuotationQueryQueryVariables = Exact<{
+  requestForQuotationId: Scalars['ID']['input'];
+}>;
+
+
+export type RequestForQuotationContainerDetailRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', code: string, name: string, measureUnit: MaterialMeasureUnit } }> } };
+
 export type RequestForQuotationFormContainerCreateRequestForQuotationMutationMutationVariables = Exact<{
   input: CreateRequestForQuotationInput;
 }>;
@@ -555,6 +608,13 @@ export type RequestsForQuotationContainerRequestsForQuotationQueryQueryVariables
 
 
 export type RequestsForQuotationContainerRequestsForQuotationQueryQuery = { __typename?: 'Query', requestsForQuotation: { __typename?: 'PaginatedRequestsForQuotation', paginationInfo: { __typename?: 'PaginationInfo', count: number, pageNumber: number, pageSize: number }, items: Array<{ __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, status: RequestForQuotationStatus, supplier: { __typename?: 'Supplier', id: string, name: string } }> } };
+
+export type RequestsForQuotationContainerCancelRequestForQuotationMutationMutationVariables = Exact<{
+  requestForQuotationId: Scalars['ID']['input'];
+}>;
+
+
+export type RequestsForQuotationContainerCancelRequestForQuotationMutationMutation = { __typename?: 'Mutation', cancelRequestForQuotation: boolean };
 
 export type SupplierFormContentCreateSupplierMutationMutationVariables = Exact<{
   input: SaveSupplierInput;
@@ -611,10 +671,14 @@ export const SuppliersSelectSuppliersQueryDocument = {"kind":"Document","definit
 export const PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PurchaseOrderDeliveredInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseOrderDelivered"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationMutation, PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationMutationVariables>;
 export const PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"paidAt"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQueryQuery, PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQueryQueryVariables>;
 export const PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PurchaseOrderPaymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerPurchaseOrderPayment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationMutation, PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationMutationVariables>;
+export const RequestForQuotationAnswerFormSaveRequestForQuotationAnswerMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestForQuotationAnswerFormSaveRequestForQuotationAnswerMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveRequestForQuotationAnswerInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"saveRequestForQuotationAnswer"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestForQuotationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<RequestForQuotationAnswerFormSaveRequestForQuotationAnswerMutationMutation, RequestForQuotationAnswerFormSaveRequestForQuotationAnswerMutationMutationVariables>;
+export const RequestForQuotationAnswerFormContentRequestForQuotationQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RequestForQuotationAnswerFormContentRequestForQuotationQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestForQuotation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestForQuotationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"material"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<RequestForQuotationAnswerFormContentRequestForQuotationQueryQuery, RequestForQuotationAnswerFormContentRequestForQuotationQueryQueryVariables>;
+export const RequestForQuotationContainerDetailRequestForQuotationQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RequestForQuotationContainerDetailRequestForQuotationQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestForQuotation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestForQuotationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"material"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}}]}}]}}]}}]} as unknown as DocumentNode<RequestForQuotationContainerDetailRequestForQuotationQueryQuery, RequestForQuotationContainerDetailRequestForQuotationQueryQueryVariables>;
 export const RequestForQuotationFormContainerCreateRequestForQuotationMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestForQuotationFormContainerCreateRequestForQuotationMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateRequestForQuotationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRequestForQuotation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"material"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}}]}}]}}]}}]} as unknown as DocumentNode<RequestForQuotationFormContainerCreateRequestForQuotationMutationMutation, RequestForQuotationFormContainerCreateRequestForQuotationMutationMutationVariables>;
 export const RequestForQuotationFormContainerMaterialsContentSuppliersQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RequestForQuotationFormContainerMaterialsContentSuppliersQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<RequestForQuotationFormContainerMaterialsContentSuppliersQueryQuery, RequestForQuotationFormContainerMaterialsContentSuppliersQueryQueryVariables>;
 export const RequestForQuotationFormContainerMaterialsContentSupplierQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RequestForQuotationFormContainerMaterialsContentSupplierQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"supplier"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"supplierId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}}]}}]}}]} as unknown as DocumentNode<RequestForQuotationFormContainerMaterialsContentSupplierQueryQuery, RequestForQuotationFormContainerMaterialsContentSupplierQueryQueryVariables>;
 export const RequestsForQuotationContainerRequestsForQuotationQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RequestsForQuotationContainerRequestsForQuotationQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchRequestForQuotationInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestsForQuotation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchParams"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paginationInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"pageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RequestsForQuotationContainerRequestsForQuotationQueryQuery, RequestsForQuotationContainerRequestsForQuotationQueryQueryVariables>;
+export const RequestsForQuotationContainerCancelRequestForQuotationMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestsForQuotationContainerCancelRequestForQuotationMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelRequestForQuotation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestForQuotationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requestForQuotationId"}}}]}]}}]} as unknown as DocumentNode<RequestsForQuotationContainerCancelRequestForQuotationMutationMutation, RequestsForQuotationContainerCancelRequestForQuotationMutationMutationVariables>;
 export const SupplierFormContentCreateSupplierMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SupplierFormContentCreateSupplierMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveSupplierInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSupplier"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}}]}}]}}]} as unknown as DocumentNode<SupplierFormContentCreateSupplierMutationMutation, SupplierFormContentCreateSupplierMutationMutationVariables>;
 export const SupplierFormContentUpdateSupplierMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SupplierFormContentUpdateSupplierMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveSupplierInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateSupplier"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"supplierId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}}]}}]}}]} as unknown as DocumentNode<SupplierFormContentUpdateSupplierMutationMutation, SupplierFormContentUpdateSupplierMutationMutationVariables>;
 export const SupplierFormContentSupplierQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SupplierFormContentSupplierQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"supplier"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"supplierId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"supplierId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}}]}}]}}]} as unknown as DocumentNode<SupplierFormContentSupplierQueryQuery, SupplierFormContentSupplierQueryQueryVariables>;

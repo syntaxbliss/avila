@@ -25,7 +25,7 @@ import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useQuery, useSuspenseQuery } from '@apollo/client';
 import { MdAdd, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
-import { materialMeasureUnitAbbreviationByMaterialMeasureUnit } from '../../helpers';
+import { materialMeasureUnitAbbreviationText } from '../../helpers';
 import { Material, MaterialMeasureUnit } from '../../__generated__/graphql';
 
 type Props = React.ComponentProps<typeof Card> & {
@@ -347,7 +347,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
 
           <Text flex={0} minW="25px" textAlign="right" mt="8">
             {materialsByMaterialId[form.materialId]?.measureUnit &&
-              materialMeasureUnitAbbreviationByMaterialMeasureUnit[
+              materialMeasureUnitAbbreviationText[
                 materialsByMaterialId[form.materialId].measureUnit as MaterialMeasureUnit
               ]}
           </Text>

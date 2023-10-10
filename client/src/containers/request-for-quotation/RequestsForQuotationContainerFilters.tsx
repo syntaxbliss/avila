@@ -21,9 +21,14 @@ type Props = {
 };
 
 const statusSelectOptions = [
-  { label: 'Todas', value: SearchRequestForQuotationStatus.All },
-  { label: 'Contestadas', value: SearchRequestForQuotationStatus.Answered },
+  { label: 'Todos', value: SearchRequestForQuotationStatus.All },
+  { label: 'Contestados', value: SearchRequestForQuotationStatus.Answered },
   { label: 'Sin contestar', value: SearchRequestForQuotationStatus.Unanswered },
+  {
+    label: 'Contestados + Sin contestar',
+    value: SearchRequestForQuotationStatus.AnsweredAndUnanswered,
+  },
+  { label: 'Cancelados', value: SearchRequestForQuotationStatus.Cancelled },
 ];
 
 const sortOrderSelectOptions = [

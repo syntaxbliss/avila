@@ -1,7 +1,7 @@
 import { forwardRef } from '@chakra-ui/react';
 import FormSelect, { FormSelectOption } from './FormSelect';
 import { PaymentMethod } from '../__generated__/graphql';
-import { paymentMethodAbbreviationByPaymentMethod } from '../helpers';
+import { paymentMethodText } from '../helpers';
 
 type ValueType = PaymentMethod | '';
 
@@ -13,7 +13,7 @@ type Props = Omit<FormSelectProps, 'value' | 'onChange' | 'options'> & {
 };
 
 const options: FormSelectOption[] = Object.values(PaymentMethod).map(method => ({
-  label: paymentMethodAbbreviationByPaymentMethod[method],
+  label: paymentMethodText[method],
   value: method,
 }));
 

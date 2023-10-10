@@ -1,13 +1,25 @@
-import { IconButton, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import {
+  IconButton,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 import { MaterialMeasureUnit } from '../__generated__/graphql';
-import { formatMaterialQuantity } from '../helpers';
+import { formatCurrency, formatMaterialQuantity } from '../helpers';
 import { MdDelete } from 'react-icons/md';
+import { useCallback, useMemo } from 'react';
 
 export type RequestForQuotationMaterialsTableRow = {
   code: string;
   measureUnit: MaterialMeasureUnit;
   name: string;
   quantity: number;
+  unitPrice?: number;
 };
 
 type Props = React.ComponentProps<typeof TableContainer> & {
@@ -20,6 +32,22 @@ export default function RequestForQuotationMaterialsTable({
   onDelete,
   ...rest
 }: Props): JSX.Element | null {
+  const hasUnitPriceColumn = useMemo(() => {
+    return !onDelete && materials.length && materials[0].unitPrice;
+  }, [materials, onDelete]);
+
+  const getSubtotal = useCallback((input: number, qty: number) => {
+    return formatCurrency(input * qty);
+  }, []);
+
+  const totalAmount = useMemo(() => {
+    return materials.reduce((sum, item, index) => {
+      sum += (item.unitPrice as number) * item.quantity;
+
+      return sum;
+    }, 0);
+  }, [materials]);
+
   if (!materials.length) {
     return null;
   }
@@ -33,6 +61,16 @@ export default function RequestForQuotationMaterialsTable({
             <Th textAlign="center" w="30%">
               Cantidad
             </Th>
+            {hasUnitPriceColumn && (
+              <>
+                <Th w="0" textAlign="center">
+                  Precio unitario
+                </Th>
+                <Th w="0" textAlign="center">
+                  Subtotal
+                </Th>
+              </>
+            )}
             {onDelete && <Th w="0" />}
           </Tr>
         </Thead>
@@ -44,6 +82,15 @@ export default function RequestForQuotationMaterialsTable({
               <Td textAlign="center">
                 {formatMaterialQuantity(material.quantity, material.measureUnit)}
               </Td>
+
+              {hasUnitPriceColumn && (
+                <>
+                  <Td textAlign="right">{formatCurrency(material.unitPrice as number)}</Td>
+                  <Td textAlign="right">
+                    {getSubtotal(material.unitPrice as number, material.quantity)}
+                  </Td>
+                </>
+              )}
 
               {onDelete && (
                 <Td>
@@ -59,6 +106,23 @@ export default function RequestForQuotationMaterialsTable({
               )}
             </Tr>
           ))}
+
+          {hasUnitPriceColumn && (
+            <>
+              <Tr bgColor="gray.700">
+                <Td colSpan={4} textAlign="right">
+                  <Text
+                    fontWeight="bold"
+                    textTransform="uppercase"
+                    letterSpacing="wide"
+                    color="whiteAlpha.800"
+                  >
+                    <Text as="span">Total:</Text> {formatCurrency(totalAmount)}
+                  </Text>
+                </Td>
+              </Tr>
+            </>
+          )}
         </Tbody>
       </Table>
     </TableContainer>

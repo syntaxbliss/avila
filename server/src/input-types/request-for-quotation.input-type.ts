@@ -1,5 +1,5 @@
 import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
-import { PaymentMethodEnum, RequestForQuotationStatusEnum } from 'src/entities';
+import { PaymentMethodEnum } from 'src/entities';
 import { z } from 'zod';
 import { QuerySortOrderEnum } from './commons';
 
@@ -40,6 +40,8 @@ export const createRequestForQuotationSchema = z.object({
 export enum SearchRequestForQuotationStatusEnum {
   ALL = 'all',
   ANSWERED = 'answered',
+  ANSWERED_AND_UNANSWERED = 'answered-and-unanswered',
+  CANCELLED = 'cancelled',
   UNANSWERED = 'unanswered',
 }
 registerEnumType(SearchRequestForQuotationStatusEnum, {
@@ -63,3 +65,25 @@ export class SearchRequestForQuotationInput {
   @Field(() => QuerySortOrderEnum, { nullable: true })
   sortOrder: QuerySortOrderEnum | null;
 }
+
+@InputType()
+export class RequestForQuotationAnswerMaterialInput {
+  @Field(() => ID)
+  materialId: string;
+
+  @Field(() => Float)
+  unitPrice: number;
+}
+export const requestForQuotationAnswerMaterialSchema = z.object({
+  materialId: z.string().trim().uuid(),
+  unitPrice: z.number().positive(),
+});
+
+@InputType()
+export class SaveRequestForQuotationAnswerInput {
+  @Field(() => [RequestForQuotationAnswerMaterialInput])
+  materials: RequestForQuotationAnswerMaterialInput[];
+}
+export const saveRequestForQuotationAnswerSchema = z.object({
+  materials: z.array(requestForQuotationAnswerMaterialSchema).min(1),
+});

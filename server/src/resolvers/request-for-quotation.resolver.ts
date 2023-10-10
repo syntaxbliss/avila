@@ -1,17 +1,20 @@
-import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import * as dayjs from 'dayjs';
 import { GraphQLError } from 'graphql';
 import {
   Material_SupplierEntity,
   RequestForQuotationEntity,
   RequestForQuotationMaterialEntity,
+  RequestForQuotationStatusEnum,
 } from 'src/entities';
 import {
   CreateRequestForQuotationInput,
   PaginationInput,
+  SaveRequestForQuotationAnswerInput,
   SearchRequestForQuotationInput,
   SearchRequestForQuotationStatusEnum,
   createRequestForQuotationSchema,
+  saveRequestForQuotationAnswerSchema,
 } from 'src/input-types';
 import { RequestForQuotationMaterialLoader, SupplierLoader } from 'src/loaders';
 import { mapRequestForQuotationEntityToRequestForQuotation } from 'src/mappers';
@@ -67,8 +70,15 @@ export default class RequestForQuotationResolver {
         .groupBy('request_for_quotation.id');
     }
 
-    if (searchParams?.status && searchParams.status !== SearchRequestForQuotationStatusEnum.ALL) {
-      query.andWhere('request_for_quotation.status = :status', { status: searchParams.status });
+    if (searchParams?.status) {
+      if (searchParams.status === SearchRequestForQuotationStatusEnum.ANSWERED_AND_UNANSWERED) {
+        query.andWhere('request_for_quotation.status IN (:answered, :unanswered)', {
+          answered: SearchRequestForQuotationStatusEnum.ANSWERED,
+          unanswered: SearchRequestForQuotationStatusEnum.UNANSWERED,
+        });
+      } else if (searchParams.status !== SearchRequestForQuotationStatusEnum.ALL) {
+        query.andWhere('request_for_quotation.status = :status', { status: searchParams.status });
+      }
     }
 
     if (pagination) {
@@ -94,6 +104,17 @@ export default class RequestForQuotationResolver {
         pageSize: pagination?.pageSize ?? count,
       },
     };
+  }
+
+  @Query(() => RequestForQuotation)
+  async requestForQuotation(
+    @Args('requestForQuotationId', { type: () => ID }) requestForQuotationId: string
+  ): Promise<RequestForQuotation> {
+    const requestForQuotation = await this.ds.manager.findOneByOrFail(RequestForQuotationEntity, {
+      id: requestForQuotationId,
+    });
+
+    return mapRequestForQuotationEntityToRequestForQuotation(requestForQuotation);
   }
 
   @Mutation(() => RequestForQuotation)
@@ -133,6 +154,57 @@ export default class RequestForQuotationResolver {
 
       return mapRequestForQuotationEntityToRequestForQuotation(requestForQuotation);
     });
+  }
+
+  @Mutation(() => Boolean)
+  async saveRequestForQuotationAnswer(
+    @Args('requestForQuotationId', { type: () => ID }) requestForQuotationId: string,
+    @Args('input') input: SaveRequestForQuotationAnswerInput
+  ) {
+    const parsedData = saveRequestForQuotationAnswerSchema.parse(input);
+    const requestForQuotation = await this.ds.manager.findOneOrFail(RequestForQuotationEntity, {
+      where: { id: requestForQuotationId },
+      relations: { materials: { material_supplier: { material: true } } },
+    });
+
+    if (parsedData.materials.length !== requestForQuotation.materials.length) {
+      throw new GraphQLError('BAD_REQUEST');
+    }
+
+    return this.ds.transaction(async em => {
+      const promises = requestForQuotation.materials.map(rfqm => {
+        const receivedRFQM = parsedData.materials.find(
+          m => m.materialId === rfqm.material_supplier.materialId
+        );
+
+        if (!receivedRFQM) {
+          throw new Error();
+        }
+
+        rfqm.unitPrice = receivedRFQM.unitPrice;
+        return em.save(rfqm);
+      });
+      await Promise.all(promises);
+
+      requestForQuotation.status = RequestForQuotationStatusEnum.ANSWERED;
+      await em.save(requestForQuotation);
+
+      return true;
+    });
+  }
+
+  @Mutation(() => Boolean)
+  async cancelRequestForQuotation(
+    @Args('requestForQuotationId', { type: () => ID }) requestForQuotationId: string
+  ): Promise<boolean> {
+    const requestForQuotation = await this.ds.manager.findOneByOrFail(RequestForQuotationEntity, {
+      id: requestForQuotationId,
+    });
+
+    requestForQuotation.status = RequestForQuotationStatusEnum.CANCELLED;
+    await this.ds.manager.save(requestForQuotation);
+
+    return true;
   }
 
   @ResolveField()

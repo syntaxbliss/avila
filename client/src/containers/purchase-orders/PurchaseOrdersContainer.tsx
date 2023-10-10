@@ -196,12 +196,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
 
                 <Divider my="5" />
 
-                <Table
-                  size="sm"
-                  {...(searchParams?.status === PurchaseOrderStatus.Cancelled
-                    ? {}
-                    : { variant: 'striped', colorScheme: 'gray' })}
-                >
+                <Table size="sm">
                   <Thead>
                     <Tr>
                       <Th textAlign="center" w="20%">
@@ -277,7 +272,10 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             size="xs"
                             ml="1"
                             onClick={() => setToFlagAsDelivered(purchaseOrder as PurchaseOrder)}
-                            isDisabled={Boolean(purchaseOrder.deliveredAt)}
+                            isDisabled={
+                              purchaseOrder.status === PurchaseOrderStatus.Cancelled ||
+                              Boolean(purchaseOrder.deliveredAt)
+                            }
                           />
 
                           <IconButton
@@ -289,13 +287,13 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             ml="1"
                             onClick={() => setToRegisterPayment(purchaseOrder as PurchaseOrder)}
                             isDisabled={
-                              purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0 ||
-                              purchaseOrder.status === PurchaseOrderStatus.Cancelled
+                              purchaseOrder.status === PurchaseOrderStatus.Cancelled ||
+                              purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0
                             }
                           />
 
                           <IconButton
-                            aria-label="delete"
+                            aria-label="cancel"
                             colorScheme="red"
                             rounded="full"
                             icon={<MdClose />}
