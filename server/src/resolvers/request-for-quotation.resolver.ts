@@ -117,6 +117,16 @@ export default class RequestForQuotationResolver {
     return mapRequestForQuotationEntityToRequestForQuotation(requestForQuotation);
   }
 
+  @Query(() => [RequestForQuotation])
+  async requestsForQuotationEligibleForPurchaseOrders() {
+    const requestsForQuotation = await this.ds.manager.find(RequestForQuotationEntity, {
+      where: { status: RequestForQuotationStatusEnum.ANSWERED },
+      order: { orderedAt: 'DESC' },
+    });
+
+    return requestsForQuotation.map(rfq => mapRequestForQuotationEntityToRequestForQuotation(rfq));
+  }
+
   @Mutation(() => RequestForQuotation)
   async createRequestForQuotation(
     @Args('input') input: CreateRequestForQuotationInput

@@ -16,12 +16,12 @@ type Props = {
 const sections = [
   { path: appRoutes.materials.index, icon: MdShelves, text: 'Materiales' },
   { path: appRoutes.suppliers.index, icon: MdLocalShipping, text: 'Proveedores' },
-  { path: appRoutes.purchaseOrders.index, icon: MdOutlineShoppingCart, text: 'Órdenes de compra' },
   {
     path: appRoutes.requestsForQuotation.index,
     icon: MdOutlineListAlt,
     text: 'Pedidos de cotización',
   },
+  { path: appRoutes.purchaseOrders.index, icon: MdOutlineShoppingCart, text: 'Órdenes de compra' },
 ];
 
 export default function Layout({ children }: Props): JSX.Element {

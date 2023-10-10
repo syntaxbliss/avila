@@ -19,7 +19,7 @@ export default class RequestForQuotationMaterialLoader {
   private createRequestForQuotationMaterialsByRequestForQuotationLoader() {
     const findOptions: typeof this.requestForQuotationMaterialsByRequestForQuotation.findOptions = {
       relations: { materials: { material_supplier: true } },
-      order: { materials: { material_supplier: { material: { name: 'ASC' } } } },
+      order: { orderedAt: 'DESC', materials: { material_supplier: { material: { name: 'ASC' } } } },
     };
 
     const loader = new DataLoader(

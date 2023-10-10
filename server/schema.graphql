@@ -131,6 +131,7 @@ type Query {
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
   requestsForQuotation(searchParams: SearchRequestForQuotationInput, pagination: PaginationInput): PaginatedRequestsForQuotation!
   requestForQuotation(requestForQuotationId: ID!): RequestForQuotation!
+  requestsForQuotationEligibleForPurchaseOrders: [RequestForQuotation!]!
   suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
 }
