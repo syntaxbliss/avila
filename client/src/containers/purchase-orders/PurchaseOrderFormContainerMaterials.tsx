@@ -26,10 +26,11 @@ import { gql } from '../../__generated__';
 import { useQuery, useSuspenseQuery } from '@apollo/client';
 import { MdAdd, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
 import { materialMeasureUnitAbbreviationText } from '../../helpers';
-import { Material, MaterialMeasureUnit } from '../../__generated__/graphql';
+import { Material, MaterialMeasureUnit, RequestForQuotation } from '../../__generated__/graphql';
 
 type Props = React.ComponentProps<typeof Card> & {
   onTotalAmountChange: (totalAmount: number) => void;
+  requestForQuotation?: RequestForQuotation;
 };
 
 type Materials = {
@@ -47,13 +48,14 @@ export type PurchaseOrderFormContainerMaterialsHandler = () => Materials | undef
 const PurchaseOrderFormContainerMaterials = forwardRef<
   PurchaseOrderFormContainerMaterialsHandler,
   Props
->(({ onTotalAmountChange, ...rest }, ref) => {
+>(({ onTotalAmountChange, requestForQuotation, ...rest }, ref) => {
   return (
     <Card title="Materiales" {...rest}>
       <SuspenseSpinner>
         <PurchaseOrderFormContainerMaterialsContent
           ref={ref}
           onTotalAmountChange={onTotalAmountChange}
+          requestForQuotation={requestForQuotation}
         />
       </SuspenseSpinner>
     </Card>
@@ -92,6 +94,7 @@ export default PurchaseOrderFormContainerMaterials;
 
 type PurchaseOrderFormContainerMaterialsContentProps = {
   onTotalAmountChange: Props['onTotalAmountChange'];
+  requestForQuotation?: RequestForQuotation;
 };
 
 type FormState = {
@@ -111,8 +114,8 @@ const initialValues: FormState = { materialId: '', quantity: '', unitPrice: '' }
 const PurchaseOrderFormContainerMaterialsContent = forwardRef<
   PurchaseOrderFormContainerMaterialsHandler,
   PurchaseOrderFormContainerMaterialsContentProps
->(({ onTotalAmountChange }, ref) => {
-  const [selectedSupplier, setSelectedSupplier] = useState('');
+>(({ onTotalAmountChange, requestForQuotation }, ref) => {
+  const [selectedSupplier, setSelectedSupplier] = useState(requestForQuotation?.supplier.id ?? '');
   const [updateStock, setUpdateStock] = useState(true);
   const [form, setForm] = useState<FormState>({ ...initialValues });
   const [materialsList, setMaterialsList] = useState<Materials['materials']>([]);
@@ -233,9 +236,19 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
   );
 
   useEffect(() => {
-    setMaterialsList([]);
-    setForm({ ...initialValues });
-  }, [selectedSupplier]);
+    if (requestForQuotation) {
+      setMaterialsList(
+        requestForQuotation.materials.map(material => ({
+          materialId: material.material.id,
+          quantity: material.quantity,
+          unitPrice: material.unitPrice as number,
+        }))
+      );
+    } else {
+      setMaterialsList([]);
+      setForm({ ...initialValues });
+    }
+  }, [selectedSupplier, requestForQuotation]);
 
   useEffect(() => {
     onTotalAmountChange(totalAmount);
@@ -284,7 +297,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
             icon={<MdRefresh />}
             size="xs"
             onClick={changeSupplierDialog.onOpen}
-            isDisabled={!materialsList.length}
+            isDisabled={Boolean(!materialsList.length || requestForQuotation)}
           />
         </GridItem>
 

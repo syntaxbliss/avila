@@ -86,7 +86,7 @@ export default class RequestForQuotationResolver {
     }
 
     const sortOrder = searchParams?.sortOrder ?? 'DESC';
-    this.supplierLoader.setSupplierByRequestForQuotation({ orderedAt: sortOrder }, true);
+    this.supplierLoader.setSupplierByRequestForQuotationOrder({ orderedAt: sortOrder }, true);
     this.requestForQuotationMaterialLoader.setRequestForQuotationMaterialsByRequestForQuotationOrder(
       true
     );
@@ -122,9 +122,18 @@ export default class RequestForQuotationResolver {
     const requestsForQuotation = await this.ds.manager.find(RequestForQuotationEntity, {
       where: { status: RequestForQuotationStatusEnum.ANSWERED },
       order: { orderedAt: 'DESC' },
+      relations: { materials: { material_supplier: { supplier: true } } },
     });
 
-    return requestsForQuotation.map(rfq => mapRequestForQuotationEntityToRequestForQuotation(rfq));
+    this.supplierLoader.setSupplierByRequestForQuotationOrder({ orderedAt: 'DESC' }, false);
+
+    return requestsForQuotation.reduce((acc, rfq) => {
+      if (rfq.materials[0].material_supplier) {
+        acc.push(mapRequestForQuotationEntityToRequestForQuotation(rfq));
+      }
+
+      return acc;
+    }, [] as RequestForQuotation[]);
   }
 
   @Mutation(() => RequestForQuotation)

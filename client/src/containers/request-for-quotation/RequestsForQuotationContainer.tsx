@@ -35,9 +35,15 @@ import {
   PageHeader,
   Pagination,
 } from '../../components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdClose, MdList, MdMarkEmailRead } from 'react-icons/md';
+import {
+  MdAddCircleOutline,
+  MdClose,
+  MdList,
+  MdMarkEmailRead,
+  MdShoppingCart,
+} from 'react-icons/md';
 import { humanReadableDate, paymentMethodText, requestForQuotationStatusText } from '../../helpers';
 import { useMutation, useQuery } from '@apollo/client';
 import { useCallback, useState } from 'react';
@@ -87,6 +93,7 @@ const defaultFilters: SearchParams = {
 };
 
 export default function RequestsForQuotationContainer(): JSX.Element {
+  const navigate = useNavigate();
   const {
     onImmediateSearchParamsChange,
     onPaginationChange,
@@ -252,6 +259,24 @@ export default function RequestsForQuotationContainer(): JSX.Element {
                               isDisabled={[
                                 RequestForQuotationStatus.Cancelled,
                                 RequestForQuotationStatus.Answered,
+                              ].includes(requestForQuotation.status)}
+                            />
+
+                            <IconButton
+                              aria-label="purchase-order"
+                              colorScheme="yellow"
+                              rounded="full"
+                              icon={<MdShoppingCart />}
+                              size="xs"
+                              ml="1"
+                              onClick={() =>
+                                navigate(
+                                  `${appRoutes.purchaseOrders.create}?rfqId=${requestForQuotation.id}`
+                                )
+                              }
+                              isDisabled={[
+                                RequestForQuotationStatus.Cancelled,
+                                RequestForQuotationStatus.Unanswered,
                               ].includes(requestForQuotation.status)}
                             />
 

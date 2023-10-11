@@ -28,9 +28,17 @@ export default class PurchaseOrderMaterialLoader {
           ...this.purchaseOrderMaterialsByPurchaseOrder.findOptions,
         });
 
-        return purchaseOrders.map(po =>
-          po.materials.map(pom => mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial(pom))
-        );
+        return ids.map(id => {
+          const purchaseOrder = purchaseOrders.find(po => po.id === id);
+
+          if (!purchaseOrder) {
+            throw new Error();
+          }
+
+          return purchaseOrder.materials.map(pom =>
+            mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial(pom)
+          );
+        });
       },
       { cache: false }
     );

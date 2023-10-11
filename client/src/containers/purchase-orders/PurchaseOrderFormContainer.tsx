@@ -22,6 +22,8 @@ import {
 import { useCallback, useRef, useState } from 'react';
 import {
   Card,
+  LoadingSpinner,
+  NoRecordsAlert,
   PageHeader,
   RequestForQuotationMaterialsTable,
   SuspenseSpinner,
@@ -34,17 +36,43 @@ import PurchaseOrderFormContainerMaterials, {
   type PurchaseOrderFormContainerMaterialsHandler,
 } from './PurchaseOrderFormContainerMaterials';
 import { gql } from '../../__generated__';
-import { useMutation, useSuspenseQuery } from '@apollo/client';
+import { useMutation, useQuery, useSuspenseQuery } from '@apollo/client';
 import PurchaseOrderFormContainerPayments, {
   type PurchaseOrderFormContainerPaymentsHandler,
 } from './PurchaseOrderFormContainerPayments';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { appRoutes } from '../../routes';
 import { humanReadableDate, paymentMethodText } from '../../helpers';
 import { RequestForQuotation } from '../../__generated__/graphql';
 import _ from 'lodash';
 
 PurchaseOrderFormContainer.gql = {
+  queries: {
+    requestForQuotation: gql(`
+      query PurchaseOrderFormContainerRequestForQuotationQuery ($requestForQuotationId: ID!) {
+        requestForQuotation (requestForQuotationId: $requestForQuotationId) {
+          id
+          orderedAt
+          paymentMethod
+          supplier {
+            id
+            name
+          }
+          materials {
+            material {
+              id
+              code
+              name
+              measureUnit
+            }
+            quantity
+            unitPrice
+          }
+        }
+      }
+    `),
+  },
+
   mutations: {
     createPurchaseOrder: gql(`
       mutation PurchaseOrderFormContainerCreatePurchaseOrderMutation($input: CreatePurchaseOrderInput!) {
@@ -90,9 +118,23 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
   const handlers = useRef<FormHandlers>({ basicInfo: null, materials: null, payments: null });
   const toast = useToast();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const rfqId = params.get('rfqId');
 
   const [generationData, setGenerationData] = useState<{ rfq?: RequestForQuotation }>();
   const [totalAmount, setTotalAmount] = useState(0);
+
+  const requestForQuotationQuery = useQuery(
+    PurchaseOrderFormContainer.gql.queries.requestForQuotation,
+    {
+      fetchPolicy: 'network-only',
+      skip: !rfqId,
+      variables: { requestForQuotationId: String(rfqId) },
+      onCompleted(response) {
+        setGenerationData({ rfq: response.requestForQuotation as RequestForQuotation });
+      },
+    }
+  );
 
   const [createPurchaseOrderMutation, createPurchaseOrderMutationStatus] = useMutation(
     PurchaseOrderFormContainer.gql.mutations.createPurchaseOrder
@@ -130,6 +172,10 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
     [createPurchaseOrderMutation, toast, navigate]
   );
 
+  if (requestForQuotationQuery.loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <>
       <PageHeader title="Nueva orden de compra" />
@@ -143,7 +189,9 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
         Volver
       </Button>
 
-      {!generationData && <GenerationModeForm onChange={rfq => setGenerationData({ rfq })} />}
+      {!generationData && !rfqId && (
+        <GenerationModeForm onChange={rfq => setGenerationData({ rfq })} />
+      )}
 
       {!_.isUndefined(generationData) && (
         <Container
@@ -164,6 +212,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
 
           <PurchaseOrderFormContainerMaterials
             mt="5"
+            requestForQuotation={generationData.rfq}
             onTotalAmountChange={amount => setTotalAmount(amount)}
             ref={e => {
               if (e) {
@@ -328,62 +377,66 @@ function EligibleRequestsForQuotationList({
         borderWidth="1px"
         rounded="md"
       >
-        {requestsForQuotationEligibleForPurchaseOrders.map(rfq => (
-          <Box
-            key={rfq.id}
-            w="full"
-            onClick={() =>
-              onChange(selectedId === rfq.id ? undefined : (rfq as RequestForQuotation))
-            }
-          >
-            <Card
+        {requestsForQuotationEligibleForPurchaseOrders.length ? (
+          requestsForQuotationEligibleForPurchaseOrders.map(rfq => (
+            <Box
+              key={rfq.id}
               w="full"
-              py="3"
-              px="4"
-              cursor="pointer"
-              direction="row"
-              {...(selectedId === rfq.id
-                ? { borderColor: 'green.500', bgColor: 'green.50' }
-                : { _hover: { borderColor: 'blue.500', bgColor: 'blue.50' } })}
+              onClick={() =>
+                onChange(selectedId === rfq.id ? undefined : (rfq as RequestForQuotation))
+              }
             >
-              <Box flex={1}>
-                <Text>
-                  <Text fontWeight="bold" as="span">
-                    Proveedor:
-                  </Text>{' '}
-                  {rfq.supplier.name}
-                </Text>
+              <Card
+                w="full"
+                py="3"
+                px="4"
+                cursor="pointer"
+                direction="row"
+                {...(selectedId === rfq.id
+                  ? { borderColor: 'green.500', bgColor: 'green.50' }
+                  : { _hover: { borderColor: 'blue.500', bgColor: 'blue.50' } })}
+              >
+                <Box flex={1}>
+                  <Text>
+                    <Text fontWeight="bold" as="span">
+                      Proveedor:
+                    </Text>{' '}
+                    {rfq.supplier.name}
+                  </Text>
 
-                <Text>
-                  <Text fontWeight="bold" as="span">
-                    Fecha de pedido:
-                  </Text>{' '}
-                  {humanReadableDate(rfq.orderedAt)}
-                </Text>
+                  <Text>
+                    <Text fontWeight="bold" as="span">
+                      Fecha de pedido:
+                    </Text>{' '}
+                    {humanReadableDate(rfq.orderedAt)}
+                  </Text>
 
-                <Text>
-                  <Text fontWeight="bold" as="span">
-                    Forma de pago:
-                  </Text>{' '}
-                  {paymentMethodText[rfq.paymentMethod]}
-                </Text>
-              </Box>
+                  <Text>
+                    <Text fontWeight="bold" as="span">
+                      Forma de pago:
+                    </Text>{' '}
+                    {paymentMethodText[rfq.paymentMethod]}
+                  </Text>
+                </Box>
 
-              <IconButton
-                aria-label="detail"
-                colorScheme="green"
-                rounded="full"
-                icon={<MdList />}
-                size="xs"
-                onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowDetail(rfq as RequestForQuotation);
-                }}
-              />
-            </Card>
-          </Box>
-        ))}
+                <IconButton
+                  aria-label="detail"
+                  colorScheme="green"
+                  rounded="full"
+                  icon={<MdList />}
+                  size="xs"
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowDetail(rfq as RequestForQuotation);
+                  }}
+                />
+              </Card>
+            </Box>
+          ))
+        ) : (
+          <NoRecordsAlert entity="pedidos de cotización elegibles para órdenes de compra." />
+        )}
       </VStack>
 
       <Modal

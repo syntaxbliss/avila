@@ -41,9 +41,15 @@ export default class MaterialLoader {
           ...this.materialsBySupplier.findOptions,
         });
 
-        return suppliers.map(s => {
-          return s.material_suppliers.reduce((acc, m_s) => {
-            if (m_s.deletedAt === null) {
+        return ids.map(id => {
+          const supplier = suppliers.find(s => s.id === id);
+
+          if (!supplier) {
+            throw new Error();
+          }
+
+          return supplier.material_suppliers.reduce((acc, m_s) => {
+            if (!m_s.deletedAt) {
               acc.push(mapMaterialEntityToMaterial(m_s.material));
             }
 

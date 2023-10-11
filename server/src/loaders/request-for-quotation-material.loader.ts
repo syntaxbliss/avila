@@ -29,11 +29,17 @@ export default class RequestForQuotationMaterialLoader {
           ...this.requestForQuotationMaterialsByRequestForQuotation.findOptions,
         });
 
-        return requestsForQuotation.map(rfq =>
-          rfq.materials.map(rfqm =>
+        return ids.map(id => {
+          const requestForQuotation = requestsForQuotation.find(rfq => rfq.id === id);
+
+          if (!requestForQuotation) {
+            throw new Error();
+          }
+
+          return requestForQuotation.materials.map(rfqm =>
             mapRequestForQuotationMaterialEntityToRequestForQuotationMaterial(rfqm)
-          )
-        );
+          );
+        });
       },
       { cache: false }
     );

@@ -24,7 +24,13 @@ export default class PurchaseOrderPaymentLoader {
           relations: { payments: true },
         });
 
-        return purchaseOrders.map(purchaseOrder => {
+        return ids.map(id => {
+          const purchaseOrder = purchaseOrders.find(po => po.id === id);
+
+          if (!purchaseOrder) {
+            throw new Error();
+          }
+
           if (purchaseOrder.payments?.length) {
             return purchaseOrder.payments.map(p =>
               mapPurchaseOrderPaymentEntityToPurchaseOrderPayment(p)

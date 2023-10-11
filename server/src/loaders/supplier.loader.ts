@@ -41,9 +41,15 @@ export default class SupplierLoader {
           ...this.suppliersByMaterial.findOptions,
         });
 
-        return materials.map(m => {
-          return m.material_suppliers.reduce((acc, m_s) => {
-            if (m_s.deletedAt === null) {
+        return ids.map(id => {
+          const material = materials.find(m => m.id === id);
+
+          if (!material) {
+            throw new Error();
+          }
+
+          return material.material_suppliers.reduce((acc, m_s) => {
+            if (!m_s.deletedAt) {
               acc.push(mapSupplierEntityToSupplier(m_s.supplier));
             }
 
@@ -93,9 +99,17 @@ export default class SupplierLoader {
           ...this.supplierByRequestForQuotation.findOptions,
         });
 
-        return requestsForQuotation.map(rfq =>
-          mapSupplierEntityToSupplier(rfq.materials[0].material_supplier.supplier)
-        );
+        return ids.map(id => {
+          const requestForQuotation = requestsForQuotation.find(rfq => rfq.id === id);
+
+          if (!requestForQuotation) {
+            throw new Error();
+          }
+
+          return mapSupplierEntityToSupplier(
+            requestForQuotation.materials[0].material_supplier.supplier
+          );
+        }, [] as Supplier[]);
       },
       { cache: false }
     );
@@ -115,7 +129,7 @@ export default class SupplierLoader {
     this.supplierByPurchaseOrder.findOptions.withDeleted = includeDeleted;
   }
 
-  setSupplierByRequestForQuotation(
+  setSupplierByRequestForQuotationOrder(
     order: FindManyOptions<RequestForQuotationEntity>['order'],
     includeDeleted = false
   ) {
