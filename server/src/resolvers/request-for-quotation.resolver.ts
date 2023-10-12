@@ -2,7 +2,7 @@ import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nest
 import * as dayjs from 'dayjs';
 import { GraphQLError } from 'graphql';
 import {
-  Material_SupplierEntity,
+  MaterialSupplierEntity,
   RequestForQuotationEntity,
   RequestForQuotationMaterialEntity,
   RequestForQuotationStatusEnum,
@@ -62,8 +62,8 @@ export default class RequestForQuotationResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('request_for_quotation.materials', 'request_for_quotation_material')
-        .innerJoin('request_for_quotation_material.material_supplier', 'material__supplier')
-        .andWhere('material__supplier.supplierId = :supplierId', {
+        .innerJoin('request_for_quotation_material.material_supplier', 'material_supplier')
+        .andWhere('material_supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,
         })
         .groupBy('request_for_quotation.id');
@@ -85,10 +85,7 @@ export default class RequestForQuotationResolver {
     }
 
     const sortOrder = searchParams?.sortOrder ?? 'DESC';
-    this.supplierLoader.setSupplierByRequestForQuotationOrder({ orderedAt: sortOrder }, true);
-    this.requestForQuotationMaterialLoader.setRequestForQuotationMaterialsByRequestForQuotationOrder(
-      true
-    );
+    this.supplierLoader.setSupplierByRequestForQuotationOrder({ orderedAt: sortOrder });
     query.orderBy('request_for_quotation.orderedAt', sortOrder);
 
     const [requestsForQuotation, count] = await query.getManyAndCount();
@@ -121,13 +118,13 @@ export default class RequestForQuotationResolver {
     const requestsForQuotation = await this.ds.manager.find(RequestForQuotationEntity, {
       where: { status: RequestForQuotationStatusEnum.ANSWERED },
       order: { orderedAt: 'DESC' },
-      relations: { materials: { material_supplier: { supplier: true } } },
+      relations: { materials: { materialSupplier: { supplier: true } } },
     });
 
-    this.supplierLoader.setSupplierByRequestForQuotationOrder({ orderedAt: 'DESC' }, false);
+    this.supplierLoader.setSupplierByRequestForQuotationOrder({ orderedAt: 'DESC' });
 
     return requestsForQuotation.reduce((acc, rfq) => {
-      if (rfq.materials[0].material_supplier) {
+      if (rfq.materials[0].materialSupplier) {
         acc.push(mapRequestForQuotationEntityToRequestForQuotation(rfq));
       }
 
@@ -151,20 +148,20 @@ export default class RequestForQuotationResolver {
 
       // materials
       const materialsIds = parsedData.materials.map(material => material.materialId);
-      const material_suppliers = await em.find(Material_SupplierEntity, {
+      const materialSuppliers = await em.find(MaterialSupplierEntity, {
         where: { supplierId: parsedData.supplierId, materialId: In(materialsIds) },
       });
 
-      if (material_suppliers.length !== materialsIds.length) {
+      if (materialSuppliers.length !== materialsIds.length) {
         throw new GraphQLError('BAD_REQUEST');
       }
 
       const requestForQuotationMaterials = parsedData.materials.map(material => {
         return em.create<RequestForQuotationMaterialEntity>(RequestForQuotationMaterialEntity, {
           requestForQuotation,
-          material_supplier: material_suppliers.find(
-            m_s => m_s.materialId === material.materialId
-          ) as Material_SupplierEntity,
+          materialSupplier: materialSuppliers.find(
+            ms => ms.materialId === material.materialId
+          ) as MaterialSupplierEntity,
           quantity: material.quantity,
         });
       });
@@ -182,7 +179,7 @@ export default class RequestForQuotationResolver {
     const parsedData = saveRequestForQuotationAnswerSchema.parse(input);
     const requestForQuotation = await this.ds.manager.findOneOrFail(RequestForQuotationEntity, {
       where: { id: requestForQuotationId },
-      relations: { materials: { material_supplier: { material: true } } },
+      relations: { materials: { materialSupplier: { material: true } } },
     });
 
     if (parsedData.materials.length !== requestForQuotation.materials.length) {
@@ -192,7 +189,7 @@ export default class RequestForQuotationResolver {
     return this.ds.transaction(async em => {
       const promises = requestForQuotation.materials.map(rfqm => {
         const receivedRFQM = parsedData.materials.find(
-          m => m.materialId === rfqm.material_supplier.materialId
+          m => m.materialId === rfqm.materialSupplier.materialId
         );
 
         if (!receivedRFQM) {

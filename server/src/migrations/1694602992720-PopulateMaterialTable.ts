@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { v4 } from 'uuid';
 import { faker } from '@faker-js/faker';
-import { MaterialMeasureUnitEnum } from 'src/entities';
+import { MeasureUnitEnum } from 'src/entities';
 
 export class PopulateMaterialTable1694602992720 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -21,7 +21,7 @@ export class PopulateMaterialTable1694602992720 implements MigrationInterface {
 
       codes.add(code);
 
-      const measureUnit = faker.helpers.enumValue(MaterialMeasureUnitEnum);
+      const measureUnit = faker.helpers.enumValue(MeasureUnitEnum);
       const stockable = faker.datatype.boolean();
       const currentQuantity = stockable ? `"${faker.finance.amount(0, 99999.99)}"` : null;
       const alertQuantity = stockable ? `"${faker.finance.amount(0, 99999.99)}"` : null;

@@ -30,8 +30,8 @@ export default class SupplierLoader {
 
   private createSuppliersByMaterialLoader() {
     const findOptions: typeof this.suppliersByMaterial.findOptions = {
-      relations: { material_suppliers: { supplier: true } },
-      order: { name: 'ASC', material_suppliers: { supplier: { name: 'ASC' } } },
+      relations: { materialSuppliers: { supplier: true } },
+      order: { name: 'ASC', materialSuppliers: { supplier: { name: 'ASC' } } },
     };
 
     const loader: typeof this.suppliersByMaterial.loader = new DataLoader(
@@ -48,7 +48,7 @@ export default class SupplierLoader {
             throw new Error();
           }
 
-          return material.material_suppliers.map(m_s => mapSupplierEntityToSupplier(m_s.supplier));
+          return material.materialSuppliers.map(ms => mapSupplierEntityToSupplier(ms.supplier));
         });
       },
       { cache: false }
@@ -59,7 +59,7 @@ export default class SupplierLoader {
 
   private createSupplierByPurchaseOrderLoader() {
     const findOptions: typeof this.supplierByPurchaseOrder.findOptions = {
-      relations: { materials: { material_supplier: { supplier: true } } },
+      relations: { materials: { materialSupplier: { supplier: true } } },
       order: { orderedAt: 'DESC' },
     };
 
@@ -71,7 +71,7 @@ export default class SupplierLoader {
         });
 
         return purchaseOrders.map(po =>
-          mapSupplierEntityToSupplier(po.materials[0].material_supplier.supplier)
+          mapSupplierEntityToSupplier(po.materials[0].materialSupplier.supplier)
         );
       },
       { cache: false }
@@ -82,7 +82,7 @@ export default class SupplierLoader {
 
   private createSupplierByRequestForQuotationLoader() {
     const findOptions: typeof this.supplierByRequestForQuotation.findOptions = {
-      relations: { materials: { material_supplier: { supplier: true } } },
+      relations: { materials: { materialSupplier: { supplier: true } } },
       order: { orderedAt: 'DESC' },
     };
 
@@ -101,7 +101,7 @@ export default class SupplierLoader {
           }
 
           return mapSupplierEntityToSupplier(
-            requestForQuotation.materials[0].material_supplier.supplier
+            requestForQuotation.materials[0].materialSupplier.supplier
           );
         }, [] as Supplier[]);
       },

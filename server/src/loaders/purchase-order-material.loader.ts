@@ -18,7 +18,7 @@ export default class PurchaseOrderMaterialLoader {
 
   private createPurchaseOrderMaterialsByPurchaseOrderLoader() {
     const findOptions: typeof this.purchaseOrderMaterialsByPurchaseOrder.findOptions = {
-      relations: { materials: { material_supplier: true } },
+      relations: { materials: { materialSupplier: true } },
     };
 
     const loader = new DataLoader(

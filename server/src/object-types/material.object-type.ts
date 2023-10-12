@@ -1,5 +1,5 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
-import { MaterialMeasureUnitEnum } from 'src/entities';
+import { MeasureUnitEnum } from 'src/entities';
 import { PaginatedResponse } from './commons';
 import { Supplier } from './supplier.object-type';
 
@@ -14,8 +14,8 @@ export class Material {
   @Field(() => String)
   code: string;
 
-  @Field(() => MaterialMeasureUnitEnum)
-  measureUnit: MaterialMeasureUnitEnum;
+  @Field(() => MeasureUnitEnum)
+  measureUnit: MeasureUnitEnum;
 
   @Field(() => Float, { nullable: true })
   currentQuantity: number | null;

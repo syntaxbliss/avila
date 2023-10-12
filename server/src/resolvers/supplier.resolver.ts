@@ -52,7 +52,7 @@ export default class SupplierResolver {
     const supplier = await this.ds.manager.findOneByOrFail(SupplierEntity, { id: supplierId });
     this.materialLoader.setMaterialsBySupplierOrder({
       name: 'ASC',
-      material_suppliers: { material: { name: 'ASC' } },
+      materialSuppliers: { material: { name: 'ASC' } },
     });
 
     return mapSupplierEntityToSupplier(supplier);
@@ -97,14 +97,14 @@ export default class SupplierResolver {
     return this.ds.transaction(async em => {
       const supplier = await em.findOne(SupplierEntity, {
         where: { id: supplierId },
-        relations: { material_suppliers: true },
+        relations: { materialSuppliers: true },
       });
 
       if (!supplier) {
         throw new GraphQLError('BAD_REQUEST');
       }
 
-      await Promise.all(supplier.material_suppliers.map(m_s => em.softRemove(m_s)));
+      await Promise.all(supplier.materialSuppliers.map(ms => em.softRemove(ms)));
       await em.softRemove(supplier);
 
       return true;

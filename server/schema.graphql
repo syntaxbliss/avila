@@ -14,14 +14,8 @@ type Supplier {
   address: String
   email: String
   phone: String
-  deletedAt: DateTime
   materials: [Material!]!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type PaginatedSuppliers {
   items: [Supplier!]!
@@ -32,14 +26,13 @@ type Material {
   id: ID!
   name: String!
   code: String!
-  measureUnit: MaterialMeasureUnit!
+  measureUnit: MeasureUnit!
   currentQuantity: Float
   alertQuantity: Float
   suppliers: [Supplier!]!
-  deletedAt: DateTime
 }
 
-enum MaterialMeasureUnit {
+enum MeasureUnit {
   GR
   KG
   TN
@@ -74,6 +67,11 @@ enum PaymentMethod {
   CURRENT_ACCOUNT
   E_CHECK
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type PurchaseOrder {
   id: ID!
@@ -132,7 +130,7 @@ type Query {
   requestsForQuotation(searchParams: SearchRequestForQuotationInput, pagination: PaginationInput): PaginatedRequestsForQuotation!
   requestForQuotation(requestForQuotationId: ID!): RequestForQuotation!
   requestsForQuotationEligibleForPurchaseOrders: [RequestForQuotation!]!
-  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput, includeDeleted: Boolean): PaginatedSuppliers!
+  suppliers(searchParams: SearchSupplierInput, pagination: PaginationInput): PaginatedSuppliers!
   supplier(supplierId: ID!): Supplier!
 }
 
@@ -228,7 +226,7 @@ type Mutation {
 input SaveMaterialInput {
   name: String!
   code: String!
-  measureUnit: MaterialMeasureUnit!
+  measureUnit: MeasureUnit!
   currentQuantity: Float
   alertQuantity: Float
   suppliers: [ID!]!

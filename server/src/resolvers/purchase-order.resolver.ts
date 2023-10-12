@@ -4,7 +4,7 @@ import { GraphQLError } from 'graphql';
 import * as _ from 'lodash';
 import {
   MaterialEntity,
-  Material_SupplierEntity,
+  MaterialSupplierEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
@@ -71,8 +71,8 @@ export default class PurchaseOrderResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('purchase_order.materials', 'purchase_order_material')
-        .innerJoin('purchase_order_material.material_supplier', 'material__supplier')
-        .andWhere('material__supplier.supplierId = :supplierId', {
+        .innerJoin('purchase_order_material.material_supplier', 'material_supplier')
+        .andWhere('material_supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,
         })
         .groupBy('purchase_order.id');
@@ -100,8 +100,7 @@ export default class PurchaseOrderResolver {
 
     const sortField = searchParams?.sortField ?? 'orderedAt';
     const sortOrder = searchParams?.sortOrder ?? 'DESC';
-    this.supplierLoader.setSupplierByPurchaseOrderOrder({ [sortField]: sortOrder }, true);
-    this.purchaseOrderMaterialLoader.setPurchaseOrderMaterialsByPurchaseOrderOrder(true);
+    this.supplierLoader.setSupplierByPurchaseOrderOrder({ [sortField]: sortOrder });
     query.orderBy(`purchase_order.${sortField}`, sortOrder);
 
     const [purchaseOrders, count] = await query.getManyAndCount();
@@ -154,20 +153,20 @@ export default class PurchaseOrderResolver {
 
       // materials
       const materialsIds = parsedData.materials.map(material => material.materialId);
-      const material_suppliers = await em.find(Material_SupplierEntity, {
+      const materialSuppliers = await em.find(MaterialSupplierEntity, {
         where: { supplierId: parsedData.supplierId, materialId: In(materialsIds) },
       });
 
-      if (material_suppliers.length !== materialsIds.length) {
+      if (materialSuppliers.length !== materialsIds.length) {
         throw new GraphQLError('BAD_REQUEST');
       }
 
       const purchaseOrderMaterials = parsedData.materials.map(material => {
         return em.create<PurchaseOrderMaterialEntity>(PurchaseOrderMaterialEntity, {
           purchaseOrder,
-          material_supplier: material_suppliers.find(
-            m_s => m_s.materialId === material.materialId
-          ) as Material_SupplierEntity,
+          materialSupplier: materialSuppliers.find(
+            ms => ms.materialId === material.materialId
+          ) as MaterialSupplierEntity,
           quantity: material.quantity,
           unitPrice: material.unitPrice,
         });
@@ -247,7 +246,7 @@ export default class PurchaseOrderResolver {
     };
 
     if (parsedData.updateStock) {
-      findOptions.relations = { materials: { material_supplier: { material: true } } };
+      findOptions.relations = { materials: { materialSupplier: { material: true } } };
     }
 
     const purchaseOrder = await this.ds.manager.findOneOrFail(PurchaseOrderEntity, findOptions);
@@ -261,7 +260,7 @@ export default class PurchaseOrderResolver {
       // update stock values
       if (parsedData.updateStock) {
         const updatedMaterials = purchaseOrder.materials.reduce((acc, pom) => {
-          const { material } = pom.material_supplier;
+          const { material } = pom.materialSupplier;
 
           if (!_.isNull(material.currentQuantity)) {
             const newCurrentQuantity =

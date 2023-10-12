@@ -18,8 +18,8 @@ export default class RequestForQuotationMaterialLoader {
 
   private createRequestForQuotationMaterialsByRequestForQuotationLoader() {
     const findOptions: typeof this.requestForQuotationMaterialsByRequestForQuotation.findOptions = {
-      relations: { materials: { material_supplier: true } },
-      order: { orderedAt: 'DESC', materials: { material_supplier: { material: { name: 'ASC' } } } },
+      relations: { materials: { materialSupplier: true } },
+      order: { orderedAt: 'DESC', materials: { materialSupplier: { material: { name: 'ASC' } } } },
     };
 
     const loader = new DataLoader(

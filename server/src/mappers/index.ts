@@ -61,7 +61,7 @@ export const mapPurchaseOrderMaterialEntityToPurchaseOrderMaterial = (
   const purchaseOrderMaterial = new PurchaseOrderMaterial();
   purchaseOrderMaterial.quantity = entity.quantity;
   purchaseOrderMaterial.unitPrice = entity.unitPrice;
-  purchaseOrderMaterial.materialId = entity.material_supplier.materialId;
+  purchaseOrderMaterial.materialId = entity.materialSupplier.materialId;
 
   return purchaseOrderMaterial;
 };
@@ -97,7 +97,7 @@ export const mapRequestForQuotationMaterialEntityToRequestForQuotationMaterial =
   const requestForQuotationMaterial = new RequestForQuotationMaterial();
   requestForQuotationMaterial.quantity = entity.quantity;
   requestForQuotationMaterial.unitPrice = entity.unitPrice;
-  requestForQuotationMaterial.materialId = entity.material_supplier.materialId;
+  requestForQuotationMaterial.materialId = entity.materialSupplier.materialId;
 
   return requestForQuotationMaterial;
 };

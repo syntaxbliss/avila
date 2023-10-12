@@ -30,8 +30,8 @@ export default class MaterialLoader {
 
   private createMaterialsBySupplierLoader() {
     const findOptions: typeof this.materialsBySupplier.findOptions = {
-      relations: { material_suppliers: { material: true } },
-      order: { name: 'ASC', material_suppliers: { material: { name: 'ASC' } } },
+      relations: { materialSuppliers: { material: true } },
+      order: { name: 'ASC', materialSuppliers: { material: { name: 'ASC' } } },
     };
 
     const loader: typeof this.materialsBySupplier.loader = new DataLoader(
@@ -48,7 +48,7 @@ export default class MaterialLoader {
             throw new Error();
           }
 
-          return supplier.material_suppliers.map(m_s => mapMaterialEntityToMaterial(m_s.material));
+          return supplier.materialSuppliers.map(ms => mapMaterialEntityToMaterial(ms.material));
         });
       },
       { cache: false }

@@ -8,8 +8,6 @@ export default class RequestForQuotationMaterialResolver {
 
   @ResolveField()
   async material(@Parent() parent: RequestForQuotationMaterial): Promise<Material> {
-    this.materialLoader.setMaterialByRequestForQuotationMaterialOrder(true);
-
     return this.materialLoader.loadMaterialByRequestForQuotationMaterial(parent.materialId);
   }
 }
