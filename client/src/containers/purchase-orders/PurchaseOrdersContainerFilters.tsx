@@ -1,11 +1,10 @@
 import { Divider, Grid, GridItem, IconButton } from '@chakra-ui/react';
-import { Card, FormDateRange, FormSelect, FormSwitch, SuspenseSpinner } from '../../components';
+import { Card, FormDateRange, FormSelect, SuspenseSpinner } from '../../components';
 import { MdFilterAltOff } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useSuspenseQuery } from '@apollo/client';
 import { useMemo } from 'react';
 import {
-  PurchaseOrderStatus,
   QuerySortOrder,
   SearchPurchaseOrderDeliveryStatus,
   SearchPurchaseOrderPaymentStatus,
@@ -18,7 +17,6 @@ export type SearchParams = {
   supplierId: string;
   paymentStatus: SearchPurchaseOrderPaymentStatus;
   deliveryStatus: SearchPurchaseOrderDeliveryStatus;
-  status: PurchaseOrderStatus;
   sortField: SearchPurchaseOrderQuerySortField;
   sortOrder: QuerySortOrder;
 };
@@ -101,18 +99,6 @@ export default function PurchaseOrdersContainerFilters({
                 supplierId={searchParams.supplierId}
               />
             </SuspenseSpinner>
-
-            <FormSwitch
-              mt="9"
-              id="purchase-orders-container-filters__cancelled"
-              label="Sólo órdenes anuladas"
-              value={searchParams.status === PurchaseOrderStatus.Cancelled}
-              onChange={e =>
-                onImmediateChange({
-                  status: e ? PurchaseOrderStatus.Cancelled : PurchaseOrderStatus.Active,
-                })
-              }
-            />
           </Grid>
         </GridItem>
 

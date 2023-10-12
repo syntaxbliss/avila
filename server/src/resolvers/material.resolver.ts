@@ -157,7 +157,7 @@ export default class MaterialResolver {
       });
 
       const toDelete = materialSuppliers.filter(ms => !data.suppliers.includes(ms.supplierId));
-      operations.push(...toDelete.map(ms => em.softRemove(ms)));
+      operations.push(...toDelete.map(ms => em.remove(ms)));
 
       await Promise.all(operations);
 
@@ -169,21 +169,9 @@ export default class MaterialResolver {
   async deleteMaterial(
     @Args('materialId', { type: () => ID }) materialId: string
   ): Promise<boolean> {
-    return this.ds.transaction(async em => {
-      const material = await em.findOne(MaterialEntity, {
-        where: { id: materialId },
-        relations: { materialSuppliers: true },
-      });
+    await this.ds.manager.delete(MaterialEntity, { id: materialId });
 
-      if (!material) {
-        throw new GraphQLError('BAD_REQUEST');
-      }
-
-      await Promise.all(material.materialSuppliers.map(ms => em.softRemove(ms)));
-      await em.softRemove(material);
-
-      return true;
-    });
+    return true;
   }
 
   @Mutation(() => Boolean)

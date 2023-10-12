@@ -8,7 +8,7 @@ type Props = React.ComponentProps<typeof Box> & {
 const DividerWithText: React.FC<Props> = ({ text, ...rest }) => {
   return (
     <Box position="relative" {...rest}>
-      <Divider />
+      <Divider borderColor="orange.500" />
 
       <Text
         bgColor="white"
@@ -20,7 +20,7 @@ const DividerWithText: React.FC<Props> = ({ text, ...rest }) => {
         textTransform="uppercase"
         letterSpacing="wider"
         fontSize="xs"
-        color="gray.500"
+        color="orange.500"
         px="2"
       >
         {text}

@@ -81,14 +81,8 @@ type PurchaseOrder {
   totalAmount: Float!
   paidAmount: Float!
   supplier: Supplier!
-  status: PurchaseOrderStatus!
   materials: [PurchaseOrderMaterial!]!
   payments: [PurchaseOrderPayment!]
-}
-
-enum PurchaseOrderStatus {
-  ACTIVE
-  CANCELLED
 }
 
 type PaginatedPurchaseOrders {
@@ -113,7 +107,6 @@ type RequestForQuotation {
 
 enum RequestForQuotationStatus {
   ANSWERED
-  CANCELLED
   UNANSWERED
 }
 
@@ -163,7 +156,6 @@ input SearchPurchaseOrderInput {
   supplierId: ID
   paymentStatus: SearchPurchaseOrderPaymentStatus
   deliveryStatus: SearchPurchaseOrderDeliveryStatus
-  status: PurchaseOrderStatus
   sortField: SearchPurchaseOrderQuerySortField
   sortOrder: QuerySortOrder
 }
@@ -196,8 +188,6 @@ input SearchRequestForQuotationInput {
 enum SearchRequestForQuotationStatus {
   ALL
   ANSWERED
-  ANSWERED_AND_UNANSWERED
-  CANCELLED
   UNANSWERED
 }
 
@@ -212,12 +202,12 @@ type Mutation {
   deleteMaterial(materialId: ID!): Boolean!
   updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
-  cancelPurchaseOrder(purchaseOrderId: ID!): Boolean!
+  deletePurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!
   registerPurchaseOrderPayment(purchaseOrderId: ID!, input: PurchaseOrderPaymentInput!): Boolean!
   createRequestForQuotation(input: CreateRequestForQuotationInput!): RequestForQuotation!
   saveRequestForQuotationAnswer(requestForQuotationId: ID!, input: SaveRequestForQuotationAnswerInput!): Boolean!
-  cancelRequestForQuotation(requestForQuotationId: ID!): Boolean!
+  deleteRequestForQuotation(requestForQuotationId: ID!): Boolean!
   createSupplier(input: SaveSupplierInput!): Supplier!
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
   deleteSupplier(supplierId: ID!): Boolean!

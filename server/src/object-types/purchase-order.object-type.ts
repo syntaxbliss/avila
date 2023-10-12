@@ -3,7 +3,6 @@ import { Supplier } from './supplier.object-type';
 import { PurchaseOrderMaterial } from './purchase-order-material.object-type';
 import { PurchaseOrderPayment } from './purchase-order-payment.object-type';
 import { PaginatedResponse } from './commons';
-import { PurchaseOrderStatusEnum } from 'src/entities';
 
 @ObjectType()
 export class PurchaseOrder {
@@ -27,9 +26,6 @@ export class PurchaseOrder {
 
   @Field(() => Supplier)
   supplier: Supplier;
-
-  @Field(() => PurchaseOrderStatusEnum)
-  status: PurchaseOrderStatusEnum;
 
   @Field(() => [PurchaseOrderMaterial])
   materials: PurchaseOrderMaterial[];

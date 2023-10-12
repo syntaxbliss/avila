@@ -69,15 +69,8 @@ export default class RequestForQuotationResolver {
         .groupBy('request_for_quotation.id');
     }
 
-    if (searchParams?.status) {
-      if (searchParams.status === SearchRequestForQuotationStatusEnum.ANSWERED_AND_UNANSWERED) {
-        query.andWhere('request_for_quotation.status IN (:answered, :unanswered)', {
-          answered: SearchRequestForQuotationStatusEnum.ANSWERED,
-          unanswered: SearchRequestForQuotationStatusEnum.UNANSWERED,
-        });
-      } else if (searchParams.status !== SearchRequestForQuotationStatusEnum.ALL) {
-        query.andWhere('request_for_quotation.status = :status', { status: searchParams.status });
-      }
+    if (searchParams?.status && searchParams.status !== SearchRequestForQuotationStatusEnum.ALL) {
+      query.andWhere('request_for_quotation.status = :status', { status: searchParams.status });
     }
 
     if (pagination) {
@@ -209,15 +202,10 @@ export default class RequestForQuotationResolver {
   }
 
   @Mutation(() => Boolean)
-  async cancelRequestForQuotation(
+  async deleteRequestForQuotation(
     @Args('requestForQuotationId', { type: () => ID }) requestForQuotationId: string
   ): Promise<boolean> {
-    const requestForQuotation = await this.ds.manager.findOneByOrFail(RequestForQuotationEntity, {
-      id: requestForQuotationId,
-    });
-
-    requestForQuotation.status = RequestForQuotationStatusEnum.CANCELLED;
-    await this.ds.manager.save(requestForQuotation);
+    await this.ds.manager.delete(RequestForQuotationEntity, { id: requestForQuotationId });
 
     return true;
   }

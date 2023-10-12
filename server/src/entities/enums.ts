@@ -15,13 +15,7 @@ export enum PaymentMethodEnum {
   E_CHECK = 'e-check',
 }
 
-export enum PurchaseOrderStatusEnum {
-  ACTIVE = 'active',
-  CANCELLED = 'cancelled',
-}
-
 export enum RequestForQuotationStatusEnum {
   ANSWERED = 'answered',
-  CANCELLED = 'cancelled',
   UNANSWERED = 'unanswered',
 }

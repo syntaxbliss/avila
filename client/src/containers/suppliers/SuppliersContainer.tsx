@@ -26,7 +26,7 @@ import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
 import { MdAddCircleOutline, MdDelete, MdEdit, MdOutlineDelete } from 'react-icons/md';
 import { gql } from '../../__generated__';
-import { useMutation, useQuery } from '@apollo/client';
+import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { useCallback, useState } from 'react';
 import { QuerySortOrder, Supplier } from '../../__generated__/graphql';
 import { useQueryFilteringAndPagination } from '../../hooks';
@@ -99,16 +99,28 @@ export default function SuppliersContainer(): JSX.Element {
     onClose: () => setToDelete(undefined),
   });
 
-  const handleDeleteSupplierClick = useCallback(() => {
-    if (toDelete?.id) {
-      deleteSupplierMutation({
-        variables: { supplierId: toDelete.id },
-        onCompleted() {
-          toast({ description: 'Proveedor eliminado exitosamente.' });
-          deleteDialog.onClose();
-          suppliersQuery.refetch();
-        },
-      });
+  const handleDeleteSupplierClick = useCallback(async () => {
+    if (!toDelete?.id) {
+      return;
+    }
+
+    try {
+      await deleteSupplierMutation({ variables: { supplierId: toDelete.id } });
+
+      toast({ description: 'Proveedor eliminado exitosamente.' });
+      deleteDialog.onClose();
+      suppliersQuery.refetch();
+    } catch (error) {
+      if ((error as ApolloError).message.includes('foreign key constraint fails')) {
+        toast({
+          status: 'error',
+          description:
+            'El proveedor seleccionado no puede eliminarse por tener otros registros asociados.',
+        });
+        deleteDialog.onClose();
+      } else {
+        throw new Error();
+      }
     }
   }, [toDelete?.id, deleteSupplierMutation, toast, deleteDialog, suppliersQuery]);
 

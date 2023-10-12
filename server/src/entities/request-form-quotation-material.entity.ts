@@ -12,7 +12,7 @@ export default class RequestForQuotationMaterialEntity {
     requestForQuotation => requestForQuotation.materials,
     {
       nullable: false,
-      onDelete: 'RESTRICT',
+      onDelete: 'CASCADE',
     }
   )
   requestForQuotation: RequestForQuotationEntity;

@@ -24,13 +24,19 @@ import {
 } from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdClose, MdList, MdLocalShipping, MdPayments } from 'react-icons/md';
+import {
+  MdAddCircleOutline,
+  MdDelete,
+  MdList,
+  MdLocalShipping,
+  MdOutlineDelete,
+  MdPayments,
+} from 'react-icons/md';
 import { gql } from '../../__generated__';
-import { useMutation, useQuery } from '@apollo/client';
+import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { formatCurrency, humanReadableDate } from '../../helpers';
 import {
   PurchaseOrder,
-  PurchaseOrderStatus,
   QuerySortOrder,
   SearchPurchaseOrderDeliveryStatus,
   SearchPurchaseOrderPaymentStatus,
@@ -63,7 +69,6 @@ PurchaseOrdersContainer.gql = {
             deliveredAt
             totalAmount
             paidAmount
-            status
             supplier {
               id
               name
@@ -74,9 +79,9 @@ PurchaseOrdersContainer.gql = {
     `),
   },
   mutations: {
-    cancelPurchaseOrder: gql(`
-      mutation PurchaseOrdersContainerCancelPurchaseOrderMutation ($purchaseOrderId: ID!) {
-        cancelPurchaseOrder (purchaseOrderId: $purchaseOrderId)
+    deletePurchaseOrder: gql(`
+      mutation PurchaseOrdersContainerDeletePurchaseOrderMutation ($purchaseOrderId: ID!) {
+        deletePurchaseOrder (purchaseOrderId: $purchaseOrderId)
       }
     `),
   },
@@ -88,7 +93,6 @@ const defaultFilters: SearchParams = {
   supplierId: '',
   paymentStatus: SearchPurchaseOrderPaymentStatus.All,
   deliveryStatus: SearchPurchaseOrderDeliveryStatus.All,
-  status: PurchaseOrderStatus.Active,
   sortField: SearchPurchaseOrderQuerySortField.OrderedAt,
   sortOrder: QuerySortOrder.Desc,
 };
@@ -118,16 +122,16 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     },
   });
 
-  const [cancelPurchaseOrderMutation, cancelPurchaseOrderMutationStatus] = useMutation(
-    PurchaseOrdersContainer.gql.mutations.cancelPurchaseOrder
+  const [deletePurchaseOrderMutation, deletePurchaseOrderMutationStatus] = useMutation(
+    PurchaseOrdersContainer.gql.mutations.deletePurchaseOrder
   );
 
   const toast = useToast();
 
-  const [toCancel, setToCancel] = useState<Partial<PurchaseOrder>>();
-  const cancelDialog = useDisclosure({
-    isOpen: Boolean(toCancel),
-    onClose: () => setToCancel(undefined),
+  const [toDelete, setToDelete] = useState<Partial<PurchaseOrder>>();
+  const deleteDialog = useDisclosure({
+    isOpen: Boolean(toDelete),
+    onClose: () => setToDelete(undefined),
   });
 
   const [toFlagAsDelivered, setToFlagAsDelivered] = useState<PurchaseOrder>();
@@ -148,18 +152,28 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     onClose: () => setShowDetail(undefined),
   });
 
-  const handleCancelPurchaseOrderClick = useCallback(() => {
-    if (toCancel?.id) {
-      cancelPurchaseOrderMutation({
-        variables: { purchaseOrderId: toCancel.id },
-        onCompleted() {
-          toast({ description: 'Orden de compra anulada exitosamente.' });
-          cancelDialog.onClose();
-          purchaseOrdersQuery.refetch();
-        },
-      });
+  const handleDeletePurchaseOrderClick = useCallback(async () => {
+    if (toDelete?.id) {
+      try {
+        await deletePurchaseOrderMutation({ variables: { purchaseOrderId: toDelete.id } });
+
+        toast({ description: 'Orden de compra eliminada exitosamente.' });
+        deleteDialog.onClose();
+        purchaseOrdersQuery.refetch();
+      } catch (error) {
+        if ((error as ApolloError).message.includes('foreign key constraint fails')) {
+          toast({
+            status: 'error',
+            description:
+              'La orden de compra seleccionada no puede eliminarse por tener otros registros asociados.',
+          });
+          deleteDialog.onClose();
+        } else {
+          throw new Error();
+        }
+      }
     }
-  }, [cancelDialog, cancelPurchaseOrderMutation, purchaseOrdersQuery, toCancel, toast]);
+  }, [deleteDialog, deletePurchaseOrderMutation, purchaseOrdersQuery, toDelete, toast]);
 
   return (
     <>
@@ -218,14 +232,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
 
                   <Tbody>
                     {purchaseOrdersQuery.data.purchaseOrders.items.map(purchaseOrder => (
-                      <Tr
-                        key={purchaseOrder.id}
-                        bgColor={
-                          purchaseOrder.status === PurchaseOrderStatus.Cancelled
-                            ? 'red.200'
-                            : undefined
-                        }
-                      >
+                      <Tr key={purchaseOrder.id}>
                         <Td textAlign="center">{humanReadableDate(purchaseOrder.orderedAt)}</Td>
                         <Td textAlign="center">
                           {purchaseOrder.deliveredAt ? (
@@ -272,10 +279,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             size="xs"
                             ml="1"
                             onClick={() => setToFlagAsDelivered(purchaseOrder as PurchaseOrder)}
-                            isDisabled={
-                              purchaseOrder.status === PurchaseOrderStatus.Cancelled ||
-                              Boolean(purchaseOrder.deliveredAt)
-                            }
+                            isDisabled={Boolean(purchaseOrder.deliveredAt)}
                           />
 
                           <IconButton
@@ -286,21 +290,17 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             size="xs"
                             ml="1"
                             onClick={() => setToRegisterPayment(purchaseOrder as PurchaseOrder)}
-                            isDisabled={
-                              purchaseOrder.status === PurchaseOrderStatus.Cancelled ||
-                              purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0
-                            }
+                            isDisabled={purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0}
                           />
 
                           <IconButton
-                            aria-label="cancel"
+                            aria-label="delete"
                             colorScheme="red"
                             rounded="full"
-                            icon={<MdClose />}
+                            icon={<MdDelete />}
                             size="xs"
                             ml="1"
-                            onClick={() => setToCancel(purchaseOrder as PurchaseOrder)}
-                            isDisabled={purchaseOrder.status === PurchaseOrderStatus.Cancelled}
+                            onClick={() => setToDelete(purchaseOrder as PurchaseOrder)}
                           />
                         </Td>
                       </Tr>
@@ -317,27 +317,27 @@ export default function PurchaseOrdersContainer(): JSX.Element {
 
               <ConfirmationDialog
                 confirmButtonColorScheme="red"
-                confirmButtonIcon={<MdClose />}
-                confirmButtonText="Anular"
-                isLoading={cancelPurchaseOrderMutationStatus.loading}
-                isOpen={cancelDialog.isOpen}
-                onClose={cancelDialog.onClose}
-                onConfirm={handleCancelPurchaseOrderClick}
-                title="Anular orden de compra"
+                confirmButtonIcon={<MdOutlineDelete />}
+                confirmButtonText="Eliminar"
+                isLoading={deletePurchaseOrderMutationStatus.loading}
+                isOpen={deleteDialog.isOpen}
+                onClose={deleteDialog.onClose}
+                onConfirm={handleDeletePurchaseOrderClick}
+                title="Eliminar orden de compra"
               >
-                ¿Confirma que desea anular la siguiente orden de compra?
+                ¿Confirma que desea eliminar la siguiente orden de compra?
                 <br />
                 <br />
                 <Text>
-                  <b>Proveedor:</b> {toCancel?.supplier?.name}
+                  <b>Proveedor:</b> {toDelete?.supplier?.name}
                 </Text>
                 <Text>
-                  <b>Fecha de pedido:</b> {toCancel ? humanReadableDate(toCancel.orderedAt) : null}
+                  <b>Fecha de pedido:</b> {toDelete ? humanReadableDate(toDelete.orderedAt) : null}
                 </Text>
-                {toCancel?.deliveredAt && (
+                {toDelete?.deliveredAt && (
                   <Text>
                     <b>Fecha de entrega:</b>{' '}
-                    {toCancel ? humanReadableDate(toCancel.deliveredAt) : null}
+                    {toDelete ? humanReadableDate(toDelete.deliveredAt) : null}
                   </Text>
                 )}
               </ConfirmationDialog>

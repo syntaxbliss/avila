@@ -130,7 +130,7 @@ MaterialFormContent.gql = {
   },
   queries: {
     material: gql(`
-      query MaterialFormContentMaterialQuery($materialId: ID!) {
+      query MaterialFormContentMaterialQuery ($materialId: ID!) {
         material(materialId: $materialId) {
           id
           name
@@ -167,7 +167,9 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
     skip: !materialId,
     fetchPolicy: 'network-only',
   });
-  const { data: suppliersData } = useSuspenseQuery(MaterialFormContent.gql.queries.suppliers);
+  const { data: suppliersData } = useSuspenseQuery(MaterialFormContent.gql.queries.suppliers, {
+    fetchPolicy: 'network-only',
+  });
 
   const [createMaterialMutation, createMaterialMutationStatus] = useMutation(
     MaterialFormContent.gql.mutations.createMaterial
@@ -226,7 +228,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
   }, []);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -236,7 +238,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
 
       if (!validation.errors) {
         if (materialId) {
-          updateMaterialMutation({
+          await updateMaterialMutation({
             variables: {
               materialId,
               input: {
@@ -254,6 +256,14 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
                   ...formErrors,
                   code: 'Este código ya se encuentra registrado.',
                 }));
+              } else if (error.message.includes('foreign key constraint fails')) {
+                toast({
+                  status: 'error',
+                  description:
+                    'Alguno de los proveedores no puede desvincularse por tener otros registros asociados.',
+                });
+              } else {
+                throw new Error();
               }
             },
             onCompleted() {

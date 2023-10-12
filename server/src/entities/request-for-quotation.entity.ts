@@ -15,7 +15,6 @@ export default class RequestForQuotationEntity {
     requestForQuotationMaterial => requestForQuotationMaterial.requestForQuotation,
     {
       nullable: false,
-      onDelete: 'RESTRICT',
     }
   )
   materials: RequestForQuotationMaterialEntity[];

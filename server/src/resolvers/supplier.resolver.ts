@@ -1,5 +1,4 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GraphQLError } from 'graphql';
 import { SupplierEntity } from 'src/entities';
 import {
   PaginationInput,
@@ -94,21 +93,9 @@ export default class SupplierResolver {
   async deleteSupplier(
     @Args('supplierId', { type: () => ID }) supplierId: string
   ): Promise<boolean> {
-    return this.ds.transaction(async em => {
-      const supplier = await em.findOne(SupplierEntity, {
-        where: { id: supplierId },
-        relations: { materialSuppliers: true },
-      });
+    await this.ds.manager.delete(SupplierEntity, { id: supplierId });
 
-      if (!supplier) {
-        throw new GraphQLError('BAD_REQUEST');
-      }
-
-      await Promise.all(supplier.materialSuppliers.map(ms => em.softRemove(ms)));
-      await em.softRemove(supplier);
-
-      return true;
-    });
+    return true;
   }
 
   @ResolveField()

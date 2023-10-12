@@ -26,7 +26,7 @@ import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
 import { MdAddCircleOutline, MdDelete, MdEdit, MdOutlineDelete, MdShelves } from 'react-icons/md';
 import { gql } from '../../__generated__';
-import { useMutation, useQuery } from '@apollo/client';
+import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { formatMaterialQuantity } from '../../helpers';
 import { useCallback, useState } from 'react';
 import {
@@ -130,16 +130,28 @@ export default function MaterialsContainer(): JSX.Element {
     }
   }, []);
 
-  const handleDeleteMaterialClick = useCallback(() => {
-    if (toDelete?.id) {
-      deleteMaterialMutation({
-        variables: { materialId: toDelete.id },
-        onCompleted() {
-          toast({ description: 'Material eliminado exitosamente.' });
-          deleteDialog.onClose();
-          materialsQuery.refetch();
-        },
-      });
+  const handleDeleteMaterialClick = useCallback(async () => {
+    if (!toDelete?.id) {
+      return;
+    }
+
+    try {
+      await deleteMaterialMutation({ variables: { materialId: toDelete.id } });
+
+      toast({ description: 'Material eliminado exitosamente.' });
+      deleteDialog.onClose();
+      materialsQuery.refetch();
+    } catch (error) {
+      if ((error as ApolloError).message.includes('foreign key constraint fails')) {
+        toast({
+          status: 'error',
+          description:
+            'El material seleccionado no puede eliminarse por tener otros registros asociados.',
+        });
+        deleteDialog.onClose();
+      } else {
+        throw new Error();
+      }
     }
   }, [toDelete?.id, deleteMaterialMutation, toast, deleteDialog, materialsQuery]);
 

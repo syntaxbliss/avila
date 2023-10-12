@@ -40,8 +40,6 @@ export const createRequestForQuotationSchema = z.object({
 export enum SearchRequestForQuotationStatusEnum {
   ALL = 'all',
   ANSWERED = 'answered',
-  ANSWERED_AND_UNANSWERED = 'answered-and-unanswered',
-  CANCELLED = 'cancelled',
   UNANSWERED = 'unanswered',
 }
 registerEnumType(SearchRequestForQuotationStatusEnum, {

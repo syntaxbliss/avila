@@ -9,7 +9,7 @@ export default class PurchaseOrderPaymentEntity {
 
   @ManyToOne(() => PurchaseOrderEntity, purchaseOrder => purchaseOrder.payments, {
     nullable: false,
-    onDelete: 'RESTRICT',
+    onDelete: 'CASCADE',
   })
   purchaseOrder: PurchaseOrderEntity;
 

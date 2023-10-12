@@ -21,7 +21,6 @@ export const paymentMethodText: Record<PaymentMethod, string> = {
 
 export const requestForQuotationStatusText: Record<RequestForQuotationStatus, string> = {
   [RequestForQuotationStatus.Answered]: 'Contestado',
-  [RequestForQuotationStatus.Cancelled]: 'Cancelado',
   [RequestForQuotationStatus.Unanswered]: 'Sin contestar',
 };
 

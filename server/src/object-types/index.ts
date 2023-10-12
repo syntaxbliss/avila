@@ -1,14 +1,8 @@
 import { registerEnumType } from '@nestjs/graphql';
-import {
-  MeasureUnitEnum,
-  PaymentMethodEnum,
-  PurchaseOrderStatusEnum,
-  RequestForQuotationStatusEnum,
-} from 'src/entities';
+import { MeasureUnitEnum, PaymentMethodEnum, RequestForQuotationStatusEnum } from 'src/entities';
 
 registerEnumType(MeasureUnitEnum, { name: 'MeasureUnit' });
 registerEnumType(PaymentMethodEnum, { name: 'PaymentMethod' });
-registerEnumType(PurchaseOrderStatusEnum, { name: 'PurchaseOrderStatus' });
 registerEnumType(RequestForQuotationStatusEnum, { name: 'RequestForQuotationStatus' });
 
 export * from './commons';

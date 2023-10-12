@@ -95,7 +95,7 @@ SupplierFormContent.gql = {
   },
   queries: {
     supplier: gql(`
-      query SupplierFormContentSupplierQuery($supplierId: ID!) {
+      query SupplierFormContentSupplierQuery ($supplierId: ID!) {
         supplier(supplierId: $supplierId) {
           id
           name
@@ -114,6 +114,7 @@ type SupplierFormContentProps = {
 
 function SupplierFormContent({ supplierId }: SupplierFormContentProps): JSX.Element {
   const { data } = useSuspenseQuery(SupplierFormContent.gql.queries.supplier, {
+    fetchPolicy: 'network-only',
     variables: { supplierId: String(supplierId) },
     skip: !supplierId,
   });
