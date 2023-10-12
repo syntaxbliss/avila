@@ -103,6 +103,7 @@ type RequestForQuotation {
   status: RequestForQuotationStatus!
   materials: [RequestForQuotationMaterial!]!
   paymentMethod: PaymentMethod!
+  hasAssociatedPurchaseOrder: Boolean!
 }
 
 enum RequestForQuotationStatus {
@@ -235,6 +236,7 @@ input CreatePurchaseOrderInput {
   updateStock: Boolean!
   materials: [PurchaseOrderMaterialInput!]!
   payments: [PurchaseOrderPaymentInput!]
+  requestForQuotationId: ID
 }
 
 input PurchaseOrderMaterialInput {

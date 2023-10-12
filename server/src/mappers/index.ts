@@ -86,6 +86,7 @@ export const mapRequestForQuotationEntityToRequestForQuotation = (
   requestForQuotation.orderedAt = entity.orderedAt;
   requestForQuotation.paymentMethod = entity.paymentMethod;
   requestForQuotation.status = entity.status;
+  requestForQuotation.hasAssociatedPurchaseOrder = Boolean(entity.purchaseOrderId);
 
   return requestForQuotation;
 };

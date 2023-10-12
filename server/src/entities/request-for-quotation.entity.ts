@@ -1,6 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentMethodEnum, RequestForQuotationStatusEnum } from './enums';
 import RequestForQuotationMaterialEntity from './request-form-quotation-material.entity';
+import PurchaseOrderEntity from './purchase-order.entity';
 
 @Entity('request_for_quotation')
 export default class RequestForQuotationEntity {
@@ -28,4 +29,11 @@ export default class RequestForQuotationEntity {
     default: RequestForQuotationStatusEnum.UNANSWERED,
   })
   status: RequestForQuotationStatusEnum;
+
+  @OneToOne(() => PurchaseOrderEntity, { nullable: true, onDelete: 'RESTRICT' })
+  @JoinColumn()
+  purchaseOrder: PurchaseOrderEntity | null;
+
+  @Column('uuid', { nullable: true })
+  purchaseOrderId: string | null;
 }

@@ -24,7 +24,7 @@ import {
   RequestForQuotationMaterial,
   Supplier,
 } from 'src/object-types';
-import { DataSource, In } from 'typeorm';
+import { DataSource, In, IsNull } from 'typeorm';
 
 @Resolver(() => RequestForQuotation)
 export default class RequestForQuotationResolver {
@@ -62,7 +62,7 @@ export default class RequestForQuotationResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('request_for_quotation.materials', 'request_for_quotation_material')
-        .innerJoin('request_for_quotation_material.material_supplier', 'material_supplier')
+        .innerJoin('request_for_quotation_material.materialSupplier', 'material_supplier')
         .andWhere('material_supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,
         })
@@ -109,7 +109,7 @@ export default class RequestForQuotationResolver {
   @Query(() => [RequestForQuotation])
   async requestsForQuotationEligibleForPurchaseOrders() {
     const requestsForQuotation = await this.ds.manager.find(RequestForQuotationEntity, {
-      where: { status: RequestForQuotationStatusEnum.ANSWERED },
+      where: { status: RequestForQuotationStatusEnum.ANSWERED, purchaseOrderId: IsNull() },
       order: { orderedAt: 'DESC' },
       relations: { materials: { materialSupplier: { supplier: true } } },
     });

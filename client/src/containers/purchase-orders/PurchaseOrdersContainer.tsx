@@ -239,7 +239,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             humanReadableDate(purchaseOrder.deliveredAt)
                           ) : (
                             <Text color="red.500" fontWeight="bold">
-                              Sin entregar
+                              No entregada
                             </Text>
                           )}
                         </Td>

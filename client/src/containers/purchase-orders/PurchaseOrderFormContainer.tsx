@@ -54,6 +54,7 @@ PurchaseOrderFormContainer.gql = {
           id
           orderedAt
           paymentMethod
+          hasAssociatedPurchaseOrder
           supplier {
             id
             name
@@ -131,7 +132,9 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
       skip: !rfqId,
       variables: { requestForQuotationId: String(rfqId) },
       onCompleted(response) {
-        setGenerationData({ rfq: response.requestForQuotation as RequestForQuotation });
+        if (!response.requestForQuotation.hasAssociatedPurchaseOrder) {
+          setGenerationData({ rfq: response.requestForQuotation as RequestForQuotation });
+        }
       },
     }
   );
@@ -153,6 +156,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
         createPurchaseOrderMutation({
           variables: {
             input: {
+              requestForQuotationId: generationData?.rfq?.id,
               orderedAt: basicInfo.orderedAt,
               deliveredAt: 'deliveredAt' in basicInfo ? basicInfo.deliveredAt : undefined,
               deliveryNote: 'deliveryNote' in basicInfo ? basicInfo.deliveryNote : undefined,
@@ -169,7 +173,7 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
         });
       }
     },
-    [createPurchaseOrderMutation, toast, navigate]
+    [createPurchaseOrderMutation, toast, navigate, generationData?.rfq?.id]
   );
 
   if (requestForQuotationQuery.loading) {

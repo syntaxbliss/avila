@@ -8,6 +8,7 @@ import {
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
+  RequestForQuotationEntity,
 } from 'src/entities';
 import {
   CreatePurchaseOrderInput,
@@ -70,7 +71,7 @@ export default class PurchaseOrderResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('purchase_order.materials', 'purchase_order_material')
-        .innerJoin('purchase_order_material.material_supplier', 'material_supplier')
+        .innerJoin('purchase_order_material.materialSupplier', 'material_supplier')
         .andWhere('material_supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,
         })
@@ -126,6 +127,12 @@ export default class PurchaseOrderResolver {
     @Args('input') input: CreatePurchaseOrderInput
   ): Promise<PurchaseOrder> {
     const parsedData = createPurchaseorderSchema.parse(input);
+
+    const requestForQuotation = parsedData.requestForQuotationId
+      ? await this.ds.manager.findOneByOrFail(RequestForQuotationEntity, {
+          id: parsedData.requestForQuotationId,
+        })
+      : null;
 
     return this.ds.transaction(async em => {
       // purchase order
@@ -205,6 +212,12 @@ export default class PurchaseOrderResolver {
           }
         );
         await Promise.all(updatedMaterials.map(um => em.save(um)));
+      }
+
+      // request for quotation association
+      if (requestForQuotation) {
+        requestForQuotation.purchaseOrder = purchaseOrder;
+        await em.save(requestForQuotation);
       }
 
       return mapPurchaseOrderEntityToPurchaseOrder(purchaseOrder);

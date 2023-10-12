@@ -23,6 +23,9 @@ export class RequestForQuotation {
 
   @Field(() => PaymentMethodEnum)
   paymentMethod: PaymentMethodEnum;
+
+  @Field(() => Boolean)
+  hasAssociatedPurchaseOrder: boolean;
 }
 
 @ObjectType()

@@ -63,6 +63,9 @@ export class CreatePurchaseOrderInput {
 
   @Field(() => [PurchaseOrderPaymentInput], { nullable: true })
   payments: PurchaseOrderPaymentInput[] | null;
+
+  @Field(() => ID, { nullable: true })
+  requestForQuotationId: string | null;
 }
 export const createPurchaseorderSchema = z.object({
   orderedAt: z.date(),
@@ -72,6 +75,7 @@ export const createPurchaseorderSchema = z.object({
   updateStock: z.boolean(),
   materials: z.array(purchaseOrderMaterialSchema).min(1),
   payments: z.array(purchaseOrderPaymentSchema).optional(),
+  requestForQuotationId: z.string().trim().uuid().optional(),
 });
 
 export enum SearchPurchaseOrderPaymentStatusEnum {

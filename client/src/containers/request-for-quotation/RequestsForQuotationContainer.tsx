@@ -66,6 +66,7 @@ RequestsForQuotationContainer.gql = {
             orderedAt
             paymentMethod
             status
+            hasAssociatedPurchaseOrder
             supplier {
               id
               name
@@ -279,7 +280,9 @@ export default function RequestsForQuotationContainer(): JSX.Element {
                                 )
                               }
                               isDisabled={
-                                requestForQuotation.status === RequestForQuotationStatus.Unanswered
+                                requestForQuotation.status ===
+                                  RequestForQuotationStatus.Unanswered ||
+                                requestForQuotation.hasAssociatedPurchaseOrder
                               }
                             />
 
