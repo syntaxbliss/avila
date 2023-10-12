@@ -48,13 +48,7 @@ export default class SupplierLoader {
             throw new Error();
           }
 
-          return material.material_suppliers.reduce((acc, m_s) => {
-            if (!m_s.deletedAt) {
-              acc.push(mapSupplierEntityToSupplier(m_s.supplier));
-            }
-
-            return acc;
-          }, [] as Supplier[]);
+          return material.material_suppliers.map(m_s => mapSupplierEntityToSupplier(m_s.supplier));
         });
       },
       { cache: false }
@@ -121,20 +115,14 @@ export default class SupplierLoader {
     this.suppliersByMaterial.findOptions.order = order;
   }
 
-  setSupplierByPurchaseOrderOrder(
-    order: FindManyOptions<PurchaseOrderEntity>['order'],
-    includeDeleted = false
-  ) {
+  setSupplierByPurchaseOrderOrder(order: FindManyOptions<PurchaseOrderEntity>['order']) {
     this.supplierByPurchaseOrder.findOptions.order = order;
-    this.supplierByPurchaseOrder.findOptions.withDeleted = includeDeleted;
   }
 
   setSupplierByRequestForQuotationOrder(
-    order: FindManyOptions<RequestForQuotationEntity>['order'],
-    includeDeleted = false
+    order: FindManyOptions<RequestForQuotationEntity>['order']
   ) {
     this.supplierByRequestForQuotation.findOptions.order = order;
-    this.supplierByRequestForQuotation.findOptions.withDeleted = includeDeleted;
   }
 
   loadSuppliersByMaterial(id: string) {

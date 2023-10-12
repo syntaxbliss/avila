@@ -47,10 +47,6 @@ export default class RequestForQuotationMaterialLoader {
     this.requestForQuotationMaterialsByRequestForQuotation = { findOptions, loader };
   }
 
-  setRequestForQuotationMaterialsByRequestForQuotationOrder(includeDeleted = false) {
-    this.requestForQuotationMaterialsByRequestForQuotation.findOptions.withDeleted = includeDeleted;
-  }
-
   loadRequestForQuotationMaterialsByRequestForQuotation(id: string) {
     return this.requestForQuotationMaterialsByRequestForQuotation.loader.load(id);
   }

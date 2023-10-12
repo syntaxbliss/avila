@@ -25,7 +25,6 @@ export const mapMaterialEntityToMaterial = (entity: MaterialEntity): Material =>
   material.measureUnit = entity.measureUnit;
   material.currentQuantity = entity.currentQuantity;
   material.alertQuantity = entity.alertQuantity;
-  material.deletedAt = entity.deletedAt;
 
   return material;
 };
@@ -37,7 +36,6 @@ export const mapSupplierEntityToSupplier = (entity: SupplierEntity): Supplier =>
   supplier.address = entity.address;
   supplier.email = entity.email;
   supplier.phone = entity.phone;
-  supplier.deletedAt = entity.deletedAt;
 
   return supplier;
 };

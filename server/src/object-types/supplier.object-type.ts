@@ -19,9 +19,6 @@ export class Supplier {
   @Field(() => String, { nullable: true })
   phone: string | null;
 
-  @Field(() => Date, { nullable: true })
-  deletedAt: Date | null;
-
   @Field(() => [Material])
   materials: Material[];
 }

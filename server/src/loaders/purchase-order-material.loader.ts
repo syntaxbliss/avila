@@ -46,10 +46,6 @@ export default class PurchaseOrderMaterialLoader {
     this.purchaseOrderMaterialsByPurchaseOrder = { findOptions, loader };
   }
 
-  setPurchaseOrderMaterialsByPurchaseOrderOrder(includeDeleted = false) {
-    this.purchaseOrderMaterialsByPurchaseOrder.findOptions.withDeleted = includeDeleted;
-  }
-
   loadPurchaseOrderMaterialsByPurchaseOrder(id: string) {
     return this.purchaseOrderMaterialsByPurchaseOrder.loader.load(id);
   }

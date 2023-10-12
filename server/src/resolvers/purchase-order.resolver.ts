@@ -71,7 +71,6 @@ export default class PurchaseOrderResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('purchase_order.materials', 'purchase_order_material')
-        .withDeleted()
         .innerJoin('purchase_order_material.material_supplier', 'material__supplier')
         .andWhere('material__supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,

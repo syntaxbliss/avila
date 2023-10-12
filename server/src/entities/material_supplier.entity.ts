@@ -1,24 +1,27 @@
-import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import MaterialEntity from './material.entity';
 import SupplierEntity from './supplier.entity';
 
-@Entity('material__supplier')
-export default class Material_SupplierEntity {
+@Entity('material_supplier')
+export default class MaterialSupplierEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => MaterialEntity, material => material.material_suppliers, { nullable: false })
+  @ManyToOne(() => MaterialEntity, material => material.materialSuppliers, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
   material: MaterialEntity;
 
-  @Column()
+  @Column('uuid')
   materialId: string;
 
-  @ManyToOne(() => SupplierEntity, supplier => supplier.material_suppliers, { nullable: false })
+  @ManyToOne(() => SupplierEntity, supplier => supplier.materialSuppliers, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
   supplier: SupplierEntity;
 
-  @Column()
+  @Column('uuid')
   supplierId: string;
-
-  @DeleteDateColumn()
-  deletedAt: Date | null;
 }

@@ -1,4 +1,4 @@
-export enum MaterialMeasureUnitEnum {
+export enum MeasureUnitEnum {
   GR = 'gr',
   KG = 'kg',
   TN = 'tn',

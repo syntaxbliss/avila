@@ -106,6 +106,8 @@ export default class MaterialResolver {
     });
   }
 
+  // FIXME: @todo refactorizar. eliminar todos los suppliers del material y reasociarlo con los
+  // suppliers recibidos
   @Mutation(() => Material)
   async updateMaterial(
     @Args('materialId', { type: () => ID }) materialId: string,

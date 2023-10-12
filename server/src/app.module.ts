@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import {
   MaterialEntity,
-  Material_SupplierEntity,
+  MaterialSupplierEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
@@ -34,7 +34,7 @@ import RequestForQuotationMaterialResolver from './resolvers/request-for-quotati
 
 const entities = [
   MaterialEntity,
-  Material_SupplierEntity,
+  MaterialSupplierEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,

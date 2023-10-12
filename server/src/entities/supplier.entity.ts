@@ -1,5 +1,5 @@
-import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import Material_SupplierEntity from './material_supplier.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import MaterialSupplierEntity from './material_supplier.entity';
 
 @Entity('supplier')
 export default class SupplierEntity {
@@ -18,9 +18,6 @@ export default class SupplierEntity {
   @Column({ type: 'varchar', nullable: true })
   phone: string | null;
 
-  @OneToMany(() => Material_SupplierEntity, material_supplier => material_supplier.supplier)
-  material_suppliers: Material_SupplierEntity[];
-
-  @DeleteDateColumn()
-  deletedAt: Date | null;
+  @OneToMany(() => MaterialSupplierEntity, materialSupplier => materialSupplier.supplier)
+  materialSuppliers: MaterialSupplierEntity[];
 }

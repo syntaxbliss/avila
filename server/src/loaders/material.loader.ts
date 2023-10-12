@@ -48,13 +48,7 @@ export default class MaterialLoader {
             throw new Error();
           }
 
-          return supplier.material_suppliers.reduce((acc, m_s) => {
-            if (!m_s.deletedAt) {
-              acc.push(mapMaterialEntityToMaterial(m_s.material));
-            }
-
-            return acc;
-          }, [] as Material[]);
+          return supplier.material_suppliers.map(m_s => mapMaterialEntityToMaterial(m_s.material));
         });
       },
       { cache: false }
@@ -109,14 +103,6 @@ export default class MaterialLoader {
 
   setMaterialsBySupplierOrder(order: FindManyOptions<SupplierEntity>['order']) {
     this.materialsBySupplier.findOptions.order = order;
-  }
-
-  setMaterialByPurchaseOrderMaterialOrder(includeDeleted = false) {
-    this.materialByPurchaseOrderMaterial.findOptions.withDeleted = includeDeleted;
-  }
-
-  setMaterialByRequestForQuotationMaterialOrder(includeDeleted = false) {
-    this.materialByRequestForQuotationMaterial.findOptions.withDeleted = includeDeleted;
   }
 
   loadMaterialsBySupplier(id: string) {

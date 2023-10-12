@@ -25,9 +25,6 @@ export class Material {
 
   @Field(() => [Supplier])
   suppliers: Supplier[];
-
-  @Field(() => Date, { nullable: true })
-  deletedAt: Date | null;
 }
 
 @ObjectType()

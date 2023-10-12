@@ -62,7 +62,6 @@ export default class RequestForQuotationResolver {
     if (searchParams?.supplierId) {
       query
         .innerJoin('request_for_quotation.materials', 'request_for_quotation_material')
-        .withDeleted()
         .innerJoin('request_for_quotation_material.material_supplier', 'material__supplier')
         .andWhere('material__supplier.supplierId = :supplierId', {
           supplierId: searchParams.supplierId,

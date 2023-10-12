@@ -1,6 +1,6 @@
-import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { MaterialMeasureUnitEnum } from './enums';
-import Material_SupplierEntity from './material_supplier.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { MeasureUnitEnum } from './enums';
+import MaterialSupplierEntity from './material_supplier.entity';
 
 @Entity('material')
 export default class MaterialEntity {
@@ -13,8 +13,8 @@ export default class MaterialEntity {
   @Column({ unique: true })
   code: string;
 
-  @Column({ type: 'enum', enum: MaterialMeasureUnitEnum })
-  measureUnit: MaterialMeasureUnitEnum;
+  @Column({ type: 'enum', enum: MeasureUnitEnum })
+  measureUnit: MeasureUnitEnum;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   currentQuantity: number | null;
@@ -22,9 +22,6 @@ export default class MaterialEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   alertQuantity: number | null;
 
-  @OneToMany(() => Material_SupplierEntity, material_supplier => material_supplier.material)
-  material_suppliers: Material_SupplierEntity[];
-
-  @DeleteDateColumn()
-  deletedAt: Date | null;
+  @OneToMany(() => MaterialSupplierEntity, materialSupplier => materialSupplier.material)
+  materialSuppliers: MaterialSupplierEntity[];
 }
