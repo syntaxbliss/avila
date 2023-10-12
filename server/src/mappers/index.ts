@@ -1,5 +1,7 @@
 import {
   MaterialEntity,
+  PartEntity,
+  PartMaterialEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
@@ -9,6 +11,8 @@ import {
 } from 'src/entities';
 import {
   Material,
+  Part,
+  PartMaterial,
   PurchaseOrder,
   PurchaseOrderMaterial,
   PurchaseOrderPayment,
@@ -100,4 +104,21 @@ export const mapRequestForQuotationMaterialEntityToRequestForQuotationMaterial =
   requestForQuotationMaterial.materialId = entity.materialSupplier.materialId;
 
   return requestForQuotationMaterial;
+};
+
+export const mapPartEntityToPart = (entity: PartEntity): Part => {
+  const part = new Part();
+  part.id = entity.id;
+  part.name = entity.name;
+  part.code = entity.code;
+
+  return part;
+};
+
+export const mapPartMaterialEntityToPartMaterial = (entity: PartMaterialEntity): PartMaterial => {
+  const partMaterial = new PartMaterial();
+  partMaterial.id = entity.id;
+  partMaterial.quantity = entity.quantity;
+
+  return partMaterial;
 };

@@ -46,6 +46,19 @@ type PaginatedMaterials {
   paginationInfo: PaginationInfo!
 }
 
+type PartMaterial {
+  id: ID!
+  material: Material!
+  quantity: Float!
+}
+
+type Part {
+  id: ID!
+  name: String!
+  code: String!
+  materials: [PartMaterial!]!
+}
+
 type PurchaseOrderMaterial {
   material: Material!
   quantity: Float!
@@ -202,6 +215,7 @@ type Mutation {
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
   updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
+  createPart(input: CreatePartInput!): Part!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
   deletePurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!
@@ -224,6 +238,17 @@ input SaveMaterialInput {
 }
 
 input UpdateMaterialQuantityInput {
+  materialId: ID!
+  quantity: Float!
+}
+
+input CreatePartInput {
+  name: String!
+  code: String!
+  materials: [PartMaterialInput!]!
+}
+
+input PartMaterialInput {
   materialId: ID!
   quantity: Float!
 }

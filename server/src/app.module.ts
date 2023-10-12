@@ -20,6 +20,8 @@ import {
 } from './entities';
 import {
   MaterialResolver,
+  PartMaterialResolver,
+  PartResolver,
   PurchaseOrderMaterialResolver,
   PurchaseOrderResolver,
   RequestForQuotationResolver,
@@ -27,6 +29,7 @@ import {
 } from './resolvers';
 import {
   MaterialLoader,
+  PartMaterialLoader,
   PurchaseOrderMaterialLoader,
   PurchaseOrderPaymentLoader,
   RequestForQuotationMaterialLoader,
@@ -48,6 +51,8 @@ const entities = [
 ];
 const resolvers = [
   MaterialResolver,
+  PartMaterialResolver,
+  PartResolver,
   PurchaseOrderMaterialResolver,
   PurchaseOrderResolver,
   RequestForQuotationMaterialResolver,
@@ -56,6 +61,7 @@ const resolvers = [
 ];
 const loaders = [
   MaterialLoader,
+  PartMaterialLoader,
   PurchaseOrderMaterialLoader,
   PurchaseOrderPaymentLoader,
   RequestForQuotationMaterialLoader,

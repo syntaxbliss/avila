@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as DataLoader from 'dataloader';
-import { MaterialEntity, SupplierEntity } from 'src/entities';
+import { MaterialEntity, PartMaterialEntity, SupplierEntity } from 'src/entities';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
 import { Material } from 'src/object-types';
 import { DataSource, FindManyOptions, In } from 'typeorm';
@@ -22,10 +22,15 @@ export default class MaterialLoader {
     findOptions: FindManyOptions<MaterialEntity>;
   };
 
+  private materialByPartMaterial: {
+    loader: DataLoader<string, Material>;
+  };
+
   constructor(private readonly ds: DataSource) {
     this.createMaterialsBySupplierLoader();
     this.createMaterialByPurchaseOrderMaterialLoader();
     this.createMaterialByRequestForQuotationMaterialLoader();
+    this.createMaterialByPartMaterialLoader();
   }
 
   private createMaterialsBySupplierLoader() {
@@ -101,6 +106,30 @@ export default class MaterialLoader {
     this.materialByRequestForQuotationMaterial = { findOptions, loader };
   }
 
+  private createMaterialByPartMaterialLoader() {
+    const loader = new DataLoader(
+      async (ids: readonly string[]) => {
+        const partMaterials = await this.ds.manager.find(PartMaterialEntity, {
+          where: { id: In(ids) },
+          relations: { material: true },
+        });
+
+        return ids.map(id => {
+          const partMaterial = partMaterials.find(pm => pm.id === id);
+
+          if (!partMaterial) {
+            throw new Error();
+          }
+
+          return mapMaterialEntityToMaterial(partMaterial.material);
+        });
+      },
+      { cache: false }
+    );
+
+    this.materialByPartMaterial = { loader };
+  }
+
   setMaterialsBySupplierOrder(order: FindManyOptions<SupplierEntity>['order']) {
     this.materialsBySupplier.findOptions.order = order;
   }
@@ -115,5 +144,9 @@ export default class MaterialLoader {
 
   loadMaterialByRequestForQuotationMaterial(id: string) {
     return this.materialByRequestForQuotationMaterial.loader.load(id);
+  }
+
+  loadMaterialByPartMaterial(id: string): Promise<Material> {
+    return this.materialByPartMaterial.loader.load(id);
   }
 }

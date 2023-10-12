@@ -7,6 +7,8 @@ registerEnumType(RequestForQuotationStatusEnum, { name: 'RequestForQuotationStat
 
 export * from './commons';
 export * from './material.object-type';
+export * from './part-material.object-type';
+export * from './part.object-type';
 export * from './purchase-order-material.object-type';
 export * from './purchase-order-payment.object-type';
 export * from './purchase-order.object-type';
