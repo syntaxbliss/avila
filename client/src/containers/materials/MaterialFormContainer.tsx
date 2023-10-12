@@ -19,12 +19,12 @@ import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
-import { MaterialMeasureUnit } from '../../__generated__/graphql';
+import { MeasureUnit } from '../../__generated__/graphql';
 
 type FormState = {
   name: string;
   code: string;
-  measureUnit: MaterialMeasureUnit | '';
+  measureUnit: MeasureUnit | '';
   stockable: boolean;
   currentQuantity: string;
   alertQuantity: string;
@@ -36,7 +36,7 @@ const formSchema = z
     name: validationRules.string(true, 1, 250),
     code: validationRules.string(true, 1, 20),
     stockable: z.boolean(),
-    measureUnit: validationRules.enum(MaterialMeasureUnit),
+    measureUnit: validationRules.enum(MeasureUnit),
     currentQuantity: validationRules.decimal(0, 99999999.99, false),
     alertQuantity: validationRules.decimal(0, 99999999.99, false),
     suppliers: z.array(z.string().trim().uuid()),
@@ -242,7 +242,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
               input: {
                 code: validation.data.code,
                 name: validation.data.name,
-                measureUnit: validation.data.measureUnit as MaterialMeasureUnit,
+                measureUnit: validation.data.measureUnit as MeasureUnit,
                 currentQuantity: validation.data.currentQuantity,
                 alertQuantity: validation.data.alertQuantity,
                 suppliers: validation.data.suppliers,
@@ -267,7 +267,7 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
               input: {
                 code: validation.data.code,
                 name: validation.data.name,
-                measureUnit: validation.data.measureUnit as MaterialMeasureUnit,
+                measureUnit: validation.data.measureUnit as MeasureUnit,
                 currentQuantity: validation.data.currentQuantity,
                 alertQuantity: validation.data.alertQuantity,
                 suppliers: validation.data.suppliers,

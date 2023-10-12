@@ -5,7 +5,7 @@ import { Container, Flex, Text, useToast } from '@chakra-ui/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { validationRules } from '../../validation/rules';
 import { z } from 'zod';
-import { materialMeasureUnitAbbreviationText } from '../../helpers';
+import { measureUnitAbbreviationText } from '../../helpers';
 import { gql } from '../../__generated__';
 import { useMutation } from '@apollo/client';
 
@@ -103,7 +103,7 @@ export default function MaterialsContainerUpdateStockForm({
               <FormInputNumber value={quantity} onChange={e => setQuantity(e)} />
 
               <Text ml="2" mt="2">
-                {materialMeasureUnitAbbreviationText[material.measureUnit]}
+                {measureUnitAbbreviationText[material.measureUnit]}
               </Text>
             </Flex>
           </Container>

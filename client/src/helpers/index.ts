@@ -1,18 +1,14 @@
 import _ from 'lodash';
-import {
-  MaterialMeasureUnit,
-  PaymentMethod,
-  RequestForQuotationStatus,
-} from '../__generated__/graphql';
+import { MeasureUnit, PaymentMethod, RequestForQuotationStatus } from '../__generated__/graphql';
 import dayjs from 'dayjs';
 
-export const materialMeasureUnitAbbreviationText: Record<MaterialMeasureUnit, string> = {
-  [MaterialMeasureUnit.Gr]: 'gr',
-  [MaterialMeasureUnit.Kg]: 'kg',
-  [MaterialMeasureUnit.Tn]: 'tn',
-  [MaterialMeasureUnit.Lt]: 'lt',
-  [MaterialMeasureUnit.Mt]: 'mt',
-  [MaterialMeasureUnit.Unit]: 'un',
+export const measureUnitAbbreviationText: Record<MeasureUnit, string> = {
+  [MeasureUnit.Gr]: 'gr',
+  [MeasureUnit.Kg]: 'kg',
+  [MeasureUnit.Tn]: 'tn',
+  [MeasureUnit.Lt]: 'lt',
+  [MeasureUnit.Mt]: 'mt',
+  [MeasureUnit.Unit]: 'un',
 };
 
 export const paymentMethodText: Record<PaymentMethod, string> = {
@@ -33,14 +29,14 @@ const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', cu
 
 export const formatMaterialQuantity = (
   quantity: number | null | undefined,
-  measureUnit: MaterialMeasureUnit
+  measureUnit: MeasureUnit
 ) => {
   if (_.isNull(quantity) || _.isUndefined(quantity)) {
     return null;
   }
 
   return `${currencyFormatter.format(quantity).substring(2)} ${
-    materialMeasureUnitAbbreviationText[measureUnit]
+    measureUnitAbbreviationText[measureUnit]
   }`;
 };
 

@@ -21,9 +21,9 @@ import { useQuery, useSuspenseQuery } from '@apollo/client';
 import { z } from 'zod';
 import { validationRules } from '../../validation/rules';
 import { Divider, Grid, GridItem, IconButton, Text, useDisclosure } from '@chakra-ui/react';
-import { Material, MaterialMeasureUnit } from '../../__generated__/graphql';
+import { Material, MeasureUnit } from '../../__generated__/graphql';
 import { MdAdd, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
-import { materialMeasureUnitAbbreviationText } from '../../helpers';
+import { measureUnitAbbreviationText } from '../../helpers';
 import { gql } from '../../__generated__';
 import _ from 'lodash';
 
@@ -271,7 +271,7 @@ const RequestForQuotationFormContainerMaterialsContent =
                 if (material) {
                   acc.push({
                     code: material.code as string,
-                    measureUnit: material.measureUnit as MaterialMeasureUnit,
+                    measureUnit: material.measureUnit as MeasureUnit,
                     name: material.name as string,
                     quantity: m.quantity,
                   });
@@ -308,8 +308,8 @@ const RequestForQuotationFormContainerMaterialsContent =
 
             <Text flex={0} minW="25px" textAlign="right" mt="8">
               {materialsByMaterialId[form.materialId]?.measureUnit &&
-                materialMeasureUnitAbbreviationText[
-                  materialsByMaterialId[form.materialId].measureUnit as MaterialMeasureUnit
+                measureUnitAbbreviationText[
+                  materialsByMaterialId[form.materialId].measureUnit as MeasureUnit
                 ]}
             </Text>
           </GridItem>

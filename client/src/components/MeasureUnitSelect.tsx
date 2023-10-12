@@ -1,7 +1,7 @@
-import { MaterialMeasureUnit } from '../__generated__/graphql';
+import { MeasureUnit } from '../__generated__/graphql';
 import FormSelect, { FormSelectOption } from './FormSelect';
 
-type ValueType = MaterialMeasureUnit | '';
+type ValueType = MeasureUnit | '';
 
 type FormSelectProps = React.ComponentProps<typeof FormSelect>;
 
@@ -10,16 +10,16 @@ type Props = Omit<FormSelectProps, 'value' | 'onChange' | 'options'> & {
   value: ValueType;
 };
 
-const descriptionByUnit: Record<MaterialMeasureUnit, string> = {
-  [MaterialMeasureUnit.Gr]: 'Gramos [gr]',
-  [MaterialMeasureUnit.Kg]: 'Kilogramos [kg]',
-  [MaterialMeasureUnit.Tn]: 'Toneladas [tn]',
-  [MaterialMeasureUnit.Lt]: 'Litros [lt]',
-  [MaterialMeasureUnit.Mt]: 'Metros [mt]',
-  [MaterialMeasureUnit.Unit]: 'Unidades [un]',
+const descriptionByUnit: Record<MeasureUnit, string> = {
+  [MeasureUnit.Gr]: 'Gramos [gr]',
+  [MeasureUnit.Kg]: 'Kilogramos [kg]',
+  [MeasureUnit.Tn]: 'Toneladas [tn]',
+  [MeasureUnit.Lt]: 'Litros [lt]',
+  [MeasureUnit.Mt]: 'Metros [mt]',
+  [MeasureUnit.Unit]: 'Unidades [un]',
 };
 
-const options: FormSelectOption[] = Object.values(MaterialMeasureUnit).map(unit => ({
+const options: FormSelectOption[] = Object.values(MeasureUnit).map(unit => ({
   label: descriptionByUnit[unit],
   value: unit,
 }));

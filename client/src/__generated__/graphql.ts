@@ -40,14 +40,13 @@ export type Material = {
   alertQuantity?: Maybe<Scalars['Float']['output']>;
   code: Scalars['String']['output'];
   currentQuantity?: Maybe<Scalars['Float']['output']>;
-  deletedAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
-  measureUnit: MaterialMeasureUnit;
+  measureUnit: MeasureUnit;
   name: Scalars['String']['output'];
   suppliers: Array<Supplier>;
 };
 
-export enum MaterialMeasureUnit {
+export enum MeasureUnit {
   Gr = 'GR',
   Kg = 'KG',
   Lt = 'LT',
@@ -300,7 +299,6 @@ export type QuerySupplierArgs = {
 
 
 export type QuerySuppliersArgs = {
-  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
   pagination?: InputMaybe<PaginationInput>;
   searchParams?: InputMaybe<SearchSupplierInput>;
 };
@@ -347,7 +345,7 @@ export type SaveMaterialInput = {
   alertQuantity?: InputMaybe<Scalars['Float']['input']>;
   code: Scalars['String']['input'];
   currentQuantity?: InputMaybe<Scalars['Float']['input']>;
-  measureUnit: MaterialMeasureUnit;
+  measureUnit: MeasureUnit;
   name: Scalars['String']['input'];
   suppliers: Array<Scalars['ID']['input']>;
 };
@@ -428,7 +426,6 @@ export type SearchSupplierInput = {
 export type Supplier = {
   __typename?: 'Supplier';
   address?: Maybe<Scalars['String']['output']>;
-  deletedAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   materials: Array<Material>;
@@ -446,7 +443,7 @@ export type MaterialFormContentCreateMaterialMutationMutationVariables = Exact<{
 }>;
 
 
-export type MaterialFormContentCreateMaterialMutationMutation = { __typename?: 'Mutation', createMaterial: { __typename?: 'Material', id: string, name: string, code: string, measureUnit: MaterialMeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null, suppliers: Array<{ __typename?: 'Supplier', id: string }> } };
+export type MaterialFormContentCreateMaterialMutationMutation = { __typename?: 'Mutation', createMaterial: { __typename?: 'Material', id: string, name: string, code: string, measureUnit: MeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null, suppliers: Array<{ __typename?: 'Supplier', id: string }> } };
 
 export type MaterialFormContentUpdateMaterialMutationMutationVariables = Exact<{
   materialId: Scalars['ID']['input'];
@@ -454,14 +451,14 @@ export type MaterialFormContentUpdateMaterialMutationMutationVariables = Exact<{
 }>;
 
 
-export type MaterialFormContentUpdateMaterialMutationMutation = { __typename?: 'Mutation', updateMaterial: { __typename?: 'Material', id: string, name: string, code: string, measureUnit: MaterialMeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null, suppliers: Array<{ __typename?: 'Supplier', id: string }> } };
+export type MaterialFormContentUpdateMaterialMutationMutation = { __typename?: 'Mutation', updateMaterial: { __typename?: 'Material', id: string, name: string, code: string, measureUnit: MeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null, suppliers: Array<{ __typename?: 'Supplier', id: string }> } };
 
 export type MaterialFormContentMaterialQueryQueryVariables = Exact<{
   materialId: Scalars['ID']['input'];
 }>;
 
 
-export type MaterialFormContentMaterialQueryQuery = { __typename?: 'Query', material: { __typename?: 'Material', id: string, name: string, code: string, measureUnit: MaterialMeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null, suppliers: Array<{ __typename?: 'Supplier', id: string }> } };
+export type MaterialFormContentMaterialQueryQuery = { __typename?: 'Query', material: { __typename?: 'Material', id: string, name: string, code: string, measureUnit: MeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null, suppliers: Array<{ __typename?: 'Supplier', id: string }> } };
 
 export type MaterialFormContentSuppliersQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -474,7 +471,7 @@ export type MaterialsContainerMaterialsQueryQueryVariables = Exact<{
 }>;
 
 
-export type MaterialsContainerMaterialsQueryQuery = { __typename?: 'Query', materials: { __typename?: 'PaginatedMaterials', paginationInfo: { __typename?: 'PaginationInfo', count: number, pageNumber: number, pageSize: number }, items: Array<{ __typename?: 'Material', id: string, name: string, code: string, measureUnit: MaterialMeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null }> } };
+export type MaterialsContainerMaterialsQueryQuery = { __typename?: 'Query', materials: { __typename?: 'PaginatedMaterials', paginationInfo: { __typename?: 'PaginationInfo', count: number, pageNumber: number, pageSize: number }, items: Array<{ __typename?: 'Material', id: string, name: string, code: string, measureUnit: MeasureUnit, currentQuantity?: number | null, alertQuantity?: number | null }> } };
 
 export type MaterialsContainerDeleteMaterialMutationMutationVariables = Exact<{
   materialId: Scalars['ID']['input'];
@@ -495,7 +492,7 @@ export type PurchaseOrderFormContainerRequestForQuotationQueryQueryVariables = E
 }>;
 
 
-export type PurchaseOrderFormContainerRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MaterialMeasureUnit } }> } };
+export type PurchaseOrderFormContainerRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MeasureUnit } }> } };
 
 export type PurchaseOrderFormContainerCreatePurchaseOrderMutationMutationVariables = Exact<{
   input: CreatePurchaseOrderInput;
@@ -507,7 +504,7 @@ export type PurchaseOrderFormContainerCreatePurchaseOrderMutationMutation = { __
 export type EligibleRequestsForQuotationListRequestsForQuotationEligibleForPurchaseOrdersQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type EligibleRequestsForQuotationListRequestsForQuotationEligibleForPurchaseOrdersQueryQuery = { __typename?: 'Query', requestsForQuotationEligibleForPurchaseOrders: Array<{ __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MaterialMeasureUnit } }> }> };
+export type EligibleRequestsForQuotationListRequestsForQuotationEligibleForPurchaseOrdersQueryQuery = { __typename?: 'Query', requestsForQuotationEligibleForPurchaseOrders: Array<{ __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MeasureUnit } }> }> };
 
 export type PurchaseOrderFormContainerMaterialsContentSuppliersQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -519,7 +516,7 @@ export type PurchaseOrderFormContainerMaterialsContentSupplierQueryQueryVariable
 }>;
 
 
-export type PurchaseOrderFormContainerMaterialsContentSupplierQueryQuery = { __typename?: 'Query', supplier: { __typename?: 'Supplier', id: string, materials: Array<{ __typename?: 'Material', id: string, code: string, name: string, measureUnit: MaterialMeasureUnit }> } };
+export type PurchaseOrderFormContainerMaterialsContentSupplierQueryQuery = { __typename?: 'Query', supplier: { __typename?: 'Supplier', id: string, materials: Array<{ __typename?: 'Material', id: string, code: string, name: string, measureUnit: MeasureUnit }> } };
 
 export type PurchaseOrdersContainerPurchaseOrdersQueryQueryVariables = Exact<{
   searchParams?: InputMaybe<SearchPurchaseOrderInput>;
@@ -541,14 +538,12 @@ export type PurchaseOrdersContainerDetailContentPuchaseOrderQueryQueryVariables 
 }>;
 
 
-export type PurchaseOrdersContainerDetailContentPuchaseOrderQueryQuery = { __typename?: 'Query', purchaseOrder: { __typename?: 'PurchaseOrder', id: string, orderedAt: any, deliveredAt?: any | null, deliveryNote?: string | null, totalAmount: number, paidAmount: number, supplier: { __typename?: 'Supplier', name: string }, materials: Array<{ __typename?: 'PurchaseOrderMaterial', quantity: number, unitPrice: number, material: { __typename?: 'Material', code: string, name: string, measureUnit: MaterialMeasureUnit } }>, payments?: Array<{ __typename?: 'PurchaseOrderPayment', id: string, method: PaymentMethod, amount: number, paidAt: any, notes?: string | null }> | null } };
+export type PurchaseOrdersContainerDetailContentPuchaseOrderQueryQuery = { __typename?: 'Query', purchaseOrder: { __typename?: 'PurchaseOrder', id: string, orderedAt: any, deliveredAt?: any | null, deliveryNote?: string | null, totalAmount: number, paidAmount: number, supplier: { __typename?: 'Supplier', name: string }, materials: Array<{ __typename?: 'PurchaseOrderMaterial', quantity: number, unitPrice: number, material: { __typename?: 'Material', code: string, name: string, measureUnit: MeasureUnit } }>, payments?: Array<{ __typename?: 'PurchaseOrderPayment', id: string, method: PaymentMethod, amount: number, paidAt: any, notes?: string | null }> | null } };
 
-export type SuppliersSelectSuppliersQueryQueryVariables = Exact<{
-  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
-}>;
+export type SuppliersSelectSuppliersQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SuppliersSelectSuppliersQueryQuery = { __typename?: 'Query', suppliers: { __typename?: 'PaginatedSuppliers', items: Array<{ __typename?: 'Supplier', id: string, name: string, deletedAt?: any | null }> } };
+export type SuppliersSelectSuppliersQueryQuery = { __typename?: 'Query', suppliers: { __typename?: 'PaginatedSuppliers', items: Array<{ __typename?: 'Supplier', id: string, name: string }> } };
 
 export type PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationMutationVariables = Exact<{
   purchaseOrderId: Scalars['ID']['input'];
@@ -586,14 +581,14 @@ export type RequestForQuotationAnswerFormContentRequestForQuotationQueryQueryVar
 }>;
 
 
-export type RequestForQuotationAnswerFormContentRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MaterialMeasureUnit } }> } };
+export type RequestForQuotationAnswerFormContentRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', id: string, name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, material: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MeasureUnit } }> } };
 
 export type RequestForQuotationContainerDetailRequestForQuotationQueryQueryVariables = Exact<{
   requestForQuotationId: Scalars['ID']['input'];
 }>;
 
 
-export type RequestForQuotationContainerDetailRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', code: string, name: string, measureUnit: MaterialMeasureUnit } }> } };
+export type RequestForQuotationContainerDetailRequestForQuotationQueryQuery = { __typename?: 'Query', requestForQuotation: { __typename?: 'RequestForQuotation', id: string, orderedAt: any, paymentMethod: PaymentMethod, supplier: { __typename?: 'Supplier', name: string }, materials: Array<{ __typename?: 'RequestForQuotationMaterial', quantity: number, unitPrice?: number | null, material: { __typename?: 'Material', code: string, name: string, measureUnit: MeasureUnit } }> } };
 
 export type RequestForQuotationFormContainerCreateRequestForQuotationMutationMutationVariables = Exact<{
   input: CreateRequestForQuotationInput;
@@ -612,7 +607,7 @@ export type RequestForQuotationFormContainerMaterialsContentSupplierQueryQueryVa
 }>;
 
 
-export type RequestForQuotationFormContainerMaterialsContentSupplierQueryQuery = { __typename?: 'Query', supplier: { __typename?: 'Supplier', id: string, materials: Array<{ __typename?: 'Material', id: string, code: string, name: string, measureUnit: MaterialMeasureUnit }> } };
+export type RequestForQuotationFormContainerMaterialsContentSupplierQueryQuery = { __typename?: 'Query', supplier: { __typename?: 'Supplier', id: string, materials: Array<{ __typename?: 'Material', id: string, code: string, name: string, measureUnit: MeasureUnit }> } };
 
 export type RequestsForQuotationContainerRequestsForQuotationQueryQueryVariables = Exact<{
   searchParams?: InputMaybe<SearchRequestForQuotationInput>;
@@ -682,7 +677,7 @@ export const PurchaseOrderFormContainerMaterialsContentSupplierQueryDocument = {
 export const PurchaseOrdersContainerPurchaseOrdersQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseOrdersContainerPurchaseOrdersQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchPurchaseOrderInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseOrders"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchParams"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paginationInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"pageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveredAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"paidAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerPurchaseOrdersQueryQuery, PurchaseOrdersContainerPurchaseOrdersQueryQueryVariables>;
 export const PurchaseOrdersContainerCancelPurchaseOrderMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PurchaseOrdersContainerCancelPurchaseOrderMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelPurchaseOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}}]}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerCancelPurchaseOrderMutationMutation, PurchaseOrdersContainerCancelPurchaseOrderMutationMutationVariables>;
 export const PurchaseOrdersContainerDetailContentPuchaseOrderQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseOrdersContainerDetailContentPuchaseOrderQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"orderedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveredAt"}},{"kind":"Field","name":{"kind":"Name","value":"deliveryNote"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"paidAmount"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"material"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"paidAt"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerDetailContentPuchaseOrderQueryQuery, PurchaseOrdersContainerDetailContentPuchaseOrderQueryQueryVariables>;
-export const SuppliersSelectSuppliersQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SuppliersSelectSuppliersQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"includeDeleted"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"includeDeleted"},"value":{"kind":"Variable","name":{"kind":"Name","value":"includeDeleted"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}}]}}]}}]}}]} as unknown as DocumentNode<SuppliersSelectSuppliersQueryQuery, SuppliersSelectSuppliersQueryQueryVariables>;
+export const SuppliersSelectSuppliersQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SuppliersSelectSuppliersQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<SuppliersSelectSuppliersQueryQuery, SuppliersSelectSuppliersQueryQueryVariables>;
 export const PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PurchaseOrderDeliveredInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseOrderDelivered"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationMutation, PurchaseOrdersContainerOrderDeliveredFormPurchaseOrderDeliveredMutationMutationVariables>;
 export const PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"purchaseOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"paidAt"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQueryQuery, PurchaseOrdersContainerRegisterPaymentFormPurchaseOrderPaymentsQueryQueryVariables>;
 export const PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PurchaseOrderPaymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerPurchaseOrderPayment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"purchaseOrderId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"purchaseOrderId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationMutation, PurchaseOrdersContainerRegisterPaymentFormRegisterPurchaseOrderPaymentMutationMutationVariables>;

@@ -9,14 +9,14 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { MaterialMeasureUnit } from '../__generated__/graphql';
+import { MeasureUnit } from '../__generated__/graphql';
 import { formatCurrency, formatMaterialQuantity } from '../helpers';
 import { MdDelete } from 'react-icons/md';
 import { useCallback, useMemo } from 'react';
 
 export type RequestForQuotationMaterialsTableRow = {
   code: string;
-  measureUnit: MaterialMeasureUnit;
+  measureUnit: MeasureUnit;
   name: string;
   quantity: number;
   unitPrice?: number;

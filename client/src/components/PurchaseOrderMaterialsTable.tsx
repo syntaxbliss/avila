@@ -14,13 +14,13 @@ import {
   formatCurrency,
   formatMaterialQuantity,
 } from '../helpers';
-import { MaterialMeasureUnit } from '../__generated__/graphql';
+import { MeasureUnit } from '../__generated__/graphql';
 import { useMemo } from 'react';
 import { MdDelete } from 'react-icons/md';
 
 export type PurchaseOrderMaterialsTableRow = {
   code: string;
-  measureUnit: MaterialMeasureUnit;
+  measureUnit: MeasureUnit;
   name: string;
   quantity: number;
   unitPrice: number;

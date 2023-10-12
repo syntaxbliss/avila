@@ -116,12 +116,11 @@ export default function RequestsForQuotationContainerFilters({
 SuppliersSelect.gql = {
   queries: {
     suppliers: gql(`
-      query SuppliersSelectSuppliersQuery ($includeDeleted: Boolean) {
-        suppliers (includeDeleted: $includeDeleted) {
+      query SuppliersSelectSuppliersQuery {
+        suppliers {
           items {
             id
             name
-            deletedAt
           }
         }
       }
@@ -137,14 +136,10 @@ type SuppliersSelectProps = {
 function SuppliersSelect({ onChange, supplierId }: SuppliersSelectProps): JSX.Element {
   const { data } = useSuspenseQuery(SuppliersSelect.gql.queries.suppliers, {
     fetchPolicy: 'network-only',
-    variables: { includeDeleted: true },
   });
 
   const options = useMemo(() => {
-    return data.suppliers.items.map(supplier => ({
-      label: `${supplier.name}${supplier.deletedAt ? ' [ELIMINADO]' : ''}`,
-      value: supplier.id,
-    }));
+    return data.suppliers.items.map(supplier => ({ label: supplier.name, value: supplier.id }));
   }, [data.suppliers.items]);
 
   return (

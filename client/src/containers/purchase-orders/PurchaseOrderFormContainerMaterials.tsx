@@ -25,8 +25,8 @@ import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
 import { useQuery, useSuspenseQuery } from '@apollo/client';
 import { MdAdd, MdOutlineRefresh, MdRefresh } from 'react-icons/md';
-import { materialMeasureUnitAbbreviationText } from '../../helpers';
-import { Material, MaterialMeasureUnit, RequestForQuotation } from '../../__generated__/graphql';
+import { measureUnitAbbreviationText } from '../../helpers';
+import { Material, MeasureUnit, RequestForQuotation } from '../../__generated__/graphql';
 
 type Props = React.ComponentProps<typeof Card> & {
   onTotalAmountChange: (totalAmount: number) => void;
@@ -322,7 +322,7 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
               if (material) {
                 acc.push({
                   code: material.code as string,
-                  measureUnit: material.measureUnit as MaterialMeasureUnit,
+                  measureUnit: material.measureUnit as MeasureUnit,
                   name: material.name as string,
                   quantity: m.quantity,
                   unitPrice: m.unitPrice,
@@ -360,8 +360,8 @@ const PurchaseOrderFormContainerMaterialsContent = forwardRef<
 
           <Text flex={0} minW="25px" textAlign="right" mt="8">
             {materialsByMaterialId[form.materialId]?.measureUnit &&
-              materialMeasureUnitAbbreviationText[
-                materialsByMaterialId[form.materialId].measureUnit as MaterialMeasureUnit
+              measureUnitAbbreviationText[
+                materialsByMaterialId[form.materialId].measureUnit as MeasureUnit
               ]}
           </Text>
         </GridItem>
