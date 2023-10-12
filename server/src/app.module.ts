@@ -9,6 +9,8 @@ import { DataSource } from 'typeorm';
 import {
   MaterialEntity,
   MaterialSupplierEntity,
+  PartEntity,
+  PartMaterialEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
@@ -35,6 +37,8 @@ import RequestForQuotationMaterialResolver from './resolvers/request-for-quotati
 const entities = [
   MaterialEntity,
   MaterialSupplierEntity,
+  PartEntity,
+  PartMaterialEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
