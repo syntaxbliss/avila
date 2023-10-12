@@ -26,14 +26,14 @@ export default class PurchaseOrderEntity {
   @OneToMany(
     () => PurchaseOrderMaterialEntity,
     purchaseOrderMaterial => purchaseOrderMaterial.purchaseOrder,
-    { nullable: false }
+    { nullable: false, onDelete: 'RESTRICT' }
   )
   materials: PurchaseOrderMaterialEntity[];
 
   @OneToMany(
     () => PurchaseOrderPaymentEntity,
     purchaseOrderPayment => purchaseOrderPayment.purchaseOrder,
-    { nullable: true }
+    { nullable: true, onDelete: 'RESTRICT' }
   )
   payments: PurchaseOrderPaymentEntity[] | null;
 

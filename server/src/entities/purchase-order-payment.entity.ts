@@ -9,10 +9,11 @@ export default class PurchaseOrderPaymentEntity {
 
   @ManyToOne(() => PurchaseOrderEntity, purchaseOrder => purchaseOrder.payments, {
     nullable: false,
+    onDelete: 'RESTRICT',
   })
   purchaseOrder: PurchaseOrderEntity;
 
-  @Column()
+  @Column('uuid')
   purchaseOrderId: string;
 
   @Column({ type: 'enum', enum: PaymentMethodEnum })

@@ -1,6 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import PurchaseOrderEntity from './purchase-order.entity';
-import Material_SupplierEntity from './material_supplier.entity';
+import MaterialSupplierEntity from './material_supplier.entity';
 
 @Entity('purchase_order_material')
 export default class PurchaseOrderMaterialEntity {
@@ -9,18 +9,18 @@ export default class PurchaseOrderMaterialEntity {
 
   @ManyToOne(() => PurchaseOrderEntity, purchaseOrder => purchaseOrder.materials, {
     nullable: false,
+    onDelete: 'RESTRICT',
   })
   purchaseOrder: PurchaseOrderEntity;
 
-  @Column()
+  @Column('uuid')
   purchaseOrderId: string;
 
-  @ManyToOne(() => Material_SupplierEntity, { nullable: false })
-  @JoinColumn({ name: 'material_supplierId' })
-  material_supplier: Material_SupplierEntity;
+  @ManyToOne(() => MaterialSupplierEntity, { nullable: false, onDelete: 'RESTRICT' })
+  materialSupplier: MaterialSupplierEntity;
 
-  @Column()
-  material_supplierId: string;
+  @Column('uuid')
+  materialSupplierId: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   quantity: number;

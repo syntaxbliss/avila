@@ -1,5 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import Material_SupplierEntity from './material_supplier.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import MaterialSupplierEntity from './material_supplier.entity';
 import RequestForQuotationEntity from './request-for-quotation.entity';
 
 @Entity('request_for_quotation_material')
@@ -12,19 +12,19 @@ export default class RequestForQuotationMaterialEntity {
     requestForQuotation => requestForQuotation.materials,
     {
       nullable: false,
+      onDelete: 'RESTRICT',
     }
   )
   requestForQuotation: RequestForQuotationEntity;
 
-  @Column()
+  @Column('uuid')
   requestForQuotationId: string;
 
-  @ManyToOne(() => Material_SupplierEntity, { nullable: false })
-  @JoinColumn({ name: 'material_supplierId' })
-  material_supplier: Material_SupplierEntity;
+  @ManyToOne(() => MaterialSupplierEntity, { nullable: false, onDelete: 'RESTRICT' })
+  materialSupplier: MaterialSupplierEntity;
 
-  @Column()
-  material_supplierId: string;
+  @Column('uuid')
+  materialSupplierId: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   quantity: number;
