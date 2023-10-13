@@ -9,18 +9,20 @@ import PurchaseOrdersContainer from './purchase-orders/PurchaseOrdersContainer';
 import PurchaseOrderFormContainer from './purchase-orders/PurchaseOrderFormContainer';
 import RequestForQuotationFormContainer from './request-for-quotation/RequestForQuotationFormContainer';
 import RequestsForQuotationContainer from './request-for-quotation/RequestsForQuotationContainer';
+import PartFormContainer from './parts/PartFormContainer';
 
 const routesList = [
-  { path: routes.appRoutes.materials.index, element: MaterialsContainer },
   { path: routes.appRoutes.materials.create, element: MaterialFormContainer },
   { path: routes.appRoutes.materials.edit, element: MaterialFormContainer },
-  { path: routes.appRoutes.suppliers.index, element: SuppliersContainer },
+  { path: routes.appRoutes.materials.index, element: MaterialsContainer },
+  { path: routes.appRoutes.parts.create, element: PartFormContainer },
+  { path: routes.appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
+  { path: routes.appRoutes.purchaseOrders.index, element: PurchaseOrdersContainer },
+  { path: routes.appRoutes.requestsForQuotation.create, element: RequestForQuotationFormContainer },
+  { path: routes.appRoutes.requestsForQuotation.index, element: RequestsForQuotationContainer },
   { path: routes.appRoutes.suppliers.create, element: SupplierFormContainer },
   { path: routes.appRoutes.suppliers.edit, element: SupplierFormContainer },
-  { path: routes.appRoutes.purchaseOrders.index, element: PurchaseOrdersContainer },
-  { path: routes.appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
-  { path: routes.appRoutes.requestsForQuotation.index, element: RequestsForQuotationContainer },
-  { path: routes.appRoutes.requestsForQuotation.create, element: RequestForQuotationFormContainer },
+  { path: routes.appRoutes.suppliers.index, element: SuppliersContainer },
 ];
 
 export default function AppContainer(): JSX.Element {

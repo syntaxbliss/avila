@@ -10,6 +10,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
+  forwardRef,
 } from '@chakra-ui/react';
 
 type Props = {
@@ -26,53 +27,60 @@ type Props = {
   value?: React.ComponentProps<typeof NumberInput>['value'];
 };
 
-export default function FormInputNumber({
-  error,
-  gridColumn,
-  isDisabled,
-  isRequired,
-  label,
-  max = 99999999.99,
-  min = 0,
-  onChange,
-  precision = 2,
-  step = 0.01,
-  value,
-}: Props): JSX.Element {
-  return (
-    <GridItem gridColumn={gridColumn} w="full">
-      <FormControl isInvalid={Boolean(error)}>
-        {label && (
-          <FormLabel>
-            {label}
-            {isRequired && (
-              <Text display="inline-block" ml={1} color="red.500">
-                *
-              </Text>
-            )}
-          </FormLabel>
-        )}
+const FormInputNumber = forwardRef<Props, 'input'>(
+  (
+    {
+      error,
+      gridColumn,
+      isDisabled,
+      isRequired,
+      label,
+      max = 99999999.99,
+      min = 0,
+      onChange,
+      precision = 2,
+      step = 0.01,
+      value,
+    },
+    ref
+  ) => {
+    return (
+      <GridItem gridColumn={gridColumn} w="full">
+        <FormControl isInvalid={Boolean(error)}>
+          {label && (
+            <FormLabel>
+              {label}
+              {isRequired && (
+                <Text display="inline-block" ml={1} color="red.500">
+                  *
+                </Text>
+              )}
+            </FormLabel>
+          )}
 
-        <NumberInput
-          isDisabled={isDisabled}
-          max={max}
-          min={min}
-          onChange={onChange}
-          precision={precision}
-          step={step}
-          value={value}
-          variant="filled"
-        >
-          <NumberInputField />
+          <NumberInput
+            isDisabled={isDisabled}
+            max={max}
+            min={min}
+            onChange={onChange}
+            precision={precision}
+            step={step}
+            value={value}
+            variant="filled"
+          >
+            <NumberInputField ref={ref} />
 
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
 
-        <FormErrorMessage>{error}</FormErrorMessage>
-      </FormControl>
-    </GridItem>
-  );
-}
+          <FormErrorMessage>{error}</FormErrorMessage>
+        </FormControl>
+      </GridItem>
+    );
+  }
+);
+
+export default FormInputNumber;

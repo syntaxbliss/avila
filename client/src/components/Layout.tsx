@@ -1,6 +1,7 @@
 import { Button, Divider, Flex, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
 import {
   MdLocalShipping,
+  MdOutlineHandyman,
   MdOutlineListAlt,
   MdOutlineShoppingCart,
   MdShelves,
@@ -15,6 +16,7 @@ type Props = {
 
 const sections = [
   { path: appRoutes.materials.index, icon: MdShelves, text: 'Materiales' },
+  { path: appRoutes.parts.index, icon: MdOutlineHandyman, text: 'Partes' },
   { path: appRoutes.suppliers.index, icon: MdLocalShipping, text: 'Proveedores' },
   {
     path: appRoutes.requestsForQuotation.index,
