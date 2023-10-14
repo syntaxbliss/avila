@@ -16,6 +16,7 @@ const routesList = [
   { path: routes.appRoutes.materials.edit, element: MaterialFormContainer },
   { path: routes.appRoutes.materials.index, element: MaterialsContainer },
   { path: routes.appRoutes.parts.create, element: PartFormContainer },
+  { path: routes.appRoutes.parts.edit, element: PartFormContainer },
   { path: routes.appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
   { path: routes.appRoutes.purchaseOrders.index, element: PurchaseOrdersContainer },
   { path: routes.appRoutes.requestsForQuotation.create, element: RequestForQuotationFormContainer },

@@ -136,7 +136,7 @@ export default class MaterialResolver {
       material.measureUnit = data.measureUnit;
       material.currentQuantity = data.currentQuantity ?? null;
       material.alertQuantity = data.alertQuantity ?? null;
-      await this.ds.manager.save(material);
+      await em.save(material);
 
       const materialSuppliers = await em.findBy(MaterialSupplierEntity, {
         materialId: material.id,

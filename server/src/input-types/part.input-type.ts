@@ -15,7 +15,7 @@ export const partMaterialSchema = z.object({
 });
 
 @InputType()
-export class CreatePartInput {
+export class SavePartInput {
   @Field(() => String)
   name: string;
 
@@ -25,7 +25,7 @@ export class CreatePartInput {
   @Field(() => [PartMaterialInput])
   materials: PartMaterialInput[];
 }
-export const createPartSchema = z.object({
+export const savePartSchema = z.object({
   name: z.string().trim().min(1).max(250),
   code: z.string().trim().min(1).max(20),
   materials: z.array(partMaterialSchema).min(1),

@@ -1,6 +1,6 @@
 export const appRoutes = {
   materials: { index: '/material', create: '/material/create', edit: '/material/:materialId/edit' },
-  parts: { index: '/part', create: '/part/create' },
+  parts: { index: '/part', create: '/part/create', edit: '/part/:partId/edit' },
   purchaseOrders: { index: '/purchase-order', create: '/purchase-order/create' },
   requestsForQuotation: {
     index: '/request-for-quotation',

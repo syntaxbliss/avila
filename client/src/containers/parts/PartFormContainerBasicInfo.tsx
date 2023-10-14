@@ -4,8 +4,10 @@ import _ from 'lodash';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Card, FormInputText } from '../../components';
 import { Grid } from '@chakra-ui/react';
+import { Part } from '../../__generated__/graphql';
 
 type Props = {
+  part?: Part;
   showCodeTakenError?: boolean;
 };
 
@@ -44,8 +46,8 @@ const validateForm = (input: FormState) => {
 const PartFormContainerBasicInfoBasicInfo = forwardRef<
   PartFormContainerBasicInfoBasicInfoHandler,
   Props
->(({ showCodeTakenError }, ref) => {
-  const [form, setForm] = useState<FormState>({ name: '', code: '' });
+>(({ part, showCodeTakenError }, ref) => {
+  const [form, setForm] = useState<FormState>({ name: part?.name ?? '', code: part?.code ?? '' });
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
   useEffect(() => {

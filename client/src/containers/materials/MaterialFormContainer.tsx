@@ -18,8 +18,8 @@ import { z } from 'zod';
 import _ from 'lodash';
 import { validationRules } from '../../validation/rules';
 import { gql } from '../../__generated__';
-import { useMutation, useSuspenseQuery } from '@apollo/client';
-import { MeasureUnit } from '../../__generated__/graphql';
+import { ApolloError, useMutation, useSuspenseQuery } from '@apollo/client';
+import { MeasureUnit, SaveMaterialInput } from '../../__generated__/graphql';
 
 type FormState = {
   name: string;
@@ -237,65 +237,40 @@ function MaterialFormContent({ materialId }: MaterialFormContentProps): JSX.Elem
       setFormErrors(validation.errors || {});
 
       if (!validation.errors) {
-        if (materialId) {
-          await updateMaterialMutation({
-            variables: {
-              materialId,
-              input: {
-                code: validation.data.code,
-                name: validation.data.name,
-                measureUnit: validation.data.measureUnit as MeasureUnit,
-                currentQuantity: validation.data.currentQuantity,
-                alertQuantity: validation.data.alertQuantity,
-                suppliers: validation.data.suppliers,
-              },
-            },
-            onError(error) {
-              if (error.message === 'CODE_TAKEN') {
-                setFormErrors(formErrors => ({
-                  ...formErrors,
-                  code: 'Este código ya se encuentra registrado.',
-                }));
-              } else if (error.message.includes('foreign key constraint fails')) {
-                toast({
-                  status: 'error',
-                  description:
-                    'Alguno de los proveedores no puede desvincularse por tener otros registros asociados.',
-                });
-              } else {
-                throw new Error();
-              }
-            },
-            onCompleted() {
-              toast({ description: 'Material actualizado exitosamente.' });
-              navigate(appRoutes.materials.index);
-            },
-          });
-        } else {
-          createMaterialMutation({
-            variables: {
-              input: {
-                code: validation.data.code,
-                name: validation.data.name,
-                measureUnit: validation.data.measureUnit as MeasureUnit,
-                currentQuantity: validation.data.currentQuantity,
-                alertQuantity: validation.data.alertQuantity,
-                suppliers: validation.data.suppliers,
-              },
-            },
-            onError(error) {
-              if (error.message === 'CODE_TAKEN') {
-                setFormErrors(formErrors => ({
-                  ...formErrors,
-                  code: 'Este código ya se encuentra registrado.',
-                }));
-              }
-            },
-            onCompleted() {
-              toast({ description: 'Nuevo material registrado exitosamente.' });
-              navigate(appRoutes.materials.index);
-            },
-          });
+        try {
+          const input: SaveMaterialInput = {
+            code: validation.data.code,
+            name: validation.data.name,
+            measureUnit: validation.data.measureUnit as MeasureUnit,
+            currentQuantity: validation.data.currentQuantity,
+            alertQuantity: validation.data.alertQuantity,
+            suppliers: validation.data.suppliers,
+          };
+
+          if (materialId) {
+            await updateMaterialMutation({ variables: { materialId, input } });
+            toast({ description: 'Material actualizado exitosamente.' });
+          } else {
+            await createMaterialMutation({ variables: { input } });
+            toast({ description: 'Nuevo material registrado exitosamente.' });
+          }
+
+          navigate(appRoutes.materials.index);
+        } catch (error) {
+          if ((error as ApolloError).message === 'CODE_TAKEN') {
+            setFormErrors(formErrors => ({
+              ...formErrors,
+              code: 'Este código ya se encuentra registrado.',
+            }));
+          } else if ((error as ApolloError).message.includes('foreign key constraint fails')) {
+            toast({
+              status: 'error',
+              description:
+                'Alguno de los proveedores no puede desvincularse por tener otros registros asociados.',
+            });
+          } else {
+            throw new Error();
+          }
         }
       }
     },

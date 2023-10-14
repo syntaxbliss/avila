@@ -132,6 +132,7 @@ type PaginatedRequestsForQuotation {
 type Query {
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
+  part(partId: ID!): Part!
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
   requestsForQuotation(searchParams: SearchRequestForQuotationInput, pagination: PaginationInput): PaginatedRequestsForQuotation!
@@ -215,7 +216,8 @@ type Mutation {
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
   updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
-  createPart(input: CreatePartInput!): Part!
+  createPart(input: SavePartInput!): Part!
+  updatePart(partId: ID!, input: SavePartInput!): Part!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
   deletePurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!
@@ -242,7 +244,7 @@ input UpdateMaterialQuantityInput {
   quantity: Float!
 }
 
-input CreatePartInput {
+input SavePartInput {
   name: String!
   code: String!
   materials: [PartMaterialInput!]!

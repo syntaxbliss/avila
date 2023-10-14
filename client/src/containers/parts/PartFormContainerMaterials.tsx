@@ -17,21 +17,23 @@ import { gql } from '../../__generated__';
 import { MdAdd, MdClose } from 'react-icons/md';
 import { useSuspenseQuery } from '@apollo/client';
 import _ from 'lodash';
-import { Material, MeasureUnit } from '../../__generated__/graphql';
+import { Material, MeasureUnit, Part } from '../../__generated__/graphql';
 import { measureUnitAbbreviationText } from '../../helpers';
 
-type Props = React.ComponentProps<typeof Card>;
+type Props = React.ComponentProps<typeof Card> & {
+  part?: Part;
+};
 
 type Materials = Array<{ materialId: string; quantity: number }>;
 
 export type PartFormContainerMaterialsHandler = () => Materials | undefined;
 
 const PartFormContainerMaterials = forwardRef<PartFormContainerMaterialsHandler, Props>(
-  ({ ...rest }, ref) => {
+  ({ part, ...rest }, ref) => {
     return (
       <Card title="Materiales" {...rest}>
         <SuspenseSpinner>
-          <PartFormContainerMaterialsContent ref={ref} />
+          <PartFormContainerMaterialsContent ref={ref} part={part} />
         </SuspenseSpinner>
       </Card>
     );
@@ -69,8 +71,8 @@ const formSchema = z.object({
 
 const initialValues: FormState = { materialId: '', quantity: '' };
 
-const PartFormContainerMaterialsContent = forwardRef<PartFormContainerMaterialsHandler>(
-  (_props, ref) => {
+const PartFormContainerMaterialsContent = forwardRef<PartFormContainerMaterialsHandler, Props>(
+  ({ part }, ref) => {
     const {
       data: { materials },
     } = useSuspenseQuery(PartFormContainerMaterialsContentGql.queries.materials);
@@ -79,7 +81,9 @@ const PartFormContainerMaterialsContent = forwardRef<PartFormContainerMaterialsH
     const quantityInputRef = useRef<HTMLInputElement>(null);
 
     const [form, setForm] = useState<FormState>({ ...initialValues });
-    const [materialsList, setMaterialsList] = useState<Materials>([]);
+    const [materialsList, setMaterialsList] = useState<Materials>(
+      part?.materials.map(pm => ({ materialId: pm.material.id, quantity: pm.quantity })) ?? []
+    );
     const [showEmptyListError, setShowEmptyListError] = useState(false);
 
     const autocompleteOtions: FormAutocompleteOption[] = useMemo(() => {
