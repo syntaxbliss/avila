@@ -10,6 +10,7 @@ import PurchaseOrderFormContainer from './purchase-orders/PurchaseOrderFormConta
 import RequestForQuotationFormContainer from './request-for-quotation/RequestForQuotationFormContainer';
 import RequestsForQuotationContainer from './request-for-quotation/RequestsForQuotationContainer';
 import PartFormContainer from './parts/PartFormContainer';
+import PartsContainer from './parts/PartsContainer';
 
 const routesList = [
   { path: routes.appRoutes.materials.create, element: MaterialFormContainer },
@@ -17,6 +18,7 @@ const routesList = [
   { path: routes.appRoutes.materials.index, element: MaterialsContainer },
   { path: routes.appRoutes.parts.create, element: PartFormContainer },
   { path: routes.appRoutes.parts.edit, element: PartFormContainer },
+  { path: routes.appRoutes.parts.index, element: PartsContainer },
   { path: routes.appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
   { path: routes.appRoutes.purchaseOrders.index, element: PurchaseOrdersContainer },
   { path: routes.appRoutes.requestsForQuotation.create, element: RequestForQuotationFormContainer },

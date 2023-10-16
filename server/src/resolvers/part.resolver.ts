@@ -1,10 +1,10 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { MaterialEntity, PartEntity, PartMaterialEntity } from 'src/entities';
-import { SavePartInput, savePartSchema } from 'src/input-types';
+import { PaginationInput, SavePartInput, SearchPartInput, savePartSchema } from 'src/input-types';
 import { PartMaterialLoader } from 'src/loaders';
 import { mapPartEntityToPart } from 'src/mappers';
-import { Part, PartMaterial } from 'src/object-types';
+import { PaginatedParts, Part, PartMaterial } from 'src/object-types';
 import { DataSource, In } from 'typeorm';
 
 @Resolver(() => Part)
@@ -13,6 +13,45 @@ export default class PartResolver {
     private readonly ds: DataSource,
     private readonly partMaterialLoader: PartMaterialLoader
   ) {}
+
+  @Query(() => PaginatedParts)
+  async parts(
+    @Args('searchParams', { nullable: true }) searchParams?: SearchPartInput,
+    @Args('pagination', { nullable: true }) pagination?: PaginationInput
+  ): Promise<PaginatedParts> {
+    const query = this.ds.manager.createQueryBuilder(PartEntity, 'part');
+
+    if (searchParams?.name) {
+      query.where('part.name LIKE :name', { name: `%${searchParams.name}%` });
+    }
+
+    if (searchParams?.code) {
+      query.andWhere('part.code LIKE :code', { code: `%${searchParams.code}%` });
+    }
+
+    if (pagination) {
+      query.offset((pagination.pageNumber - 1) * pagination.pageSize).limit(pagination.pageSize);
+    }
+
+    const sortField = searchParams?.sortField ?? 'name';
+    const sortOrder = searchParams?.sortOrder ?? 'ASC';
+    this.partMaterialLoader.setPartMaterialsByPartOrder({
+      [sortField]: sortOrder,
+      materials: { material: { name: 'ASC' } },
+    });
+    query.orderBy(`part.${sortField}`, sortOrder);
+
+    const [parts, count] = await query.getManyAndCount();
+
+    return {
+      items: parts.map(part => mapPartEntityToPart(part)),
+      paginationInfo: {
+        count,
+        pageNumber: pagination?.pageNumber ?? 1,
+        pageSize: pagination?.pageSize ?? count,
+      },
+    };
+  }
 
   @Query(() => Part)
   async part(@Args('partId', { type: () => ID }) partId: string): Promise<Part> {

@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { PartMaterial } from './part-material.object-type';
+import { PaginatedResponse } from './commons';
 
 @ObjectType()
 export class Part {
@@ -15,3 +16,6 @@ export class Part {
   @Field(() => [PartMaterial])
   materials: PartMaterial[];
 }
+
+@ObjectType()
+export class PaginatedParts extends PaginatedResponse(Part) {}

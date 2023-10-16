@@ -59,6 +59,11 @@ type Part {
   materials: [PartMaterial!]!
 }
 
+type PaginatedParts {
+  items: [Part!]!
+  paginationInfo: PaginationInfo!
+}
+
 type PurchaseOrderMaterial {
   material: Material!
   quantity: Float!
@@ -132,6 +137,7 @@ type PaginatedRequestsForQuotation {
 type Query {
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
+  parts(searchParams: SearchPartInput, pagination: PaginationInput): PaginatedParts!
   part(partId: ID!): Part!
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
@@ -163,6 +169,18 @@ enum QuerySortOrder {
 input PaginationInput {
   pageNumber: Int!
   pageSize: Int!
+}
+
+input SearchPartInput {
+  name: String
+  code: String
+  sortField: SearchPartQuerySortField
+  sortOrder: QuerySortOrder
+}
+
+enum SearchPartQuerySortField {
+  CODE
+  NAME
 }
 
 input SearchPurchaseOrderInput {
