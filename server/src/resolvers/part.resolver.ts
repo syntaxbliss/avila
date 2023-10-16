@@ -167,6 +167,13 @@ export default class PartResolver {
     });
   }
 
+  @Mutation(() => Boolean)
+  async deletePart(@Args('partId', { type: () => ID }) partId: string): Promise<boolean> {
+    await this.ds.manager.delete(PartEntity, { id: partId });
+
+    return true;
+  }
+
   @ResolveField()
   async materials(@Parent() parent: Part): Promise<PartMaterial[]> {
     return this.partMaterialLoader.loadPartMaterialsByPart(parent.id);

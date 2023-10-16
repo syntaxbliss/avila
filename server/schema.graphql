@@ -236,6 +236,7 @@ type Mutation {
   updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
   createPart(input: SavePartInput!): Part!
   updatePart(partId: ID!, input: SavePartInput!): Part!
+  deletePart(partId: ID!): Boolean!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
   deletePurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!

@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/client';
+import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { gql } from '../../__generated__';
-import { QuerySortOrder, SearchPartQuerySortField } from '../../__generated__/graphql';
+import { Part, QuerySortOrder, SearchPartQuerySortField } from '../../__generated__/graphql';
 import { useQueryFilteringAndPagination } from '../../hooks';
 import PartsContainerFilters, { type SearchParams } from './PartsContainerFilters';
 import {
@@ -12,15 +12,25 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { Card, LoadingSpinner, NoRecordsAlert, PageHeader, Pagination } from '../../components';
+import {
+  Card,
+  ConfirmationDialog,
+  LoadingSpinner,
+  NoRecordsAlert,
+  PageHeader,
+  Pagination,
+} from '../../components';
 import { Link } from 'react-router-dom';
 import { appRoutes } from '../../routes';
-import { MdAddCircleOutline, MdDelete, MdEdit } from 'react-icons/md';
+import { MdAddCircleOutline, MdDelete, MdEdit, MdOutlineDelete } from 'react-icons/md';
+import { useCallback, useState } from 'react';
 
 PartsContainer.gql = {
   queries: {
@@ -41,13 +51,13 @@ PartsContainer.gql = {
       }
     `),
   },
-  // mutations: {
-  //   deleteMaterial: gql(`
-  //     mutation MaterialsContainerDeleteMaterialMutation ($materialId: ID!) {
-  //       deleteMaterial (materialId: $materialId)
-  //     }
-  //   `),
-  // },
+  mutations: {
+    deletePart: gql(`
+      mutation PartsContainerDeletePartMutation ($partId: ID!) {
+        deletePart (partId: $partId)
+      }
+    `),
+  },
 };
 
 const defaultFilters: SearchParams = {
@@ -79,42 +89,42 @@ export default function PartsContainer(): JSX.Element {
     },
   });
 
-  // const [deleteMaterialMutation, deleteMaterialMutationStatus] = useMutation(
-  //   MaterialsContainer.gql.mutations.deleteMaterial
-  // );
+  const [deletePartMutation, deletePartMutationStatus] = useMutation(
+    PartsContainer.gql.mutations.deletePart
+  );
 
   const toast = useToast();
 
-  // const [toDelete, setToDelete] = useState<Partial<Material>>();
-  // const deleteDialog = useDisclosure({
-  //   isOpen: Boolean(toDelete),
-  //   onClose: () => setToDelete(undefined),
-  // });
+  const [toDelete, setToDelete] = useState<Partial<Part>>();
+  const deleteDialog = useDisclosure({
+    isOpen: Boolean(toDelete),
+    onClose: () => setToDelete(undefined),
+  });
 
-  // const handleDeleteMaterialClick = useCallback(async () => {
-  //   if (!toDelete?.id) {
-  //     return;
-  //   }
+  const handleDeletePartClick = useCallback(async () => {
+    if (!toDelete?.id) {
+      return;
+    }
 
-  //   try {
-  //     await deleteMaterialMutation({ variables: { materialId: toDelete.id } });
+    try {
+      await deletePartMutation({ variables: { partId: toDelete.id } });
 
-  //     toast({ description: 'Material eliminado exitosamente.' });
-  //     deleteDialog.onClose();
-  //     materialsQuery.refetch();
-  //   } catch (error) {
-  //     if ((error as ApolloError).message.includes('foreign key constraint fails')) {
-  //       toast({
-  //         status: 'error',
-  //         description:
-  //           'El material seleccionado no puede eliminarse por tener otros registros asociados.',
-  //       });
-  //       deleteDialog.onClose();
-  //     } else {
-  //       throw new Error();
-  //     }
-  //   }
-  // }, [toDelete?.id, deleteMaterialMutation, toast, deleteDialog, materialsQuery]);
+      toast({ description: 'Parte eliminada exitosamente.' });
+      deleteDialog.onClose();
+      partsQuery.refetch();
+    } catch (error) {
+      if ((error as ApolloError).message.includes('foreign key constraint fails')) {
+        toast({
+          status: 'error',
+          description:
+            'La parte seleccionada no puede eliminarse por tener otros registros asociados.',
+        });
+        deleteDialog.onClose();
+      } else {
+        throw new Error();
+      }
+    }
+  }, [toDelete?.id, deletePartMutation, toast, deleteDialog, partsQuery]);
 
   return (
     <>
@@ -186,7 +196,7 @@ export default function PartsContainer(): JSX.Element {
                             icon={<MdDelete />}
                             size="xs"
                             ml="1"
-                            // onClick={() => setToDelete(material)}
+                            onClick={() => setToDelete(part)}
                           />
                         </Td>
                       </Tr>
@@ -195,17 +205,17 @@ export default function PartsContainer(): JSX.Element {
                 </Table>
               </TableContainer>
 
-              {/* <ConfirmationDialog
+              <ConfirmationDialog
                 confirmButtonColorScheme="red"
                 confirmButtonIcon={<MdOutlineDelete />}
                 confirmButtonText="Eliminar"
-                isLoading={deleteMaterialMutationStatus.loading}
+                isLoading={deletePartMutationStatus.loading}
                 isOpen={deleteDialog.isOpen}
                 onClose={deleteDialog.onClose}
-                onConfirm={handleDeleteMaterialClick}
-                title="Eliminar material"
+                onConfirm={handleDeletePartClick}
+                title="Eliminar parte"
               >
-                ¿Confirma que desea eliminar el siguiente material?
+                ¿Confirma que desea eliminar la siguiente parte?
                 <br />
                 <br />
                 <Text>
@@ -214,7 +224,7 @@ export default function PartsContainer(): JSX.Element {
                 <Text>
                   <b>Nombre:</b> {toDelete?.name}
                 </Text>
-              </ConfirmationDialog> */}
+              </ConfirmationDialog>
             </>
           ) : (
             <NoRecordsAlert entity="partes" />
