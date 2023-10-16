@@ -11,8 +11,10 @@ import RequestForQuotationFormContainer from './request-for-quotation/RequestFor
 import RequestsForQuotationContainer from './request-for-quotation/RequestsForQuotationContainer';
 import PartFormContainer from './parts/PartFormContainer';
 import PartsContainer from './parts/PartsContainer';
+import MachineFormContainer from './machines/MachineFormContainer';
 
 const routesList = [
+  { path: routes.appRoutes.machines.create, element: MachineFormContainer },
   { path: routes.appRoutes.materials.create, element: MaterialFormContainer },
   { path: routes.appRoutes.materials.edit, element: MaterialFormContainer },
   { path: routes.appRoutes.materials.index, element: MaterialsContainer },

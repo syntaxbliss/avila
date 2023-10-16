@@ -13,6 +13,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n      mutation MachineFormContentCreateMachineMutation ($input: SaveMachineInput!) {\n        createMachine (input: $input) {\n          id\n        }\n      }\n    ": types.MachineFormContentCreateMachineMutationDocument,
+    "\n      query MachineFormContainerElementsContentMaterialsQuery {\n        materials {\n          items {\n            id\n            name\n            code\n            measureUnit\n          }\n        }\n      }\n    ": types.MachineFormContainerElementsContentMaterialsQueryDocument,
+    "\n      query MachineFormContainerElementsContentPartsQuery {\n        parts {\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    ": types.MachineFormContainerElementsContentPartsQueryDocument,
     "\n      mutation MaterialFormContentCreateMaterialMutation($input: SaveMaterialInput!) {\n        createMaterial(input: $input) {\n          id\n          name\n          code\n          measureUnit\n          currentQuantity\n          alertQuantity\n          suppliers {\n            id\n          }\n        }\n      }\n    ": types.MaterialFormContentCreateMaterialMutationDocument,
     "\n      mutation MaterialFormContentUpdateMaterialMutation($materialId: ID!, $input: SaveMaterialInput!) {\n        updateMaterial(materialId: $materialId, input: $input) {\n          id\n          name\n          code\n          measureUnit\n          currentQuantity\n          alertQuantity\n          suppliers {\n            id\n          }\n        }\n      }\n    ": types.MaterialFormContentUpdateMaterialMutationDocument,
     "\n      query MaterialFormContentMaterialQuery ($materialId: ID!) {\n        material(materialId: $materialId) {\n          id\n          name\n          code\n          measureUnit\n          currentQuantity\n          alertQuantity\n          suppliers {\n            id\n          }\n        }\n      }\n    ": types.MaterialFormContentMaterialQueryDocument,
@@ -67,6 +70,18 @@ const documents = {
  */
 export function gql(source: string): unknown;
 
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      mutation MachineFormContentCreateMachineMutation ($input: SaveMachineInput!) {\n        createMachine (input: $input) {\n          id\n        }\n      }\n    "): (typeof documents)["\n      mutation MachineFormContentCreateMachineMutation ($input: SaveMachineInput!) {\n        createMachine (input: $input) {\n          id\n        }\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      query MachineFormContainerElementsContentMaterialsQuery {\n        materials {\n          items {\n            id\n            name\n            code\n            measureUnit\n          }\n        }\n      }\n    "): (typeof documents)["\n      query MachineFormContainerElementsContentMaterialsQuery {\n        materials {\n          items {\n            id\n            name\n            code\n            measureUnit\n          }\n        }\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      query MachineFormContainerElementsContentPartsQuery {\n        parts {\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    "): (typeof documents)["\n      query MachineFormContainerElementsContentPartsQuery {\n        parts {\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

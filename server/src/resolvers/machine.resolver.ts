@@ -56,6 +56,7 @@ export default class MachineResolver {
         const machineElement = em.create<MachineElementEntity>(MachineElementEntity, {
           machine,
           elementType: MachineElementTypeEnum.MATERIAL,
+          quantity: rm.quantity,
           material,
         });
 
@@ -73,6 +74,7 @@ export default class MachineResolver {
         const machineElement = em.create<MachineElementEntity>(MachineElementEntity, {
           machine,
           elementType: MachineElementTypeEnum.PART,
+          quantity: rp.quantity,
           part,
         });
 

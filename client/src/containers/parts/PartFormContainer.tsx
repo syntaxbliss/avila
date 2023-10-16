@@ -4,8 +4,8 @@ import { Button, Container, Flex, useToast } from '@chakra-ui/react';
 import { appRoutes } from '../../routes';
 import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import { useCallback, useRef, useState } from 'react';
-import PartFormContainerBasicInfoBasicInfo, {
-  type PartFormContainerBasicInfoBasicInfoHandler,
+import PartFormContainerBasicInfo, {
+  type PartFormContainerBasicInfoHandler,
 } from './PartFormContainerBasicInfo';
 import PartFormContainerMaterials, {
   type PartFormContainerMaterialsHandler,
@@ -81,7 +81,7 @@ type PartFormContentProps = {
 };
 
 type FormHandlers = {
-  basicInfo: PartFormContainerBasicInfoBasicInfoHandler | null;
+  basicInfo: PartFormContainerBasicInfoHandler | null;
   materials: PartFormContainerMaterialsHandler | null;
 };
 
@@ -150,7 +150,7 @@ function PartFormContent({ partId }: PartFormContentProps): JSX.Element {
         autoComplete="off"
         onSubmit={handleSubmit}
       >
-        <PartFormContainerBasicInfoBasicInfo
+        <PartFormContainerBasicInfo
           part={partData?.part as Part}
           showCodeTakenError={showCodeTakenError}
           ref={e => {

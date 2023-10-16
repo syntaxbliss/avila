@@ -1,29 +1,24 @@
 import { z } from 'zod';
+import { Machine } from '../../__generated__/graphql';
 import { validationRules } from '../../validation/rules';
 import _ from 'lodash';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Card, FormInputText } from '../../components';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { Grid } from '@chakra-ui/react';
-import { Part } from '../../__generated__/graphql';
+import { Card, FormInputText } from '../../components';
 
 type Props = {
-  part?: Part;
-  showCodeTakenError?: boolean;
+  machine?: Machine;
 };
 
 type FormState = {
   name: string;
-  code: string;
 };
 
-type BasicInfo = { name: string; code: string };
+type BasicInfo = { name: string };
 
-export type PartFormContainerBasicInfoHandler = () => BasicInfo | undefined;
+export type MachineFormContainerBasicInfoHandler = () => BasicInfo | undefined;
 
-const formSchema = z.object({
-  name: validationRules.string(true, 1, 250),
-  code: validationRules.string(true, 1, 10),
-});
+const formSchema = z.object({ name: validationRules.string(true, 1, 250) });
 
 const validateForm = (input: FormState) => {
   const validation = formSchema.safeParse(_.cloneDeep(input));
@@ -35,7 +30,6 @@ const validateForm = (input: FormState) => {
       success: false,
       errors: {
         name: _.get(formattedErrors, 'name._errors.0'),
-        code: _.get(formattedErrors, 'code._errors.0'),
       },
     };
   }
@@ -43,16 +37,10 @@ const validateForm = (input: FormState) => {
   return { success: true, data: validation.data };
 };
 
-const PartFormContainerBasicInfo = forwardRef<PartFormContainerBasicInfoHandler, Props>(
-  ({ part, showCodeTakenError }, ref) => {
-    const [form, setForm] = useState<FormState>({ name: part?.name ?? '', code: part?.code ?? '' });
+const MachineFormContainerBasicInfo = forwardRef<MachineFormContainerBasicInfoHandler, Props>(
+  ({ machine }, ref) => {
+    const [form, setForm] = useState<FormState>({ name: machine?.name ?? '' });
     const [formErrors, setFormErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-
-    useEffect(() => {
-      if (showCodeTakenError) {
-        setFormErrors(errors => ({ errors, code: 'Este código ya se encuentra registrado.' }));
-      }
-    }, [showCodeTakenError]);
 
     useImperativeHandle(
       ref,
@@ -73,7 +61,7 @@ const PartFormContainerBasicInfo = forwardRef<PartFormContainerBasicInfoHandler,
     );
 
     return (
-      <Card title="Parte">
+      <Card title="Máquina">
         <Grid gridTemplateColumns="repeat(4, 1fr)" gap="5">
           <FormInputText
             autoFocus
@@ -84,19 +72,10 @@ const PartFormContainerBasicInfo = forwardRef<PartFormContainerBasicInfoHandler,
             onChange={e => setForm({ ...form, name: e.target.value })}
             error={formErrors.name}
           />
-
-          <FormInputText
-            gridColumn="3 / 4"
-            isRequired
-            label="Código"
-            value={form.code}
-            onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
-            error={formErrors.code}
-          />
         </Grid>
       </Card>
     );
   }
 );
 
-export default PartFormContainerBasicInfo;
+export default MachineFormContainerBasicInfo;

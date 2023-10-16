@@ -1,17 +1,20 @@
 import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
 import {
   AutoComplete,
+  AutoCompleteGroup,
+  AutoCompleteGroupTitle,
   AutoCompleteInput,
   AutoCompleteItem,
   AutoCompleteList,
 } from '@choc-ui/chakra-autocomplete';
-import { Flex, FormLabel, GridItem, HStack, IconButton, Text } from '@chakra-ui/react';
+import { Box, Flex, FormLabel, GridItem, HStack, IconButton, Text } from '@chakra-ui/react';
 import { MdClose } from 'react-icons/md';
 
 export type FormAutocompleteOption = {
   label: string;
   value: string;
 };
+export type FormAutocompleteGroups = Record<string, FormAutocompleteOption[]>;
 
 export type FormAutocompleteHandler = {
   focusInput: () => void;
@@ -24,7 +27,7 @@ type Props = {
   maxSelections?: number;
   multiple?: boolean;
   onChange: (values: string[]) => void;
-  options: FormAutocompleteOption[];
+  options: FormAutocompleteOption[] | FormAutocompleteGroups;
   placeholder?: string;
   value: string[];
 };
@@ -44,22 +47,45 @@ const FormAutocomplete = forwardRef<FormAutocompleteHandler, Props>(
     },
     ref
   ) => {
+    const isGrouped = useMemo(() => !Array.isArray(options), [options]);
     const innerRef = useRef<HTMLInputElement>(null);
 
-    const availableOptions = useMemo(
-      () => options.filter(i => !value.includes(i.value)),
-      [value, options]
-    );
+    const availableOptions = useMemo(() => {
+      if (isGrouped) {
+        return Object.entries(options as FormAutocompleteGroups).reduce(
+          (obj, [groupName, groupOptions]) => {
+            obj[groupName] = groupOptions.filter(option => !value.includes(option.value));
+
+            return obj;
+          },
+          {} as FormAutocompleteGroups
+        );
+      }
+
+      return (options as FormAutocompleteOption[]).filter(i => !value.includes(i.value));
+    }, [value, options, isGrouped]);
 
     const optionTextByOptionValue: Record<string, string> = useMemo(() => {
-      return options.reduce((obj, option) => {
+      if (isGrouped) {
+        return Object.values(options as FormAutocompleteGroups).reduce((obj, groupOptions) => {
+          groupOptions.forEach(option => {
+            const { label, value } = option;
+
+            obj[value] = label;
+          });
+
+          return obj;
+        }, {} as Record<string, string>);
+      }
+
+      return (options as FormAutocompleteOption[]).reduce((obj, option) => {
         const { label, value } = option;
 
         obj[value] = label;
 
         return obj;
       }, {} as Record<string, string>);
-    }, [options]);
+    }, [options, isGrouped]);
 
     const pendingSelections = useMemo(() => {
       if (maxSelections) {
@@ -127,11 +153,29 @@ const FormAutocomplete = forwardRef<FormAutocompleteHandler, Props>(
           <AutoCompleteInput placeholder={placeholder} variant="filled" ref={innerRef} />
 
           <AutoCompleteList>
-            {availableOptions.map(option => (
-              <AutoCompleteItem key={option.value} value={option.value}>
-                {option.label}
-              </AutoCompleteItem>
-            ))}
+            {isGrouped
+              ? Object.entries(availableOptions as FormAutocompleteGroups).map(
+                  ([groupName, groupOptions]) => (
+                    <AutoCompleteGroup key={groupName}>
+                      <GroupTitle name={groupName} />
+
+                      {groupOptions.map(option => (
+                        <AutoCompleteItem
+                          key={option.value}
+                          value={option.value}
+                          textTransform="capitalize"
+                        >
+                          {option.label}
+                        </AutoCompleteItem>
+                      ))}
+                    </AutoCompleteGroup>
+                  )
+                )
+              : (availableOptions as FormAutocompleteOption[]).map(option => (
+                  <AutoCompleteItem key={option.value} value={option.value}>
+                    {option.label}
+                  </AutoCompleteItem>
+                ))}
           </AutoCompleteList>
         </AutoComplete>
 
@@ -150,6 +194,43 @@ const FormAutocomplete = forwardRef<FormAutocompleteHandler, Props>(
 );
 
 export default FormAutocomplete;
+
+type GroupTitleProps = {
+  name: string;
+};
+
+const GroupTitle = memo(function GroupTitleProps({ name }: GroupTitleProps): JSX.Element {
+  return (
+    <AutoCompleteGroupTitle position="relative" mr="5">
+      <Box
+        position="absolute"
+        top="50%"
+        left={0}
+        right={0}
+        height="1px"
+        bg="orange.500"
+        transform="translateY(-50%)"
+      />
+
+      <Flex justifyContent="center" w="full">
+        <Text
+          as="span"
+          bg="white"
+          fontSize="xs"
+          color="orange.500"
+          letterSpacing="wider"
+          position="relative"
+          px="2"
+          textAlign="center"
+        >
+          {name}
+
+          <Box position="absolute" inset={0} />
+        </Text>
+      </Flex>
+    </AutoCompleteGroupTitle>
+  );
+});
 
 type ValueTagProps = {
   onClick: () => void;

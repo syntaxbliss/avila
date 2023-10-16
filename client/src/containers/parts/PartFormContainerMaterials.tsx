@@ -86,7 +86,7 @@ const PartFormContainerMaterialsContent = forwardRef<PartFormContainerMaterialsH
     );
     const [showEmptyListError, setShowEmptyListError] = useState(false);
 
-    const autocompleteOtions: FormAutocompleteOption[] = useMemo(() => {
+    const autocompleteOptions: FormAutocompleteOption[] = useMemo(() => {
       return materials.items.reduce((acc, material) => {
         const alreadyAdded = materialsList.find(m => m.materialId === material.id);
 
@@ -174,7 +174,7 @@ const PartFormContainerMaterialsContent = forwardRef<PartFormContainerMaterialsH
               isRequired
               label="Material"
               value={
-                autocompleteOtions.find(option => option.value === form.materialId)?.label ?? ''
+                autocompleteOptions.find(option => option.value === form.materialId)?.label ?? ''
               }
               onChange={_.noop}
               rightElement={{
@@ -195,7 +195,7 @@ const PartFormContainerMaterialsContent = forwardRef<PartFormContainerMaterialsH
               isRequired
               label="Material"
               multiple
-              options={autocompleteOtions}
+              options={autocompleteOptions}
               value={[]}
               onChange={e => {
                 setForm({ ...form, materialId: e[0] });

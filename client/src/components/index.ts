@@ -10,6 +10,7 @@ export { default as FormSelect } from './FormSelect';
 export { default as FormSwitch } from './FormSwitch';
 export { default as Layout } from './Layout';
 export { default as LoadingSpinner } from './LoadingSpinner';
+export { default as MachineElementsTable } from './MachineElementsTable';
 export { default as MeasureUnitSelect } from './MeasureUnitSelect';
 export { default as NoRecordsAlert } from './NoRecordsAlert';
 export { default as PageHeader } from './PageHeader';
@@ -20,8 +21,13 @@ export { default as PurchaseOrderPaymentsTable } from './PurchaseOrderPaymentsTa
 export { default as RequestForQuotationMaterialsTable } from './RequestForQuotationMaterialsTable';
 export { default as SuspenseSpinner } from './SuspenseSpinner';
 
-export type { FormAutocompleteOption, FormAutocompleteHandler } from './FormAutocomplete';
+export type {
+  FormAutocompleteGroups,
+  FormAutocompleteHandler,
+  FormAutocompleteOption,
+} from './FormAutocomplete';
 export type { FormSelectOption } from './FormSelect';
+export type { MachineElementsTableRow } from './MachineElementsTable';
 export type { PurchaseOrderMaterialsTableRow } from './PurchaseOrderMaterialsTable';
 export type { PurchaseOrderPaymentsTableRow } from './PurchaseOrderPaymentsTable';
 export type { RequestForQuotationMaterialsTableRow } from './RequestForQuotationMaterialsTable';
