@@ -64,6 +64,20 @@ type PaginatedParts {
   paginationInfo: PaginationInfo!
 }
 
+type MachineElement {
+  id: ID!
+  elementType: MachieElementType!
+  quantity: Float!
+}
+
+union MachieElementType = Material | Part
+
+type Machine {
+  id: ID!
+  name: String!
+  elements: [MachineElement!]!
+}
+
 type PurchaseOrderMaterial {
   material: Material!
   quantity: Float!
@@ -230,6 +244,7 @@ input SearchSupplierInput {
 }
 
 type Mutation {
+  createMachine(input: SaveMachineInput!): Machine!
   createMaterial(input: SaveMaterialInput!): Material!
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
@@ -247,6 +262,22 @@ type Mutation {
   createSupplier(input: SaveSupplierInput!): Supplier!
   updateSupplier(supplierId: ID!, input: SaveSupplierInput!): Supplier!
   deleteSupplier(supplierId: ID!): Boolean!
+}
+
+input SaveMachineInput {
+  name: String!
+  elements: [MachineElementInput!]!
+}
+
+input MachineElementInput {
+  elementType: MachineElementType!
+  elementId: ID!
+  quantity: Float!
+}
+
+enum MachineElementType {
+  MATERIAL
+  PART
 }
 
 input SaveMaterialInput {

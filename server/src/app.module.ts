@@ -21,6 +21,7 @@ import {
   SupplierEntity,
 } from './entities';
 import {
+  MachineResolver,
   MaterialResolver,
   PartMaterialResolver,
   PartResolver,
@@ -54,6 +55,7 @@ const entities = [
   SupplierEntity,
 ];
 const resolvers = [
+  MachineResolver,
   MaterialResolver,
   PartMaterialResolver,
   PartResolver,

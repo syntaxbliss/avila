@@ -1,4 +1,5 @@
 import {
+  MachineEntity,
   MaterialEntity,
   PartEntity,
   PartMaterialEntity,
@@ -10,6 +11,7 @@ import {
   SupplierEntity,
 } from 'src/entities';
 import {
+  Machine,
   Material,
   Part,
   PartMaterial,
@@ -121,4 +123,11 @@ export const mapPartMaterialEntityToPartMaterial = (entity: PartMaterialEntity):
   partMaterial.quantity = entity.quantity;
 
   return partMaterial;
+};
+
+export const mapMachineEntityToMachine = (entity: MachineEntity): Machine => {
+  const machine = new Machine();
+  machine.id = entity.id;
+
+  return machine;
 };
