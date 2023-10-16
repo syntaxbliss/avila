@@ -7,6 +7,8 @@ import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import {
+  MachineElementEntity,
+  MachineEntity,
   MaterialEntity,
   MaterialSupplierEntity,
   PartEntity,
@@ -38,6 +40,8 @@ import {
 import RequestForQuotationMaterialResolver from './resolvers/request-for-quotation-material.resolver';
 
 const entities = [
+  MachineElementEntity,
+  MachineEntity,
   MaterialEntity,
   MaterialSupplierEntity,
   PartEntity,

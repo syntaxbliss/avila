@@ -19,3 +19,8 @@ export enum RequestForQuotationStatusEnum {
   ANSWERED = 'answered',
   UNANSWERED = 'unanswered',
 }
+
+export enum MachineElementTypeEnum {
+  MATERIAL = 'material',
+  PART = 'part',
+}
