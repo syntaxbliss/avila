@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import {
   Machine,
-  MachineElementType,
+  MachineElementElementType,
   Material,
   MeasureUnit,
   Part,
@@ -31,7 +31,11 @@ type Props = React.ComponentProps<typeof Card> & {
   machine?: Machine;
 };
 
-type Elements = Array<{ elementType: MachineElementType; elementId: string; quantity: number }>;
+type Elements = Array<{
+  elementType: MachineElementElementType;
+  elementId: string;
+  quantity: number;
+}>;
 
 export type MachineFormContainerElementsHandler = () => Elements | undefined;
 
@@ -106,7 +110,9 @@ const MachineFormContainerElementsContent = forwardRef<MachineFormContainerEleme
     const [elementsList, setElementsList] = useState<Elements>(
       machine?.elements.map(me => ({
         elementType:
-          'measureUnit' in me.element ? MachineElementType.Material : MachineElementType.Part,
+          'measureUnit' in me.element
+            ? MachineElementElementType.Material
+            : MachineElementElementType.Part,
         elementId: me.element.id,
         quantity: me.quantity,
       })) ?? []
@@ -190,8 +196,8 @@ const MachineFormContainerElementsContent = forwardRef<MachineFormContainerEleme
                     elementId: element.id as string,
                     elementType:
                       'measureUnit' in element
-                        ? MachineElementType.Material
-                        : MachineElementType.Part,
+                        ? MachineElementElementType.Material
+                        : MachineElementElementType.Part,
                     measureUnit: (element as Material).measureUnit,
                     name: element.name as string,
                     quantity: e.quantity,
@@ -278,8 +284,8 @@ const MachineFormContainerElementsContent = forwardRef<MachineFormContainerEleme
 
                   newList.push({
                     elementType: materials.items.some(m => m.id === parsedData.elementId)
-                      ? MachineElementType.Material
-                      : MachineElementType.Part,
+                      ? MachineElementElementType.Material
+                      : MachineElementElementType.Part,
                     elementId: parsedData.elementId,
                     quantity: parsedData.quantity as number,
                   });

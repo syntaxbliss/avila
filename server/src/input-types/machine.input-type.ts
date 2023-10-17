@@ -1,12 +1,12 @@
 import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
-import { MachineElementTypeEnum } from 'src/entities';
+import { MachineElementElementTypeEnum } from 'src/entities';
 import { z } from 'zod';
 import { QuerySortOrderEnum } from './commons';
 
 @InputType()
 export class MachineElementInput {
-  @Field(() => MachineElementTypeEnum)
-  elementType: MachineElementTypeEnum;
+  @Field(() => MachineElementElementTypeEnum)
+  elementType: MachineElementElementTypeEnum;
 
   @Field(() => ID)
   elementId: string;
@@ -15,7 +15,7 @@ export class MachineElementInput {
   quantity: number;
 }
 export const machineElementSchema = z.object({
-  elementType: z.nativeEnum(MachineElementTypeEnum),
+  elementType: z.nativeEnum(MachineElementElementTypeEnum),
   elementId: z.string().trim().uuid(),
   quantity: z.number().positive(),
 });

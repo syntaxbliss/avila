@@ -1,12 +1,12 @@
 import { registerEnumType } from '@nestjs/graphql';
 import {
-  MachineElementTypeEnum,
+  MachineElementElementTypeEnum,
   MeasureUnitEnum,
   PaymentMethodEnum,
   RequestForQuotationStatusEnum,
 } from 'src/entities';
 
-registerEnumType(MachineElementTypeEnum, { name: 'MachineElementType' });
+registerEnumType(MachineElementElementTypeEnum, { name: 'MachineElementElementType' });
 registerEnumType(MeasureUnitEnum, { name: 'MeasureUnit' });
 registerEnumType(PaymentMethodEnum, { name: 'PaymentMethod' });
 registerEnumType(RequestForQuotationStatusEnum, { name: 'RequestForQuotationStatus' });
@@ -17,6 +17,7 @@ export * from './machine.object-type';
 export * from './material.object-type';
 export * from './part-material.object-type';
 export * from './part.object-type';
+export * from './priced-item.object-type';
 export * from './purchase-order-material.object-type';
 export * from './purchase-order-payment.object-type';
 export * from './purchase-order.object-type';

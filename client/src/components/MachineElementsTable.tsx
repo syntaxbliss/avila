@@ -11,14 +11,14 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { MachineElementType, MeasureUnit } from '../__generated__/graphql';
+import { MachineElementElementType, MeasureUnit } from '../__generated__/graphql';
 import { formatMaterialQuantity } from '../helpers';
 import { MdDelete, MdOutlineHandyman, MdShelves } from 'react-icons/md';
 
 export type MachineElementsTableRow = {
   code: string;
   elementId: string;
-  elementType: MachineElementType;
+  elementType: MachineElementElementType;
   measureUnit?: MeasureUnit;
   name: string;
   quantity: number;
@@ -59,7 +59,7 @@ export default function MachineElementsTable({
           {elements.map(element => (
             <Tr key={element.elementId}>
               <Td textAlign="center">
-                {element.elementType === MachineElementType.Material ? (
+                {element.elementType === MachineElementElementType.Material ? (
                   <Tag size="sm" colorScheme="blue">
                     <TagLeftIcon as={MdShelves} />
                     <TagLabel textTransform="uppercase" fontWeight="bold" letterSpacing="wider">

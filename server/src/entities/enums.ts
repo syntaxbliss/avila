@@ -20,7 +20,12 @@ export enum RequestForQuotationStatusEnum {
   UNANSWERED = 'unanswered',
 }
 
-export enum MachineElementTypeEnum {
+export enum MachineElementElementTypeEnum {
+  MATERIAL = 'material',
+  PART = 'part',
+}
+
+export enum PricedItemElementTypeEnum {
   MATERIAL = 'material',
   PART = 'part',
 }

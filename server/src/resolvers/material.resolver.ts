@@ -1,6 +1,12 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { MaterialEntity, MaterialSupplierEntity, SupplierEntity } from 'src/entities';
+import {
+  MaterialEntity,
+  MaterialSupplierEntity,
+  PricedItemElementTypeEnum,
+  PricedItemEntity,
+  SupplierEntity,
+} from 'src/entities';
 import {
   PaginationInput,
   SaveMaterialInput,
@@ -101,6 +107,12 @@ export default class MaterialResolver {
         return em.create<MaterialSupplierEntity>(MaterialSupplierEntity, { material, supplier });
       });
       await Promise.all(materialSuppliers.map(ms => em.save(ms)));
+
+      const pricedItem = em.create<PricedItemEntity>(PricedItemEntity, {
+        elementType: PricedItemElementTypeEnum.MATERIAL,
+        material,
+      });
+      await em.save(pricedItem);
 
       return mapMaterialEntityToMaterial(material);
     });

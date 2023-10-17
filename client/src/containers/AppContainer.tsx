@@ -13,6 +13,7 @@ import PartFormContainer from './parts/PartFormContainer';
 import PartsContainer from './parts/PartsContainer';
 import MachineFormContainer from './machines/MachineFormContainer';
 import MachinesContainer from './machines/MachinesContainer';
+import PricedItemsContainer from './priced-items/PricedItemsContainer';
 
 const routesList = [
   { path: routes.appRoutes.machines.create, element: MachineFormContainer },
@@ -24,6 +25,7 @@ const routesList = [
   { path: routes.appRoutes.parts.create, element: PartFormContainer },
   { path: routes.appRoutes.parts.edit, element: PartFormContainer },
   { path: routes.appRoutes.parts.index, element: PartsContainer },
+  { path: routes.appRoutes.pricedItems.index, element: PricedItemsContainer },
   { path: routes.appRoutes.purchaseOrders.create, element: PurchaseOrderFormContainer },
   { path: routes.appRoutes.purchaseOrders.index, element: PurchaseOrdersContainer },
   { path: routes.appRoutes.requestsForQuotation.create, element: RequestForQuotationFormContainer },

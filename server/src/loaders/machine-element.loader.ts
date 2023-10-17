@@ -6,7 +6,7 @@ import {
   mapMaterialEntityToMaterial,
   mapPartEntityToPart,
 } from 'src/mappers';
-import { MachineElement, MachineElementUnion } from 'src/object-types';
+import { MachineElement, MachineElementElementUnion } from 'src/object-types';
 import { DataSource, FindManyOptions, In } from 'typeorm';
 
 @Injectable()
@@ -17,7 +17,7 @@ export default class MachineElementLoader {
   };
 
   private elementByMachineElement: {
-    loader: DataLoader<string, typeof MachineElementUnion>;
+    loader: DataLoader<string, typeof MachineElementElementUnion>;
     findOptions: FindManyOptions<MachineElementEntity>;
   };
 
@@ -95,7 +95,7 @@ export default class MachineElementLoader {
     return this.machineElementsByMachine.loader.load(id);
   }
 
-  loadElementByMachineElement(id: string): Promise<typeof MachineElementUnion> {
+  loadElementByMachineElement(id: string): Promise<typeof MachineElementElementUnion> {
     return this.elementByMachineElement.loader.load(id);
   }
 }

@@ -1,6 +1,7 @@
 import { Button, Divider, Flex, Grid, GridItem, Icon, Text } from '@chakra-ui/react';
 import {
   MdLocalShipping,
+  MdOutlineChecklist,
   MdOutlineHandyman,
   MdOutlineListAlt,
   MdOutlineSettingsApplications,
@@ -19,6 +20,7 @@ const sections = [
   { path: appRoutes.materials.index, icon: MdShelves, text: 'Materiales' },
   { path: appRoutes.parts.index, icon: MdOutlineHandyman, text: 'Partes' },
   { path: appRoutes.machines.index, icon: MdOutlineSettingsApplications, text: 'Máquinas' },
+  { path: appRoutes.pricedItems.index, icon: MdOutlineChecklist, text: 'Lista de precios' },
   { path: appRoutes.suppliers.index, icon: MdLocalShipping, text: 'Proveedores' },
   {
     path: appRoutes.requestsForQuotation.index,

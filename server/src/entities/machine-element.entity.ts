@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import MachineEntity from './machine.entity';
-import { MachineElementTypeEnum } from './enums';
+import { MachineElementElementTypeEnum } from './enums';
 import MaterialEntity from './material.entity';
 import PartEntity from './part.entity';
 
@@ -17,8 +17,8 @@ export default class MachineElementEntity {
   @Column('uuid')
   machineId: string;
 
-  @Column({ type: 'enum', enum: MachineElementTypeEnum })
-  elementType: MachineElementTypeEnum;
+  @Column({ type: 'enum', enum: MachineElementElementTypeEnum })
+  elementType: MachineElementElementTypeEnum;
 
   @ManyToOne(() => MaterialEntity, { nullable: true, onDelete: 'RESTRICT' })
   material: MaterialEntity | null;

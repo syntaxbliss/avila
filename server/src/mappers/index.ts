@@ -4,6 +4,7 @@ import {
   MaterialEntity,
   PartEntity,
   PartMaterialEntity,
+  PricedItemEntity,
   PurchaseOrderEntity,
   PurchaseOrderMaterialEntity,
   PurchaseOrderPaymentEntity,
@@ -17,6 +18,7 @@ import {
   Material,
   Part,
   PartMaterial,
+  PricedItem,
   PurchaseOrder,
   PurchaseOrderMaterial,
   PurchaseOrderPayment,
@@ -142,4 +144,12 @@ export const mapMachineElementEntityToMachineElement = (entity: MachineElementEn
   machineElement.quantity = entity.quantity;
 
   return machineElement;
+};
+
+export const mapPricedItemEntityToPricedItem = (entity: PricedItemEntity) => {
+  const pricedItem = new PricedItem();
+  pricedItem.id = entity.id;
+  pricedItem.unitPrice = entity.unitPrice;
+
+  return pricedItem;
 };

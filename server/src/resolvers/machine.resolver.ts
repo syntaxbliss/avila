@@ -2,8 +2,8 @@ import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nest
 import { GraphQLError } from 'graphql';
 import * as _ from 'lodash';
 import {
+  MachineElementElementTypeEnum,
   MachineElementEntity,
-  MachineElementTypeEnum,
   MachineEntity,
   MaterialEntity,
   PartEntity,
@@ -83,7 +83,7 @@ export default class MachineResolver {
 
     const [receivedMaterials, receivedParts] = _.partition(
       parsedData.elements,
-      e => e.elementType === MachineElementTypeEnum.MATERIAL
+      e => e.elementType === MachineElementElementTypeEnum.MATERIAL
     );
 
     const materials = await this.ds.manager.find(MaterialEntity, {
@@ -116,7 +116,7 @@ export default class MachineResolver {
 
         const machineElement = em.create<MachineElementEntity>(MachineElementEntity, {
           machine,
-          elementType: MachineElementTypeEnum.MATERIAL,
+          elementType: MachineElementElementTypeEnum.MATERIAL,
           quantity: rm.quantity,
           material,
         });
@@ -134,7 +134,7 @@ export default class MachineResolver {
 
         const machineElement = em.create<MachineElementEntity>(MachineElementEntity, {
           machine,
-          elementType: MachineElementTypeEnum.PART,
+          elementType: MachineElementElementTypeEnum.PART,
           quantity: rp.quantity,
           part,
         });
@@ -158,7 +158,7 @@ export default class MachineResolver {
 
     const [receivedMaterials, receivedParts] = _.partition(
       parsedData.elements,
-      e => e.elementType === MachineElementTypeEnum.MATERIAL
+      e => e.elementType === MachineElementElementTypeEnum.MATERIAL
     );
 
     const materials = await this.ds.manager.find(MaterialEntity, {
