@@ -3,6 +3,7 @@ import {
   MdLocalShipping,
   MdOutlineHandyman,
   MdOutlineListAlt,
+  MdOutlineSettingsApplications,
   MdOutlineShoppingCart,
   MdShelves,
 } from 'react-icons/md';
@@ -17,6 +18,7 @@ type Props = {
 const sections = [
   { path: appRoutes.materials.index, icon: MdShelves, text: 'Materiales' },
   { path: appRoutes.parts.index, icon: MdOutlineHandyman, text: 'Partes' },
+  { path: appRoutes.machines.index, icon: MdOutlineSettingsApplications, text: 'Máquinas' },
   { path: appRoutes.suppliers.index, icon: MdLocalShipping, text: 'Proveedores' },
   {
     path: appRoutes.requestsForQuotation.index,

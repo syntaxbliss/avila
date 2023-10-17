@@ -104,8 +104,12 @@ const MachineFormContainerElementsContent = forwardRef<MachineFormContainerEleme
 
     const [form, setForm] = useState<FormState>({ ...initialValues });
     const [elementsList, setElementsList] = useState<Elements>(
-      // machine?.materials.map(pm => ({ materialId: pm.material.id, quantity: pm.quantity })) ?? []
-      []
+      machine?.elements.map(me => ({
+        elementType:
+          'measureUnit' in me.element ? MachineElementType.Material : MachineElementType.Part,
+        elementId: me.element.id,
+        quantity: me.quantity,
+      })) ?? []
     );
     const [showEmptyListError, setShowEmptyListError] = useState(false);
 

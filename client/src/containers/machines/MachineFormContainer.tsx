@@ -4,14 +4,15 @@ import { Button, Container, Flex, useToast } from '@chakra-ui/react';
 import { appRoutes } from '../../routes';
 import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import { gql } from '../../__generated__';
-import { useMutation, useSuspenseQuery } from '@apollo/client';
-import { useCallback, useRef } from 'react';
+import { ApolloError, useMutation, useSuspenseQuery } from '@apollo/client';
+import { useCallback, useRef, useState } from 'react';
 import MachineFormContainerBasicInfo, {
   type MachineFormContainerBasicInfoHandler,
 } from './MachineFormContainerBasicInfo';
 import MachineFormContainerElements, {
   type MachineFormContainerElementsHandler,
 } from './MachineFormContainerElements';
+import { Machine } from '../../__generated__/graphql';
 
 export default function MachineFormContainer(): JSX.Element {
   const { machineId } = useParams<{ machineId: string }>();
@@ -38,15 +39,34 @@ export default function MachineFormContainer(): JSX.Element {
 }
 
 MachineFormContent.gql = {
-  // queries: {
-  //   machine: gql(`
-  //     query MachineFormContentMachineQuery ($machineId: ID!) {
-  //       machine (machineId: $machineId) {
-  //         #
-  //       }
-  //     }
-  //   `),
-  // },
+  queries: {
+    machine: gql(`
+      query MachineFormContentMachineQuery ($machineId: ID!) {
+        machine (machineId: $machineId) {
+          id
+          name
+          code
+          elements {
+            id
+            quantity
+            element {
+              ... on Material {
+                id
+                code
+                name
+                measureUnit
+              }
+              ... on Part {
+                id
+                code
+                name
+              }
+            }
+          }
+        }
+      }
+    `),
+  },
 
   mutations: {
     createMachine: gql(`
@@ -57,13 +77,13 @@ MachineFormContent.gql = {
       }
     `),
 
-    // updateMachine: gql(`
-    //   mutation MachineFormContentUpdateMachineMutation ($machineId: ID!, $input: SaveMachineInput!) {
-    //     updateMachine (machineId: $machineId, input: $input) {
-    //       id
-    //     }
-    //   }
-    // `),
+    updateMachine: gql(`
+      mutation MachineFormContentUpdateMachineMutation ($machineId: ID!, $input: SaveMachineInput!) {
+        updateMachine (machineId: $machineId, input: $input) {
+          id
+        }
+      }
+    `),
   },
 };
 
@@ -80,21 +100,23 @@ function MachineFormContent({ machineId }: MachineFormContentProps): JSX.Element
   const toast = useToast();
   const navigate = useNavigate();
 
-  // const { data: machineData } = useSuspenseQuery(MachineFormContent.gql.queries.machine, {
-  //   variables: { machineId: String(machineId) },
-  //   skip: !machineId,
-  //   fetchPolicy: 'network-only',
-  // });
+  const { data: machineData } = useSuspenseQuery(MachineFormContent.gql.queries.machine, {
+    variables: { machineId: String(machineId) },
+    skip: !machineId,
+    fetchPolicy: 'network-only',
+  });
 
   const handlers = useRef<FormHandlers>({ basicInfo: null, elements: null });
+
+  const [showCodeTakenError, setShowCodeTakenError] = useState(false);
 
   const [createMachineMutation, createMachineMutationStatus] = useMutation(
     MachineFormContent.gql.mutations.createMachine
   );
 
-  // const [updateMachineMutation, updateMachineMutationStatus] = useMutation(
-  //   MachineFormContent.gql.mutations.updateMachine
-  // );
+  const [updateMachineMutation, updateMachineMutationStatus] = useMutation(
+    MachineFormContent.gql.mutations.updateMachine
+  );
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -105,11 +127,13 @@ function MachineFormContent({ machineId }: MachineFormContentProps): JSX.Element
       const elements = handlers.current.elements?.();
 
       if (basicInfo && elements) {
+        setShowCodeTakenError(false);
+
         try {
           if (machineId) {
-            // await updateMachineMutation({
-            //   variables: { machineId, input: { ...basicInfo, elements } },
-            // });
+            await updateMachineMutation({
+              variables: { machineId, input: { ...basicInfo, elements } },
+            });
             toast({ description: 'Máquina actualizada exitosamente.' });
           } else {
             await createMachineMutation({ variables: { input: { ...basicInfo, elements } } });
@@ -118,12 +142,15 @@ function MachineFormContent({ machineId }: MachineFormContentProps): JSX.Element
 
           navigate(appRoutes.machines.index);
         } catch (error) {
-          throw new Error();
+          if ((error as ApolloError)?.message) {
+            setShowCodeTakenError(true);
+          } else {
+            throw new Error();
+          }
         }
       }
     },
-    // [createMachineMutation, updateMachineMutation, toast, navigate, partId]
-    [createMachineMutation, toast, navigate, machineId]
+    [createMachineMutation, updateMachineMutation, toast, navigate, machineId]
   );
 
   return (
@@ -137,7 +164,8 @@ function MachineFormContent({ machineId }: MachineFormContentProps): JSX.Element
         onSubmit={handleSubmit}
       >
         <MachineFormContainerBasicInfo
-          // machine={machineData?.machine as Machine}
+          machine={machineData?.machine as Machine}
+          showCodeTakenError={showCodeTakenError}
           ref={e => {
             if (e) {
               handlers.current.basicInfo = e;
@@ -147,7 +175,7 @@ function MachineFormContent({ machineId }: MachineFormContentProps): JSX.Element
 
         <MachineFormContainerElements
           mt="5"
-          // machine={machineData?.machine as Machine}
+          machine={machineData?.machine as Machine}
           ref={e => {
             if (e) {
               handlers.current.elements = e;
@@ -159,8 +187,7 @@ function MachineFormContent({ machineId }: MachineFormContentProps): JSX.Element
           <Button
             type="submit"
             colorScheme="orange"
-            // isLoading={createMachineMutationStatus.loading || updateMachineMutationStatus.loading}
-            isLoading={createMachineMutationStatus.loading}
+            isLoading={createMachineMutationStatus.loading || updateMachineMutationStatus.loading}
           >
             Guardar
           </Button>

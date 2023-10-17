@@ -13,9 +13,13 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n      query MachineFormContentMachineQuery ($machineId: ID!) {\n        machine (machineId: $machineId) {\n          id\n          name\n          code\n          elements {\n            id\n            quantity\n            element {\n              ... on Material {\n                id\n                code\n                name\n                measureUnit\n              }\n              ... on Part {\n                id\n                code\n                name\n              }\n            }\n          }\n        }\n      }\n    ": types.MachineFormContentMachineQueryDocument,
     "\n      mutation MachineFormContentCreateMachineMutation ($input: SaveMachineInput!) {\n        createMachine (input: $input) {\n          id\n        }\n      }\n    ": types.MachineFormContentCreateMachineMutationDocument,
+    "\n      mutation MachineFormContentUpdateMachineMutation ($machineId: ID!, $input: SaveMachineInput!) {\n        updateMachine (machineId: $machineId, input: $input) {\n          id\n        }\n      }\n    ": types.MachineFormContentUpdateMachineMutationDocument,
     "\n      query MachineFormContainerElementsContentMaterialsQuery {\n        materials {\n          items {\n            id\n            name\n            code\n            measureUnit\n          }\n        }\n      }\n    ": types.MachineFormContainerElementsContentMaterialsQueryDocument,
     "\n      query MachineFormContainerElementsContentPartsQuery {\n        parts {\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    ": types.MachineFormContainerElementsContentPartsQueryDocument,
+    "\n      query MachinesContainerMachinesQuery ($searchParams: SearchMachineInput, $pagination: PaginationInput) {\n        machines (searchParams: $searchParams, pagination: $pagination) {\n          paginationInfo {\n            count\n            pageNumber\n            pageSize\n          }\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    ": types.MachinesContainerMachinesQueryDocument,
+    "\n      mutation MachinesContainerDeleteMachineMutation ($machineId: ID!) {\n        deleteMachine (machineId: $machineId)\n      }\n    ": types.MachinesContainerDeleteMachineMutationDocument,
     "\n      mutation MaterialFormContentCreateMaterialMutation($input: SaveMaterialInput!) {\n        createMaterial(input: $input) {\n          id\n          name\n          code\n          measureUnit\n          currentQuantity\n          alertQuantity\n          suppliers {\n            id\n          }\n        }\n      }\n    ": types.MaterialFormContentCreateMaterialMutationDocument,
     "\n      mutation MaterialFormContentUpdateMaterialMutation($materialId: ID!, $input: SaveMaterialInput!) {\n        updateMaterial(materialId: $materialId, input: $input) {\n          id\n          name\n          code\n          measureUnit\n          currentQuantity\n          alertQuantity\n          suppliers {\n            id\n          }\n        }\n      }\n    ": types.MaterialFormContentUpdateMaterialMutationDocument,
     "\n      query MaterialFormContentMaterialQuery ($materialId: ID!) {\n        material(materialId: $materialId) {\n          id\n          name\n          code\n          measureUnit\n          currentQuantity\n          alertQuantity\n          suppliers {\n            id\n          }\n        }\n      }\n    ": types.MaterialFormContentMaterialQueryDocument,
@@ -73,7 +77,15 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n      query MachineFormContentMachineQuery ($machineId: ID!) {\n        machine (machineId: $machineId) {\n          id\n          name\n          code\n          elements {\n            id\n            quantity\n            element {\n              ... on Material {\n                id\n                code\n                name\n                measureUnit\n              }\n              ... on Part {\n                id\n                code\n                name\n              }\n            }\n          }\n        }\n      }\n    "): (typeof documents)["\n      query MachineFormContentMachineQuery ($machineId: ID!) {\n        machine (machineId: $machineId) {\n          id\n          name\n          code\n          elements {\n            id\n            quantity\n            element {\n              ... on Material {\n                id\n                code\n                name\n                measureUnit\n              }\n              ... on Part {\n                id\n                code\n                name\n              }\n            }\n          }\n        }\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n      mutation MachineFormContentCreateMachineMutation ($input: SaveMachineInput!) {\n        createMachine (input: $input) {\n          id\n        }\n      }\n    "): (typeof documents)["\n      mutation MachineFormContentCreateMachineMutation ($input: SaveMachineInput!) {\n        createMachine (input: $input) {\n          id\n        }\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      mutation MachineFormContentUpdateMachineMutation ($machineId: ID!, $input: SaveMachineInput!) {\n        updateMachine (machineId: $machineId, input: $input) {\n          id\n        }\n      }\n    "): (typeof documents)["\n      mutation MachineFormContentUpdateMachineMutation ($machineId: ID!, $input: SaveMachineInput!) {\n        updateMachine (machineId: $machineId, input: $input) {\n          id\n        }\n      }\n    "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -82,6 +94,14 @@ export function gql(source: "\n      query MachineFormContainerElementsContentMa
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n      query MachineFormContainerElementsContentPartsQuery {\n        parts {\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    "): (typeof documents)["\n      query MachineFormContainerElementsContentPartsQuery {\n        parts {\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      query MachinesContainerMachinesQuery ($searchParams: SearchMachineInput, $pagination: PaginationInput) {\n        machines (searchParams: $searchParams, pagination: $pagination) {\n          paginationInfo {\n            count\n            pageNumber\n            pageSize\n          }\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    "): (typeof documents)["\n      query MachinesContainerMachinesQuery ($searchParams: SearchMachineInput, $pagination: PaginationInput) {\n        machines (searchParams: $searchParams, pagination: $pagination) {\n          paginationInfo {\n            count\n            pageNumber\n            pageSize\n          }\n          items {\n            id\n            name\n            code\n          }\n        }\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      mutation MachinesContainerDeleteMachineMutation ($machineId: ID!) {\n        deleteMachine (machineId: $machineId)\n      }\n    "): (typeof documents)["\n      mutation MachinesContainerDeleteMachineMutation ($machineId: ID!) {\n        deleteMachine (machineId: $machineId)\n      }\n    "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

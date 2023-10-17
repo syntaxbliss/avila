@@ -66,16 +66,22 @@ type PaginatedParts {
 
 type MachineElement {
   id: ID!
-  elementType: MachieElementType!
+  element: MachineElementUnion!
   quantity: Float!
 }
 
-union MachieElementType = Material | Part
+union MachineElementUnion = Material | Part
 
 type Machine {
   id: ID!
   name: String!
+  code: String!
   elements: [MachineElement!]!
+}
+
+type PaginatedMachines {
+  items: [Machine!]!
+  paginationInfo: PaginationInfo!
 }
 
 type PurchaseOrderMaterial {
@@ -149,6 +155,8 @@ type PaginatedRequestsForQuotation {
 }
 
 type Query {
+  machines(searchParams: SearchMachineInput, pagination: PaginationInput): PaginatedMachines!
+  machine(machineId: ID!): Machine!
   materials(searchParams: SearchMaterialInput, pagination: PaginationInput): PaginatedMaterials!
   material(materialId: ID!): Material!
   parts(searchParams: SearchPartInput, pagination: PaginationInput): PaginatedParts!
@@ -162,15 +170,14 @@ type Query {
   supplier(supplierId: ID!): Supplier!
 }
 
-input SearchMaterialInput {
+input SearchMachineInput {
   name: String
   code: String
-  lowQuantity: Boolean
-  sortField: SearchMaterialQuerySortField
+  sortField: SearchMachineQuerySortField
   sortOrder: QuerySortOrder
 }
 
-enum SearchMaterialQuerySortField {
+enum SearchMachineQuerySortField {
   CODE
   NAME
 }
@@ -183,6 +190,19 @@ enum QuerySortOrder {
 input PaginationInput {
   pageNumber: Int!
   pageSize: Int!
+}
+
+input SearchMaterialInput {
+  name: String
+  code: String
+  lowQuantity: Boolean
+  sortField: SearchMaterialQuerySortField
+  sortOrder: QuerySortOrder
+}
+
+enum SearchMaterialQuerySortField {
+  CODE
+  NAME
 }
 
 input SearchPartInput {
@@ -245,6 +265,8 @@ input SearchSupplierInput {
 
 type Mutation {
   createMachine(input: SaveMachineInput!): Machine!
+  updateMachine(machineId: ID!, input: SaveMachineInput!): Machine!
+  deleteMachine(machineId: ID!): Boolean!
   createMaterial(input: SaveMaterialInput!): Material!
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
@@ -266,6 +288,7 @@ type Mutation {
 
 input SaveMachineInput {
   name: String!
+  code: String!
   elements: [MachineElementInput!]!
 }
 

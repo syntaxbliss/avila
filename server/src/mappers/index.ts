@@ -1,4 +1,5 @@
 import {
+  MachineElementEntity,
   MachineEntity,
   MaterialEntity,
   PartEntity,
@@ -12,6 +13,7 @@ import {
 } from 'src/entities';
 import {
   Machine,
+  MachineElement,
   Material,
   Part,
   PartMaterial,
@@ -128,6 +130,16 @@ export const mapPartMaterialEntityToPartMaterial = (entity: PartMaterialEntity):
 export const mapMachineEntityToMachine = (entity: MachineEntity): Machine => {
   const machine = new Machine();
   machine.id = entity.id;
+  machine.name = entity.name;
+  machine.code = entity.code;
 
   return machine;
+};
+
+export const mapMachineElementEntityToMachineElement = (entity: MachineElementEntity) => {
+  const machineElement = new MachineElement();
+  machineElement.id = entity.id;
+  machineElement.quantity = entity.quantity;
+
+  return machineElement;
 };

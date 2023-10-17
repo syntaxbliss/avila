@@ -12,9 +12,12 @@ import RequestsForQuotationContainer from './request-for-quotation/RequestsForQu
 import PartFormContainer from './parts/PartFormContainer';
 import PartsContainer from './parts/PartsContainer';
 import MachineFormContainer from './machines/MachineFormContainer';
+import MachinesContainer from './machines/MachinesContainer';
 
 const routesList = [
   { path: routes.appRoutes.machines.create, element: MachineFormContainer },
+  { path: routes.appRoutes.machines.edit, element: MachineFormContainer },
+  { path: routes.appRoutes.machines.index, element: MachinesContainer },
   { path: routes.appRoutes.materials.create, element: MaterialFormContainer },
   { path: routes.appRoutes.materials.edit, element: MaterialFormContainer },
   { path: routes.appRoutes.materials.index, element: MaterialsContainer },

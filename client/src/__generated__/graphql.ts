@@ -36,10 +36,9 @@ export type CreateRequestForQuotationInput = {
   supplierId: Scalars['ID']['input'];
 };
 
-export type MachieElementType = Material | Part;
-
 export type Machine = {
   __typename?: 'Machine';
+  code: Scalars['String']['output'];
   elements: Array<MachineElement>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -47,7 +46,7 @@ export type Machine = {
 
 export type MachineElement = {
   __typename?: 'MachineElement';
-  elementType: MachieElementType;
+  element: MachineElementUnion;
   id: Scalars['ID']['output'];
   quantity: Scalars['Float']['output'];
 };
@@ -62,6 +61,8 @@ export enum MachineElementType {
   Material = 'MATERIAL',
   Part = 'PART'
 }
+
+export type MachineElementUnion = Material | Part;
 
 export type Material = {
   __typename?: 'Material';
@@ -91,6 +92,7 @@ export type Mutation = {
   createPurchaseOrder: PurchaseOrder;
   createRequestForQuotation: RequestForQuotation;
   createSupplier: Supplier;
+  deleteMachine: Scalars['Boolean']['output'];
   deleteMaterial: Scalars['Boolean']['output'];
   deletePart: Scalars['Boolean']['output'];
   deletePurchaseOrder: Scalars['Boolean']['output'];
@@ -99,6 +101,7 @@ export type Mutation = {
   purchaseOrderDelivered: Scalars['Boolean']['output'];
   registerPurchaseOrderPayment: Scalars['Boolean']['output'];
   saveRequestForQuotationAnswer: Scalars['Boolean']['output'];
+  updateMachine: Machine;
   updateMaterial: Material;
   updateMaterialQuantity: Scalars['Boolean']['output'];
   updatePart: Part;
@@ -133,6 +136,11 @@ export type MutationCreateRequestForQuotationArgs = {
 
 export type MutationCreateSupplierArgs = {
   input: SaveSupplierInput;
+};
+
+
+export type MutationDeleteMachineArgs = {
+  machineId: Scalars['ID']['input'];
 };
 
 
@@ -179,6 +187,12 @@ export type MutationSaveRequestForQuotationAnswerArgs = {
 };
 
 
+export type MutationUpdateMachineArgs = {
+  input: SaveMachineInput;
+  machineId: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateMaterialArgs = {
   input: SaveMaterialInput;
   materialId: Scalars['ID']['input'];
@@ -199,6 +213,12 @@ export type MutationUpdatePartArgs = {
 export type MutationUpdateSupplierArgs = {
   input: SaveSupplierInput;
   supplierId: Scalars['ID']['input'];
+};
+
+export type PaginatedMachines = {
+  __typename?: 'PaginatedMachines';
+  items: Array<Machine>;
+  paginationInfo: PaginationInfo;
 };
 
 export type PaginatedMaterials = {
@@ -321,6 +341,8 @@ export type PurchaseOrderPaymentInput = {
 
 export type Query = {
   __typename?: 'Query';
+  machine: Machine;
+  machines: PaginatedMachines;
   material: Material;
   materials: PaginatedMaterials;
   part: Part;
@@ -332,6 +354,17 @@ export type Query = {
   requestsForQuotationEligibleForPurchaseOrders: Array<RequestForQuotation>;
   supplier: Supplier;
   suppliers: PaginatedSuppliers;
+};
+
+
+export type QueryMachineArgs = {
+  machineId: Scalars['ID']['input'];
+};
+
+
+export type QueryMachinesArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+  searchParams?: InputMaybe<SearchMachineInput>;
 };
 
 
@@ -428,6 +461,7 @@ export enum RequestForQuotationStatus {
 }
 
 export type SaveMachineInput = {
+  code: Scalars['String']['input'];
   elements: Array<MachineElementInput>;
   name: Scalars['String']['input'];
 };
@@ -457,6 +491,18 @@ export type SaveSupplierInput = {
   name: Scalars['String']['input'];
   phone?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type SearchMachineInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  sortField?: InputMaybe<SearchMachineQuerySortField>;
+  sortOrder?: InputMaybe<QuerySortOrder>;
+};
+
+export enum SearchMachineQuerySortField {
+  Code = 'CODE',
+  Name = 'NAME'
+}
 
 export type SearchMaterialInput = {
   code?: InputMaybe<Scalars['String']['input']>;
@@ -544,12 +590,27 @@ export type UpdateMaterialQuantityInput = {
   quantity: Scalars['Float']['input'];
 };
 
+export type MachineFormContentMachineQueryQueryVariables = Exact<{
+  machineId: Scalars['ID']['input'];
+}>;
+
+
+export type MachineFormContentMachineQueryQuery = { __typename?: 'Query', machine: { __typename?: 'Machine', id: string, name: string, code: string, elements: Array<{ __typename?: 'MachineElement', id: string, quantity: number, element: { __typename?: 'Material', id: string, code: string, name: string, measureUnit: MeasureUnit } | { __typename?: 'Part', id: string, code: string, name: string } }> } };
+
 export type MachineFormContentCreateMachineMutationMutationVariables = Exact<{
   input: SaveMachineInput;
 }>;
 
 
 export type MachineFormContentCreateMachineMutationMutation = { __typename?: 'Mutation', createMachine: { __typename?: 'Machine', id: string } };
+
+export type MachineFormContentUpdateMachineMutationMutationVariables = Exact<{
+  machineId: Scalars['ID']['input'];
+  input: SaveMachineInput;
+}>;
+
+
+export type MachineFormContentUpdateMachineMutationMutation = { __typename?: 'Mutation', updateMachine: { __typename?: 'Machine', id: string } };
 
 export type MachineFormContainerElementsContentMaterialsQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -560,6 +621,21 @@ export type MachineFormContainerElementsContentPartsQueryQueryVariables = Exact<
 
 
 export type MachineFormContainerElementsContentPartsQueryQuery = { __typename?: 'Query', parts: { __typename?: 'PaginatedParts', items: Array<{ __typename?: 'Part', id: string, name: string, code: string }> } };
+
+export type MachinesContainerMachinesQueryQueryVariables = Exact<{
+  searchParams?: InputMaybe<SearchMachineInput>;
+  pagination?: InputMaybe<PaginationInput>;
+}>;
+
+
+export type MachinesContainerMachinesQueryQuery = { __typename?: 'Query', machines: { __typename?: 'PaginatedMachines', paginationInfo: { __typename?: 'PaginationInfo', count: number, pageNumber: number, pageSize: number }, items: Array<{ __typename?: 'Machine', id: string, name: string, code: string }> } };
+
+export type MachinesContainerDeleteMachineMutationMutationVariables = Exact<{
+  machineId: Scalars['ID']['input'];
+}>;
+
+
+export type MachinesContainerDeleteMachineMutationMutation = { __typename?: 'Mutation', deleteMachine: boolean };
 
 export type MaterialFormContentCreateMaterialMutationMutationVariables = Exact<{
   input: SaveMaterialInput;
@@ -827,9 +903,13 @@ export type SuppliersContainerDeleteSupplierMutationMutationVariables = Exact<{
 export type SuppliersContainerDeleteSupplierMutationMutation = { __typename?: 'Mutation', deleteSupplier: boolean };
 
 
+export const MachineFormContentMachineQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MachineFormContentMachineQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"machineId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"machine"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"machineId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"machineId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"elements"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"element"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Material"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Part"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<MachineFormContentMachineQueryQuery, MachineFormContentMachineQueryQueryVariables>;
 export const MachineFormContentCreateMachineMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MachineFormContentCreateMachineMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveMachineInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMachine"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<MachineFormContentCreateMachineMutationMutation, MachineFormContentCreateMachineMutationMutationVariables>;
+export const MachineFormContentUpdateMachineMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MachineFormContentUpdateMachineMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"machineId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveMachineInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMachine"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"machineId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"machineId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<MachineFormContentUpdateMachineMutationMutation, MachineFormContentUpdateMachineMutationMutationVariables>;
 export const MachineFormContainerElementsContentMaterialsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MachineFormContainerElementsContentMaterialsQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"materials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}}]}}]}}]}}]} as unknown as DocumentNode<MachineFormContainerElementsContentMaterialsQueryQuery, MachineFormContainerElementsContentMaterialsQueryQueryVariables>;
 export const MachineFormContainerElementsContentPartsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MachineFormContainerElementsContentPartsQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"parts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<MachineFormContainerElementsContentPartsQueryQuery, MachineFormContainerElementsContentPartsQueryQueryVariables>;
+export const MachinesContainerMachinesQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MachinesContainerMachinesQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchMachineInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"machines"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"searchParams"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchParams"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"paginationInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"pageNumber"}},{"kind":"Field","name":{"kind":"Name","value":"pageSize"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<MachinesContainerMachinesQueryQuery, MachinesContainerMachinesQueryQueryVariables>;
+export const MachinesContainerDeleteMachineMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MachinesContainerDeleteMachineMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"machineId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMachine"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"machineId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"machineId"}}}]}]}}]} as unknown as DocumentNode<MachinesContainerDeleteMachineMutationMutation, MachinesContainerDeleteMachineMutationMutationVariables>;
 export const MaterialFormContentCreateMaterialMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MaterialFormContentCreateMaterialMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveMaterialInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMaterial"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}},{"kind":"Field","name":{"kind":"Name","value":"currentQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"alertQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<MaterialFormContentCreateMaterialMutationMutation, MaterialFormContentCreateMaterialMutationMutationVariables>;
 export const MaterialFormContentUpdateMaterialMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MaterialFormContentUpdateMaterialMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"materialId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveMaterialInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMaterial"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"materialId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"materialId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}},{"kind":"Field","name":{"kind":"Name","value":"currentQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"alertQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<MaterialFormContentUpdateMaterialMutationMutation, MaterialFormContentUpdateMaterialMutationMutationVariables>;
 export const MaterialFormContentMaterialQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MaterialFormContentMaterialQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"materialId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"material"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"materialId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"materialId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"measureUnit"}},{"kind":"Field","name":{"kind":"Name","value":"currentQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"alertQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"suppliers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<MaterialFormContentMaterialQueryQuery, MaterialFormContentMaterialQueryQueryVariables>;

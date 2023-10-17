@@ -1,3 +1,4 @@
+export { default as MachineElementLoader } from './machine-element.loader';
 export { default as MaterialLoader } from './material.loader';
 export { default as PartMaterialLoader } from './part-material.loader';
 export { default as PurchaseOrderMaterialLoader } from './purchase-order-material.loader';

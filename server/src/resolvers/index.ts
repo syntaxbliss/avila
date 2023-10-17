@@ -1,3 +1,4 @@
+export { default as MachineElementResolver } from './machine-element.resolver';
 export { default as MachineResolver } from './machine.resolver';
 export { default as MaterialResolver } from './material.resolver';
 export { default as PartMaterialResolver } from './part-material.resolver';

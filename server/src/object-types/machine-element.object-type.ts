@@ -2,8 +2,8 @@ import { Field, Float, ID, ObjectType, createUnionType } from '@nestjs/graphql';
 import { Material } from './material.object-type';
 import { Part } from './part.object-type';
 
-const MachieElementType = createUnionType({
-  name: 'MachieElementType',
+export const MachineElementUnion = createUnionType({
+  name: 'MachineElementUnion',
   types: () => [Material, Part] as const,
 });
 
@@ -12,8 +12,8 @@ export class MachineElement {
   @Field(() => ID)
   id: string;
 
-  @Field(() => MachieElementType)
-  elementType: typeof MachieElementType;
+  @Field(() => MachineElementUnion)
+  element: typeof MachineElementUnion;
 
   @Field(() => Float)
   quantity: number;

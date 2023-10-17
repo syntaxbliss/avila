@@ -21,6 +21,7 @@ import {
   SupplierEntity,
 } from './entities';
 import {
+  MachineElementResolver,
   MachineResolver,
   MaterialResolver,
   PartMaterialResolver,
@@ -31,6 +32,7 @@ import {
   SupplierResolver,
 } from './resolvers';
 import {
+  MachineElementLoader,
   MaterialLoader,
   PartMaterialLoader,
   PurchaseOrderMaterialLoader,
@@ -55,6 +57,7 @@ const entities = [
   SupplierEntity,
 ];
 const resolvers = [
+  MachineElementResolver,
   MachineResolver,
   MaterialResolver,
   PartMaterialResolver,
@@ -66,6 +69,7 @@ const resolvers = [
   SupplierResolver,
 ];
 const loaders = [
+  MachineElementLoader,
   MaterialLoader,
   PartMaterialLoader,
   PurchaseOrderMaterialLoader,
