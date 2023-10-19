@@ -1,12 +1,6 @@
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import {
-  MaterialEntity,
-  PartEntity,
-  PartMaterialEntity,
-  PricedItemElementTypeEnum,
-  PricedItemEntity,
-} from 'src/entities';
+import { MaterialEntity, PartEntity, PartMaterialEntity } from 'src/entities';
 import { PaginationInput, SavePartInput, SearchPartInput, savePartSchema } from 'src/input-types';
 import { PartMaterialLoader } from 'src/loaders';
 import { mapPartEntityToPart } from 'src/mappers';
@@ -107,12 +101,6 @@ export default class PartResolver {
         return em.save(partMaterial);
       });
       await Promise.all(partMaterials);
-
-      const pricedItem = em.create<PricedItemEntity>(PricedItemEntity, {
-        elementType: PricedItemElementTypeEnum.PART,
-        part,
-      });
-      await em.save(pricedItem);
 
       return mapPartEntityToPart(part);
     });

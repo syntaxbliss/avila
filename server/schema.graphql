@@ -30,6 +30,7 @@ type Material {
   currentQuantity: Float
   alertQuantity: Float
   suppliers: [Supplier!]!
+  unitPrice: Float
 }
 
 enum MeasureUnit {
@@ -83,14 +84,6 @@ type PaginatedMachines {
   items: [Machine!]!
   paginationInfo: PaginationInfo!
 }
-
-type PricedItem {
-  id: ID!
-  element: PricedItemElementUnion!
-  unitPrice: Float
-}
-
-union PricedItemElementUnion = Material | Part
 
 type PurchaseOrderMaterial {
   material: Material!
@@ -169,7 +162,6 @@ type Query {
   material(materialId: ID!): Material!
   parts(searchParams: SearchPartInput, pagination: PaginationInput): PaginatedParts!
   part(partId: ID!): Part!
-  pricedItems: [PricedItem!]!
   purchaseOrders(searchParams: SearchPurchaseOrderInput, pagination: PaginationInput): PaginatedPurchaseOrders!
   purchaseOrder(purchaseOrderId: ID!): PurchaseOrder!
   requestsForQuotation(searchParams: SearchRequestForQuotationInput, pagination: PaginationInput): PaginatedRequestsForQuotation!
@@ -280,10 +272,10 @@ type Mutation {
   updateMaterial(materialId: ID!, input: SaveMaterialInput!): Material!
   deleteMaterial(materialId: ID!): Boolean!
   updateMaterialQuantity(input: UpdateMaterialQuantityInput!): Boolean!
+  updateMaterialUnitPrice(materialId: ID!, unitPrice: Float!): Material!
   createPart(input: SavePartInput!): Part!
   updatePart(partId: ID!, input: SavePartInput!): Part!
   deletePart(partId: ID!): Boolean!
-  updatePricedItem(pricedItemId: ID!, unitPrice: Float!): PricedItem!
   createPurchaseOrder(input: CreatePurchaseOrderInput!): PurchaseOrder!
   deletePurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!

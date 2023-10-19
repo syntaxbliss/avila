@@ -26,20 +26,12 @@ export class PopulateMaterialTable1694602992720 implements MigrationInterface {
       const currentQuantity = stockable ? `"${faker.finance.amount(0, 99999.99)}"` : null;
       const alertQuantity = stockable ? `"${faker.finance.amount(0, 99999.99)}"` : null;
 
-      return {
-        materials: `("${id}", "${name}", "${code}", "${measureUnit}", ${currentQuantity}, ${alertQuantity})`,
-        pricedItems: `("${v4()}", "material", "${id}")`,
-      };
+      return `("${id}", "${name}", "${code}", "${measureUnit}", ${currentQuantity}, ${alertQuantity})`;
     });
 
     await queryRunner.query(`
       INSERT INTO material (id, name, code, measureUnit, currentQuantity, alertQuantity)
-      VALUES ${values.map(v => v.materials).join(', ')}
-    `);
-
-    await queryRunner.query(`
-      INSERT INTO priced_item (id, elementType, materialId)
-      VALUES ${values.map(v => v.pricedItems).join(', ')}
+      VALUES ${values.join(', ')}
     `);
   }
 

@@ -2,7 +2,7 @@ export const appRoutes = {
   machines: { index: '/machine', create: '/machine/create', edit: '/machine/:machineId/edit' },
   materials: { index: '/material', create: '/material/create', edit: '/material/:materialId/edit' },
   parts: { index: '/part', create: '/part/create', edit: '/part/:partId/edit' },
-  pricedItems: { index: '/priced-item' },
+  priceList: { index: '/price-list' },
   purchaseOrders: { index: '/purchase-order', create: '/purchase-order/create' },
   requestsForQuotation: {
     index: '/request-for-quotation',

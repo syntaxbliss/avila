@@ -25,6 +25,9 @@ export class Material {
 
   @Field(() => [Supplier])
   suppliers: Supplier[];
+
+  @Field(() => Float, { nullable: true })
+  unitPrice: number | null;
 }
 
 @ObjectType()

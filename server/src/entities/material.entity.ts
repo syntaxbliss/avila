@@ -24,4 +24,7 @@ export default class MaterialEntity {
 
   @OneToMany(() => MaterialSupplierEntity, materialSupplier => materialSupplier.material)
   materialSuppliers: MaterialSupplierEntity[];
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  unitPrice: number | null;
 }

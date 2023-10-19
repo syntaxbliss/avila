@@ -24,8 +24,3 @@ export enum MachineElementElementTypeEnum {
   MATERIAL = 'material',
   PART = 'part',
 }
-
-export enum PricedItemElementTypeEnum {
-  MATERIAL = 'material',
-  PART = 'part',
-}

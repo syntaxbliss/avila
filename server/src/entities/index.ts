@@ -4,7 +4,6 @@ export { default as MaterialEntity } from './material.entity';
 export { default as MaterialSupplierEntity } from './material_supplier.entity';
 export { default as PartEntity } from './part.entity';
 export { default as PartMaterialEntity } from './part-material.entity';
-export { default as PricedItemEntity } from './priced-item.entity';
 export { default as PurchaseOrderEntity } from './purchase-order.entity';
 export { default as PurchaseOrderMaterialEntity } from './purchase-order-material.entity';
 export { default as PurchaseOrderPaymentEntity } from './purchase-order-payment.entity';

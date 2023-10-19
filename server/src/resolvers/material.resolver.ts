@@ -1,12 +1,6 @@
-import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Float, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import {
-  MaterialEntity,
-  MaterialSupplierEntity,
-  PricedItemElementTypeEnum,
-  PricedItemEntity,
-  SupplierEntity,
-} from 'src/entities';
+import { MaterialEntity, MaterialSupplierEntity, SupplierEntity } from 'src/entities';
 import {
   PaginationInput,
   SaveMaterialInput,
@@ -19,6 +13,7 @@ import { SupplierLoader } from 'src/loaders';
 import { mapMaterialEntityToMaterial } from 'src/mappers';
 import { Material, PaginatedMaterials, Supplier } from 'src/object-types';
 import { DataSource, In, IsNull, Not } from 'typeorm';
+import { z } from 'zod';
 
 @Resolver(() => Material)
 export default class MaterialResolver {
@@ -108,12 +103,6 @@ export default class MaterialResolver {
       });
       await Promise.all(materialSuppliers.map(ms => em.save(ms)));
 
-      const pricedItem = em.create<PricedItemEntity>(PricedItemEntity, {
-        elementType: PricedItemElementTypeEnum.MATERIAL,
-        material,
-      });
-      await em.save(pricedItem);
-
       return mapMaterialEntityToMaterial(material);
     });
   }
@@ -198,6 +187,24 @@ export default class MaterialResolver {
     await this.ds.manager.save(material);
 
     return true;
+  }
+
+  @Mutation(() => Material)
+  async updateMaterialUnitPrice(
+    @Args('materialId', { type: () => ID }) materialId: string,
+    @Args('unitPrice', { type: () => Float }) unitPrice: number
+  ): Promise<Material> {
+    const parsedData = z
+      .object({ materialId: z.string().trim().uuid(), unitPrice: z.number().positive() })
+      .parse({ materialId, unitPrice });
+    const material = await this.ds.manager.findOneByOrFail(MaterialEntity, {
+      id: parsedData.materialId,
+    });
+
+    material.unitPrice = parsedData.unitPrice;
+    await this.ds.manager.save(material);
+
+    return mapMaterialEntityToMaterial(material);
   }
 
   @ResolveField()
