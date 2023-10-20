@@ -36,9 +36,9 @@ import {
   Supplier,
 } from 'src/object-types';
 import { DataSource, FindOneOptions, In, IsNull, Not } from 'typeorm';
-import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
+import { PDFService } from 'src/services';
 
 @Resolver(() => PurchaseOrder)
 export default class PurchaseOrderResolver {
@@ -46,7 +46,8 @@ export default class PurchaseOrderResolver {
     private readonly ds: DataSource,
     private readonly supplierLoader: SupplierLoader,
     private readonly purchaseOrderMaterialLoader: PurchaseOrderMaterialLoader,
-    private readonly purchaseOrderPaymentLoader: PurchaseOrderPaymentLoader
+    private readonly purchaseOrderPaymentLoader: PurchaseOrderPaymentLoader,
+    private readonly pdfService: PDFService
   ) {}
 
   @Query(() => PaginatedPurchaseOrders)
@@ -333,20 +334,7 @@ export default class PurchaseOrderResolver {
     fs.writeFileSync(path.join(outputDir, `${outputHtmlFilename}.html`), content, 'utf-8');
 
     // generate pdf
-    const browser = await puppeteer.launch({ headless: 'new' });
-    const page = await browser.newPage();
-    const downloadBaseUrl = `http://localhost:8000/download`;
-    const downloadFilename = `${outputHtmlFilename}.pdf`;
-    await page.goto(`${downloadBaseUrl}/${outputHtmlFilename}.html`, { waitUntil: 'networkidle0' });
-    await page.pdf({
-      path: path.join(outputDir, downloadFilename),
-      format: 'A4',
-      margin: { top: 20, bottom: 20, left: 20, right: 20 },
-      printBackground: true,
-    });
-    await browser.close();
-
-    return `${downloadBaseUrl}/${downloadFilename}`;
+    return this.pdfService.generatePDF(outputHtmlFilename);
   }
 
   @ResolveField()

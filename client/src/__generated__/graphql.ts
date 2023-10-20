@@ -99,7 +99,7 @@ export type Mutation = {
   deletePurchaseOrder: Scalars['Boolean']['output'];
   deleteRequestForQuotation: Scalars['Boolean']['output'];
   deleteSupplier: Scalars['Boolean']['output'];
-  printPurchaseOrder: Scalars['Boolean']['output'];
+  printPurchaseOrder: Scalars['String']['output'];
   purchaseOrderDelivered: Scalars['Boolean']['output'];
   registerPurchaseOrderPayment: Scalars['Boolean']['output'];
   saveRequestForQuotationAnswer: Scalars['Boolean']['output'];
@@ -809,7 +809,7 @@ export type PurchaseOrdersContainerDeletePurchaseOrderMutationMutation = { __typ
 export type PurchaseOrdersContainerPrintPurchaseOrderMutationMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PurchaseOrdersContainerPrintPurchaseOrderMutationMutation = { __typename?: 'Mutation', printPurchaseOrder: boolean };
+export type PurchaseOrdersContainerPrintPurchaseOrderMutationMutation = { __typename?: 'Mutation', printPurchaseOrder: string };
 
 export type PurchaseOrdersContainerDetailContentPuchaseOrderQueryQueryVariables = Exact<{
   purchaseOrderId: Scalars['ID']['input'];

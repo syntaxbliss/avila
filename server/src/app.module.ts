@@ -42,6 +42,7 @@ import {
 } from './loaders';
 import RequestForQuotationMaterialResolver from './resolvers/request-for-quotation-material.resolver';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { PDFService } from './services';
 
 const entities = [
   MachineElementEntity,
@@ -78,11 +79,15 @@ const loaders = [
   RequestForQuotationMaterialLoader,
   SupplierLoader,
 ];
+const services = [PDFService];
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
-    ServeStaticModule.forRoot({ rootPath: path.join(__dirname, 'assets') }),
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, 'assets'),
+      serveStaticOptions: { index: false },
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'mysql',
@@ -118,6 +123,6 @@ const loaders = [
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
   ],
-  providers: [...resolvers, ...loaders],
+  providers: [...resolvers, ...loaders, ...services],
 })
 export class AppModule {}

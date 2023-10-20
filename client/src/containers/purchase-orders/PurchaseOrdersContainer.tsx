@@ -187,9 +187,17 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     }
   }, [deleteDialog, deletePurchaseOrderMutation, purchaseOrdersQuery, toDelete, toast]);
 
-  // FIXME
   const handlePrintClick = useCallback(async () => {
-    await printPurchaseOrderMutation();
+    const response = await printPurchaseOrderMutation();
+
+    if (response.data?.printPurchaseOrder) {
+      const link = document.createElement('a');
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.download = '';
+      link.href = response.data?.printPurchaseOrder;
+      link.click();
+    }
   }, [printPurchaseOrderMutation]);
 
   return (
@@ -318,6 +326,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             size="xs"
                             ml="1"
                             onClick={handlePrintClick}
+                            isLoading={printPurchaseOrderMutationStatus.loading}
                           />
 
                           <IconButton
