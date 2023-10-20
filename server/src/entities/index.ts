@@ -1,3 +1,4 @@
+export { default as ConfigurationEntity } from './configuration.entity';
 export { default as MachineElementEntity } from './machine-element.entity';
 export { default as MachineEntity } from './machine.entity';
 export { default as MaterialEntity } from './material.entity';

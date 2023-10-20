@@ -88,8 +88,8 @@ PurchaseOrdersContainer.gql = {
     `),
 
     printPurchaseOrder: gql(`
-      mutation PurchaseOrdersContainerPrintPurchaseOrderMutation {
-        printPurchaseOrder
+      mutation PurchaseOrdersContainerPrintPurchaseOrderMutation ($purchaseOrderId: ID!) {
+        printPurchaseOrder (purchaseOrderId: $purchaseOrderId)
       }
     `),
   },
@@ -187,18 +187,21 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     }
   }, [deleteDialog, deletePurchaseOrderMutation, purchaseOrdersQuery, toDelete, toast]);
 
-  const handlePrintClick = useCallback(async () => {
-    const response = await printPurchaseOrderMutation();
+  const handlePrintClick = useCallback(
+    async (purchaseOrderId: string) => {
+      const response = await printPurchaseOrderMutation({ variables: { purchaseOrderId } });
 
-    if (response.data?.printPurchaseOrder) {
-      const link = document.createElement('a');
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.download = '';
-      link.href = response.data?.printPurchaseOrder;
-      link.click();
-    }
-  }, [printPurchaseOrderMutation]);
+      if (response.data?.printPurchaseOrder) {
+        const link = document.createElement('a');
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.download = '';
+        link.href = response.data?.printPurchaseOrder;
+        link.click();
+      }
+    },
+    [printPurchaseOrderMutation]
+  );
 
   return (
     <>
@@ -325,7 +328,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             icon={<MdPrint />}
                             size="xs"
                             ml="1"
-                            onClick={handlePrintClick}
+                            onClick={() => handlePrintClick(purchaseOrder.id)}
                             isLoading={printPurchaseOrderMutationStatus.loading}
                           />
 

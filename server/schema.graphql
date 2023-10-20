@@ -280,7 +280,7 @@ type Mutation {
   deletePurchaseOrder(purchaseOrderId: ID!): Boolean!
   purchaseOrderDelivered(purchaseOrderId: ID!, input: PurchaseOrderDeliveredInput!): Boolean!
   registerPurchaseOrderPayment(purchaseOrderId: ID!, input: PurchaseOrderPaymentInput!): Boolean!
-  printPurchaseOrder: String!
+  printPurchaseOrder(purchaseOrderId: ID!): String!
   createRequestForQuotation(input: CreateRequestForQuotationInput!): RequestForQuotation!
   saveRequestForQuotationAnswer(requestForQuotationId: ID!, input: SaveRequestForQuotationAnswerInput!): Boolean!
   deleteRequestForQuotation(requestForQuotationId: ID!): Boolean!

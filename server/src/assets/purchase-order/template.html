@@ -103,6 +103,7 @@
       }
 
       #articles {
+        font-size: 11px;
         border-top: solid 2px black;
       }
       #articles .border-left {
@@ -114,17 +115,32 @@
       #articles .border-bottom {
         border-bottom: solid 2px black;
       }
+      #articles .border-top {
+        border-top: solid 2px black;
+      }
+      #articles .border-top-soft {
+        border-top: solid 1px #e0e0e0;
+      }
       #articles .header {
         text-transform: uppercase;
         font-weight: 700;
         padding: 15px 8px 4px;
       }
+      #articles .total {
+        text-transform: uppercase;
+        font-weight: 700;
+        padding: 4px 8px;
+      }
       #articles table {
         width: 100%;
+        table-layout: fixed;
       }
       #articles thead tr {
         border-left: solid 2px black;
         border-right: solid 2px black;
+      }
+      #articles tbody tr:first-child {
+        border-top: 0;
       }
       #articles th {
         background-color: #ffcc00;
@@ -142,12 +158,12 @@
         <p class="font-bold font-25">ORDEN DE COMPRA</p>
       </div>
 
-      <p class="mt-20"><span class="font-bold">Domicilio comercial:</span> Área Industrial - Lotes 13 y 14, Roldán (2134), Santa Fe</p>
-      <p class="mt-10"><span class="font-bold">Condición frente al IVA:</span> IVA Responsable Inscripto</p>
-      <p class="mt-10"><span class="font-bold">CUIT:</span> 23-24002918-9</p>
-      <p class="mt-10"><span class="font-bold">Ingresos Brutos:</span> 916419770</p>
-      <p class="mt-10"><span class="font-bold">Teléfono:</span> 3413 486215</p>
-      <p class="mt-10"><span class="font-bold">Email:</span> administracion@avilamaquinaria.com.ar</p>
+      <p class="mt-20"><span class="font-bold">Domicilio comercial:</span> {{COMPANY_ADDRESS}}</p>
+      <p class="mt-10"><span class="font-bold">Condición frente al IVA:</span> {{TAX_CONDITION}}</p>
+      <p class="mt-10"><span class="font-bold">CUIT:</span> {{NRO_DE_CUIT}}</p>
+      <p class="mt-10"><span class="font-bold">Ingresos Brutos:</span> {{NRO_DE_INGRESOS_BRUTOS}}</p>
+      <p class="mt-10"><span class="font-bold">Teléfono:</span> {{COMPANY_PHONE}}</p>
+      <p class="mt-10"><span class="font-bold">Email:</span> {{COMPANY_EMAIL}}</p>
 
       <img class="logo" src="/purchase-order/logo.png" alt="logo">
     </div>
@@ -157,63 +173,42 @@
         <p class="font-bold">Número de O/C:</p>
       </div>
       <div class="grid-col-2-5">
-        <p>00235</p>
+        <p>{{PURCHASE_ORDER_NUMBER}}</p>
       </div>
 
       <div class="bg-yellow">
         <p class="font-bold">Empresa:</p>
       </div>
-      <div>
-        <p>Ferrinox SRL</p>
+      <div class="grid-col-2-5">
+        <p>{{SUPPLIER_NAME}}</p>
       </div>
 
       <div>
-        <p class="font-bold">Contacto:</p>
+        <p class="font-bold">Dirección:</p>
       </div>
-      <div>
-        <p>Diego Invernisi</p>
+      <div class="grid-col-2-5">
+        <p>{{SUPPLIER_ADDRESS}}</p>
       </div>
 
       <div>
         <p class="font-bold">Email:</p>
       </div>
       <div>
-        <p></p>
-      </div>
-
-      <div>
-        <p class="font-bold">Ciudad:</p>
-      </div>
-      <div>
-        <p>Rosario</p>
-      </div>
-
-      <div>
-        <p class="font-bold">Dirección:</p>
-      </div>
-      <div>
-        <p>Vera Mujica 250</p>
-      </div>
-
-      <div>
-        <p class="font-bold">Provincia:</p>
-      </div>
-      <div>
-        <p>Santa Fe</p>
-      </div>
-
-      <div>
-        <p class="font-bold">CP:</p>
-      </div>
-      <div>
-        <p>2000</p>
+        <p>{{SUPPLIER_EMAIL}}</p>
       </div>
 
       <div>
         <p class="font-bold">Teléfono:</p>
       </div>
       <div>
-        <p>3414 304025</p>
+        <p>{{SUPPLIER_PHONE}}</p>
+      </div>
+
+      <div>
+        <p class="font-bold">Contacto:</p>
+      </div>
+      <div>
+        <p>{{SUPPLIER_CONTACT}}</p>
       </div>
 
       <div class="grid-col-1-5"></div>
@@ -222,28 +217,28 @@
         <p class="font-bold">Fecha de O/C:</p>
       </div>
       <div>
-        <p>19/10/2023</p>
+        <p>{{PURCHASE_ORDER_DATE}}</p>
       </div>
 
       <div class="bg-yellow">
         <p class="font-bold">Lugar de entrega:</p>
       </div>
       <div>
-        <p>Rosario</p>
+        <p>{{PURCHASE_ORDER_DELIVERY_LOCATION}}</p>
       </div>
 
       <div class="bg-yellow">
         <p class="font-bold">Solicitante:</p>
       </div>
       <div>
-        <p>Violeta Ávila</p>
+        <p>{{PURCHASE_ORDER_EMITTER}}</p>
       </div>
 
       <div class="bg-yellow">
         <p class="font-bold">Condiciones:</p>
       </div>
       <div>
-        <p></p>
+        <p>{{PURCHASE_ORDER_CONDITIONS}}</p>
       </div>
     </div>
 
@@ -251,86 +246,23 @@
       <table>
         <thead>
           <tr>
-            <th class="header text-center">Cantidad</th>
             <th class="header text-left">Descripción</th>
             <th class="header text-center">Unidad</th>
-            <th class="header text-center">IVA</th>
+            <th class="header text-center">Cantidad</th>
             <th class="header text-center">Precio unitario</th>
-            <th class="header text-center">Precio total</th>
+            <th class="header text-center">Subtotal</th>
+            <th class="header text-center">IVA</th>
+            <th class="header text-center">Precio final</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr class="border-left border-right">
-            <td class="text-center">4</td>
-            <td>CHAPA AISI 304 de 1000 x 2000</td>
-            <td class="text-center">UNI.</td>
-            <td class="text-center">21%</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$0.00</td>
-          </tr>
-
-          <tr class="border-left border-right">
-            <td class="text-center">4</td>
-            <td>CHAPA AISI 304 de 1000 x 2000 x 1,5 mm</td>
-            <td class="text-center">UNI.</td>
-            <td class="text-center">21%</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$0.00</td>
-          </tr>
-
-          <tr class="border-left border-right">
-            <td class="text-center">4</td>
-            <td>CHAPA AISI 304 de 1000 x 2000 x 1,5 mm</td>
-            <td class="text-center">UNI.</td>
-            <td class="text-center">21%</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$0.00</td>
-          </tr>
-
-          <tr class="border-left border-right">
-            <td class="text-center">4</td>
-            <td>CHAPA AISI 304 de 1000 x 2000 x 1,5 mm</td>
-            <td class="text-center">UNI.</td>
-            <td class="text-center">21%</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$0.00</td>
-          </tr>
-
-          <tr class="border-left border-right">
-            <td class="text-center">4</td>
-            <td>CHAPA AISI 304 de 1000 x 2000 x 1,5 mm</td>
-            <td class="text-center">UNI.</td>
-            <td class="text-center">21%</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$0.00</td>
-          </tr>
-
-          <tr class="border-left border-right border-bottom">
-            <td class="text-center">4</td>
-            <td>CHAPA AISI 304 de 1000 x 2000 x 1,5 mm</td>
-            <td class="text-center">UNI.</td>
-            <td class="text-center">21%</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$0.00</td>
-          </tr>
+          {{ARTICLE_ROWS}}
 
           <tr>
-            <td colspan="4"></td>
-            <td class="bg-yellow header border-left">Subtotal</td>
-            <td class="text-right border-right">$0.00</td>
-          </tr>
-
-          <tr>
-            <td colspan="4"></td>
-            <td class="bg-yellow header border-left">IVA</td>
-            <td class="text-right border-right">$0.00</td>
-          </tr>
-
-          <tr>
-            <td colspan="4"></td>
-            <td class="bg-yellow header border-left border-bottom">Total</td>
-            <td class="text-right border-right border-bottom">$0.00</td>
+            <td class="border-top" colspan="5"></td>
+            <td class="bg-yellow total border-left border-bottom border-top">Total</td>
+            <td class="text-right border-right border-bottom border-top">$ {{PURCHASE_ORDER_TOTAL}}</td>
           </tr>
         </tbody>
       </table>

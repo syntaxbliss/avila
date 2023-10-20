@@ -7,6 +7,7 @@ import * as path from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import {
+  ConfigurationEntity,
   MachineElementEntity,
   MachineEntity,
   MaterialEntity,
@@ -45,6 +46,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { PDFService } from './services';
 
 const entities = [
+  ConfigurationEntity,
   MachineElementEntity,
   MachineEntity,
   MaterialEntity,
