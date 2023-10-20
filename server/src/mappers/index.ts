@@ -45,6 +45,7 @@ export const mapSupplierEntityToSupplier = (entity: SupplierEntity): Supplier =>
   supplier.address = entity.address;
   supplier.email = entity.email;
   supplier.phone = entity.phone;
+  supplier.contact = entity.contact;
 
   return supplier;
 };
@@ -54,6 +55,10 @@ export const mapPurchaseOrderEntityToPurchaseOrder = (
 ): PurchaseOrder => {
   const purchaseOrder = new PurchaseOrder();
   purchaseOrder.id = entity.id;
+  purchaseOrder.orderNumber = entity.orderNumber;
+  purchaseOrder.emitter = entity.emitter;
+  purchaseOrder.deliveryLocation = entity.deliveryLocation;
+  purchaseOrder.conditions = entity.conditions;
   purchaseOrder.orderedAt = entity.orderedAt;
   purchaseOrder.deliveredAt = entity.deliveredAt;
   purchaseOrder.deliveryNote = entity.deliveryNote;

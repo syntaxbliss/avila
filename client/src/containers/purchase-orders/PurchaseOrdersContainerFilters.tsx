@@ -1,5 +1,11 @@
 import { Divider, Grid, GridItem, IconButton } from '@chakra-ui/react';
-import { Card, FormDateRange, FormSelect, SuspenseSpinner } from '../../components';
+import {
+  Card,
+  FormDateRange,
+  FormInputNumber,
+  FormSelect,
+  SuspenseSpinner,
+} from '../../components';
 import { MdFilterAltOff } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { useSuspenseQuery } from '@apollo/client';
@@ -12,6 +18,7 @@ import {
 } from '../../__generated__/graphql';
 
 export type SearchParams = {
+  orderNumber: string;
   orderedAtFrom: string;
   orderedAtTo: string;
   supplierId: string;
@@ -22,6 +29,7 @@ export type SearchParams = {
 };
 
 type Props = {
+  onDebouncedChange: (partialUpdate: Partial<SearchParams>) => void;
   onImmediateChange: (partialUpdate: Partial<SearchParams>) => void;
   onReset?: () => void;
   searchParams: SearchParams;
@@ -50,6 +58,7 @@ const sortOrderSelectOptions = [
 ];
 
 export default function PurchaseOrdersContainerFilters({
+  onDebouncedChange,
   onImmediateChange,
   onReset,
   searchParams,
@@ -91,6 +100,16 @@ export default function PurchaseOrdersContainerFilters({
                   deliveryStatus: e.target.value as SearchPurchaseOrderDeliveryStatus,
                 })
               }
+            />
+
+            <FormInputNumber
+              label="Número de orden"
+              value={searchParams.orderNumber}
+              onChange={value => onDebouncedChange({ orderNumber: value })}
+              min={1}
+              max={99999999}
+              precision={0}
+              step={1}
             />
 
             <SuspenseSpinner>

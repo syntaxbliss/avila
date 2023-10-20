@@ -15,6 +15,7 @@ type FormState = {
   address: string;
   email: string;
   phone: string;
+  contact: string;
 };
 
 const formSchema = z.object({
@@ -22,6 +23,7 @@ const formSchema = z.object({
   address: validationRules.string(true, undefined, 250),
   email: validationRules.email(false),
   phone: validationRules.string(true, undefined, 250),
+  contact: validationRules.string(true, undefined, 250),
 });
 
 const validateForm = (input: FormState) => {
@@ -37,6 +39,7 @@ const validateForm = (input: FormState) => {
         address: _.get(errors, 'address._errors.0'),
         email: _.get(errors, 'email._errors.0'),
         phone: _.get(errors, 'phone._errors.0'),
+        contact: _.get(errors, 'contact._errors.0'),
       },
     };
   }
@@ -78,6 +81,7 @@ SupplierFormContent.gql = {
           address
           email
           phone
+          contact
         }
       }
     `),
@@ -89,6 +93,7 @@ SupplierFormContent.gql = {
           address
           email
           phone
+          contact
         }
       }
     `),
@@ -102,6 +107,7 @@ SupplierFormContent.gql = {
           address
           email
           phone
+          contact
         }
       }
     `),
@@ -126,6 +132,7 @@ function SupplierFormContent({ supplierId }: SupplierFormContentProps): JSX.Elem
     address: data?.supplier.address ?? '',
     email: data?.supplier.email ?? '',
     phone: data?.supplier.phone ?? '',
+    contact: data?.supplier.contact ?? '',
   });
 
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -155,6 +162,7 @@ function SupplierFormContent({ supplierId }: SupplierFormContentProps): JSX.Elem
                 address: validation.data.address,
                 email: validation.data.email,
                 phone: validation.data.phone,
+                contact: validation.data.contact,
               },
             },
             onCompleted() {
@@ -170,6 +178,7 @@ function SupplierFormContent({ supplierId }: SupplierFormContentProps): JSX.Elem
                 address: validation.data.address,
                 email: validation.data.email,
                 phone: validation.data.phone,
+                contact: validation.data.contact,
               },
             },
             onCompleted() {
@@ -206,10 +215,10 @@ function SupplierFormContent({ supplierId }: SupplierFormContentProps): JSX.Elem
             />
 
             <FormInputText
+              gridColumn="1 / 3"
               label="Dirección"
               value={form.address}
               onChange={e => setForm({ ...form, address: e.target.value })}
-              gridColumn="1 / 3"
               error={formErrors.address}
             />
 
@@ -227,9 +236,15 @@ function SupplierFormContent({ supplierId }: SupplierFormContentProps): JSX.Elem
               error={formErrors.phone}
             />
 
-            <GridItem gridColumn="1 / 3">
-              <Divider />
-            </GridItem>
+            <FormInputText
+              gridColumn="1 / 3"
+              label="Contacto"
+              value={form.contact}
+              onChange={e => setForm({ ...form, contact: e.target.value })}
+              error={formErrors.contact}
+            />
+
+            <Divider gridColumn="1 / 3" />
 
             <GridItem display="flex" justifyContent="flex-end" gridColumn="1 / 3">
               <Button

@@ -7,6 +7,18 @@ export default class PurchaseOrderEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ unique: true })
+  orderNumber: number;
+
+  @Column()
+  emitter: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  deliveryLocation: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  conditions: string | null;
+
   @Column()
   orderedAt: Date;
 

@@ -66,6 +66,7 @@ export default class SupplierResolver {
       address: data.address || null,
       email: data.email || null,
       phone: data.phone || null,
+      contact: data.contact || null,
     });
     await this.ds.manager.save(SupplierEntity, supplier);
 
@@ -84,6 +85,7 @@ export default class SupplierResolver {
     supplier.address = data.address || null;
     supplier.email = data.email || null;
     supplier.phone = data.phone || null;
+    supplier.contact = data.contact || null;
     await this.ds.manager.save(SupplierEntity, supplier);
 
     return mapSupplierEntityToSupplier(supplier);

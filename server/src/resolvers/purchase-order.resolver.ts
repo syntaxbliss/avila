@@ -58,17 +58,23 @@ export default class PurchaseOrderResolver {
   ): Promise<PaginatedPurchaseOrders> {
     const query = this.ds.manager.createQueryBuilder(PurchaseOrderEntity, 'purchase_order');
 
+    if (searchParams?.orderNumber) {
+      query.andWhere('purchase_order.orderNumber = :orderNumber', {
+        orderNumber: searchParams.orderNumber,
+      });
+    }
+
     if (searchParams?.orderedAtFrom && searchParams?.orderedAtTo) {
-      query.where('purchase_order.orderedAt BETWEEN :from AND :to', {
+      query.andWhere('purchase_order.orderedAt BETWEEN :from AND :to', {
         from: dayjs(searchParams.orderedAtFrom).format('YYYY-MM-DD'),
         to: dayjs(searchParams.orderedAtTo).format('YYYY-MM-DD'),
       });
     } else if (searchParams?.orderedAtFrom) {
-      query.where('purchase_order.orderedAt >= :from', {
+      query.andWhere('purchase_order.orderedAt >= :from', {
         from: dayjs(searchParams.orderedAtFrom).format('YYYY-MM-DD'),
       });
     } else if (searchParams?.orderedAtTo) {
-      query.where('purchase_order.orderedAt <= :to', {
+      query.andWhere('purchase_order.orderedAt <= :to', {
         to: dayjs(searchParams.orderedAtTo).format('YYYY-MM-DD'),
       });
     }
@@ -140,8 +146,20 @@ export default class PurchaseOrderResolver {
       : null;
 
     return this.ds.transaction(async em => {
+      // purchase order number
+      const [lastPurchaseOrder] = await em.find(PurchaseOrderEntity, {
+        skip: 0,
+        take: 1,
+        order: { orderNumber: 'DESC' },
+      });
+      const lastPurchaseOrderNumber = (lastPurchaseOrder?.orderNumber ?? 0) + 1;
+
       // purchase order
       const purchaseOrder = em.create<PurchaseOrderEntity>(PurchaseOrderEntity, {
+        orderNumber: lastPurchaseOrderNumber,
+        emitter: parsedData.emitter,
+        deliveryLocation: parsedData.deliveryLocation ?? null,
+        conditions: parsedData.conditions ?? null,
         orderedAt: parsedData.orderedAt,
         deliveredAt: parsedData.deliveredAt ?? null,
         deliveryNote: parsedData.deliveryNote ?? null,
@@ -353,10 +371,15 @@ export default class PurchaseOrderResolver {
       .replace(/{{NRO_DE_INGRESOS_BRUTOS}}/g, config.NRO_DE_INGRESOS_BRUTOS)
       .replace(/{{COMPANY_PHONE}}/g, config.COMPANY_PHONE)
       .replace(/{{COMPANY_EMAIL}}/g, config.COMPANY_EMAIL)
+      .replace(/{{PURCHASE_ORDER_NUMBER}}/g, purchaseOrder.orderNumber.toString())
       .replace(/{{SUPPLIER_NAME}}/g, supplier.name)
       .replace(/{{SUPPLIER_ADDRESS}}/g, supplier.address ?? '')
       .replace(/{{SUPPLIER_EMAIL}}/g, supplier.email ?? '')
       .replace(/{{SUPPLIER_PHONE}}/g, supplier.phone ?? '')
+      .replace(/{{SUPPLIER_CONTACT}}/g, supplier.contact ?? '')
+      .replace(/{{PURCHASE_ORDER_DELIVERY_LOCATION}}/g, purchaseOrder.deliveryLocation ?? '')
+      .replace(/{{PURCHASE_ORDER_EMITTER}}/g, purchaseOrder.emitter)
+      .replace(/{{PURCHASE_ORDER_CONDITIONS}}/g, purchaseOrder.conditions ?? '')
       .replace(/{{PURCHASE_ORDER_DATE}}/g, dayjs(purchaseOrder.orderedAt).format('DD/MM/YYYY'));
 
     const articleRowTemplate = `

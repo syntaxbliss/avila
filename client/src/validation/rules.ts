@@ -79,30 +79,18 @@ export const validationRules = {
   },
 
   date: (required: boolean = true) => {
-    const schema = z.string();
+    const schema = required
+      ? z.string().trim().min(1, 'Este campo es obligatorio.')
+      : z.string().trim();
 
-    return z
-      .preprocess(
-        val => {
-          const valAsString = String(val);
-          const date = dayjs(valAsString);
+    return schema.transform(val => {
+      const date = dayjs(val);
 
-          if (!date.isValid()) {
-            return '';
-          }
-
-          return valAsString;
-        },
-        required ? schema.min(1, 'Seleccione una fecha válida.') : schema
-      )
-      .transform(val => {
-        const date = dayjs(val);
-
-        if (!date.isValid()) {
-          return undefined;
-        }
-
+      if (date.isValid()) {
         return date.toDate();
-      });
+      }
+
+      return undefined;
+    });
   },
 };

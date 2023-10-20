@@ -66,6 +66,7 @@ PurchaseOrdersContainer.gql = {
           }
           items {
             id
+            orderNumber
             orderedAt
             deliveredAt
             totalAmount
@@ -96,6 +97,7 @@ PurchaseOrdersContainer.gql = {
 };
 
 const defaultFilters: SearchParams = {
+  orderNumber: '',
   orderedAtFrom: '',
   orderedAtTo: '',
   supplierId: '',
@@ -107,6 +109,7 @@ const defaultFilters: SearchParams = {
 
 export default function PurchaseOrdersContainer(): JSX.Element {
   const {
+    onDebouncedSearchParamsChange,
     onImmediateSearchParamsChange,
     onPaginationChange,
     onResetFilters,
@@ -119,7 +122,12 @@ export default function PurchaseOrdersContainer(): JSX.Element {
     variables: {
       ...queryVariables,
       searchParams: {
-        ..._.omit(queryVariables.searchParams, ['orderedAtFrom', 'orderedAtTo']),
+        ..._.omit(queryVariables.searchParams, ['orderedAtFrom', 'orderedAtTo', 'orderNumber']),
+        ...(queryVariables.searchParams.orderNumber &&
+        Number.isSafeInteger(parseInt(queryVariables.searchParams.orderNumber, 10)) &&
+        parseInt(queryVariables.searchParams.orderNumber, 10) > 0
+          ? { orderNumber: parseInt(queryVariables.searchParams.orderNumber, 10) }
+          : {}),
         ...(queryVariables.searchParams.orderedAtFrom
           ? { orderedAtFrom: dayjs(queryVariables.searchParams.orderedAtFrom).toDate() }
           : {}),
@@ -217,6 +225,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
       </Button>
 
       <PurchaseOrdersContainerFilters
+        onDebouncedChange={onDebouncedSearchParamsChange}
         onImmediateChange={onImmediateSearchParamsChange}
         onReset={onResetFilters}
         searchParams={searchParams}
@@ -241,6 +250,9 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                 <Table size="sm">
                   <Thead>
                     <Tr>
+                      <Th textAlign="center" w="0">
+                        #
+                      </Th>
                       <Th textAlign="center" w="20%">
                         Fecha de pedido
                       </Th>
@@ -261,6 +273,7 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                   <Tbody>
                     {purchaseOrdersQuery.data.purchaseOrders.items.map(purchaseOrder => (
                       <Tr key={purchaseOrder.id}>
+                        <Td textAlign="center">{purchaseOrder.orderNumber}</Td>
                         <Td textAlign="center">{humanReadableDate(purchaseOrder.orderedAt)}</Td>
                         <Td textAlign="center">
                           {purchaseOrder.deliveredAt ? (

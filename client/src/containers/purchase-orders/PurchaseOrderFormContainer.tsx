@@ -79,6 +79,9 @@ PurchaseOrderFormContainer.gql = {
       mutation PurchaseOrderFormContainerCreatePurchaseOrderMutation($input: CreatePurchaseOrderInput!) {
         createPurchaseOrder(input: $input) {
           id
+          emitter
+          deliveryLocation
+          conditions
           orderedAt
           deliveredAt
           deliveryNote
@@ -157,6 +160,9 @@ export default function PurchaseOrderFormContainer(): JSX.Element {
           variables: {
             input: {
               requestForQuotationId: generationData?.rfq?.id,
+              conditions: basicInfo.conditions,
+              deliveryLocation: basicInfo.deliveryLocation,
+              emitter: basicInfo.emitter,
               orderedAt: basicInfo.orderedAt,
               deliveredAt: 'deliveredAt' in basicInfo ? basicInfo.deliveredAt : undefined,
               deliveryNote: 'deliveryNote' in basicInfo ? basicInfo.deliveryNote : undefined,

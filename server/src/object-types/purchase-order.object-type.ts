@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Supplier } from './supplier.object-type';
 import { PurchaseOrderMaterial } from './purchase-order-material.object-type';
 import { PurchaseOrderPayment } from './purchase-order-payment.object-type';
@@ -8,6 +8,18 @@ import { PaginatedResponse } from './commons';
 export class PurchaseOrder {
   @Field(() => ID)
   id: string;
+
+  @Field(() => Int)
+  orderNumber: number;
+
+  @Field(() => String)
+  emitter: string;
+
+  @Field(() => String, { nullable: true })
+  deliveryLocation: string | null;
+
+  @Field(() => String, { nullable: true })
+  conditions: string | null;
 
   @Field(() => Date)
   orderedAt: Date;

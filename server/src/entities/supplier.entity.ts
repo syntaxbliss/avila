@@ -18,6 +18,9 @@ export default class SupplierEntity {
   @Column({ type: 'varchar', nullable: true })
   phone: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  contact: string | null;
+
   @OneToMany(() => MaterialSupplierEntity, materialSupplier => materialSupplier.supplier)
   materialSuppliers: MaterialSupplierEntity[];
 }

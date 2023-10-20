@@ -1,4 +1,4 @@
-import { Field, Float, ID, InputType, registerEnumType } from '@nestjs/graphql';
+import { Field, Float, ID, InputType, Int, registerEnumType } from '@nestjs/graphql';
 import { PaymentMethodEnum } from 'src/entities';
 import { z } from 'zod';
 import { QuerySortOrderEnum } from './commons';
@@ -43,6 +43,15 @@ export const purchaseOrderPaymentSchema = z.object({
 
 @InputType()
 export class CreatePurchaseOrderInput {
+  @Field(() => String)
+  emitter: string;
+
+  @Field(() => String, { nullable: true })
+  deliveryLocation: string | null;
+
+  @Field(() => String, { nullable: true })
+  conditions: string | null;
+
   @Field(() => Date)
   orderedAt: Date;
 
@@ -68,9 +77,12 @@ export class CreatePurchaseOrderInput {
   requestForQuotationId: string | null;
 }
 export const createPurchaseorderSchema = z.object({
+  emitter: z.string().trim().min(1).max(250),
+  deliveryLocation: z.string().trim().max(250).optional(),
+  conditions: z.string().trim().max(250).optional(),
   orderedAt: z.date(),
   deliveredAt: z.date().optional(),
-  deliveryNote: z.string().trim().optional(),
+  deliveryNote: z.string().trim().max(100).optional(),
   supplierId: z.string().trim().uuid(),
   updateStock: z.boolean(),
   materials: z.array(purchaseOrderMaterialSchema).min(1),
@@ -106,6 +118,9 @@ registerEnumType(SearchPurchaseOrderQuerySortFieldEnum, {
 
 @InputType()
 export class SearchPurchaseOrderInput {
+  @Field(() => Int, { nullable: true })
+  orderNumber: number | null;
+
   @Field(() => Date, { nullable: true })
   orderedAtFrom: Date | null;
 

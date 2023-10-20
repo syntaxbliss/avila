@@ -1,7 +1,6 @@
 import { useSuspenseQuery } from '@apollo/client';
 import {
   Button,
-  Flex,
   Modal,
   ModalBody,
   ModalContent,
@@ -61,6 +60,10 @@ PurchaseOrdersContainerDetailContent.gql = {
       query PurchaseOrdersContainerDetailContentPuchaseOrderQuery ($purchaseOrderId: ID!) {
         purchaseOrder (purchaseOrderId: $purchaseOrderId) {
           id
+          orderNumber
+          emitter
+          conditions
+          deliveryLocation
           orderedAt
           deliveredAt
           deliveryNote
@@ -113,32 +116,55 @@ function PurchaseOrdersContainerDetailContent({
       <ModalBody>
         <DividerWithText text="Orden" mb="5" />
 
-        <Flex alignItems="center">
+        <Text>
+          <Text as="span" fontWeight="bold">
+            Fecha de pedido:
+          </Text>{' '}
+          {humanReadableDate(data.purchaseOrder.orderedAt)}
+        </Text>
+
+        <Text>
+          <Text as="span" fontWeight="bold">
+            Solicitante:
+          </Text>{' '}
+          {data.purchaseOrder.emitter}
+        </Text>
+
+        {data.purchaseOrder.deliveryLocation && (
           <Text>
             <Text as="span" fontWeight="bold">
-              Fecha de pedido:
+              Lugar de entrega:
             </Text>{' '}
-            {humanReadableDate(data.purchaseOrder.orderedAt)}
+            {data.purchaseOrder.deliveryLocation}
           </Text>
+        )}
 
-          {data.purchaseOrder.deliveredAt && (
-            <Text ml="10">
-              <Text as="span" fontWeight="bold">
-                Fecha de entrega:
-              </Text>{' '}
-              {humanReadableDate(data.purchaseOrder.deliveredAt)}
-            </Text>
-          )}
+        {data.purchaseOrder.conditions && (
+          <Text>
+            <Text as="span" fontWeight="bold">
+              Condiciones:
+            </Text>{' '}
+            {data.purchaseOrder.conditions}
+          </Text>
+        )}
 
-          {data.purchaseOrder.deliveryNote && (
-            <Text ml="10">
-              <Text as="span" fontWeight="bold">
-                Remito:
-              </Text>{' '}
-              {data.purchaseOrder.deliveryNote}
-            </Text>
-          )}
-        </Flex>
+        {data.purchaseOrder.deliveredAt && (
+          <Text>
+            <Text as="span" fontWeight="bold">
+              Fecha de entrega:
+            </Text>{' '}
+            {humanReadableDate(data.purchaseOrder.deliveredAt)}
+          </Text>
+        )}
+
+        {data.purchaseOrder.deliveryNote && (
+          <Text>
+            <Text as="span" fontWeight="bold">
+              Remito:
+            </Text>{' '}
+            {data.purchaseOrder.deliveryNote}
+          </Text>
+        )}
 
         <DividerWithText text="Materiales" mt="8" mb="5" />
 
