@@ -36,6 +36,9 @@ import {
   Supplier,
 } from 'src/object-types';
 import { DataSource, FindOneOptions, In, IsNull, Not } from 'typeorm';
+import * as puppeteer from 'puppeteer';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Resolver(() => PurchaseOrder)
 export default class PurchaseOrderResolver {
@@ -313,6 +316,37 @@ export default class PurchaseOrderResolver {
 
       return true;
     });
+  }
+
+  @Mutation(() => String)
+  async printPurchaseOrder(): Promise<string> {
+    // copy template
+    const baseDir = path.join(__dirname, '..', 'assets', 'purchase-order');
+    const outputDir = path.join(__dirname, '..', 'assets', 'download');
+    const templateFilename = 'template.html';
+    const outputHtmlFilename = `orden-de-compra-${dayjs().format('YYYY_MM_DD_HH_mm_ss')}`;
+
+    // fill content
+    const content = fs
+      .readFileSync(path.join(baseDir, templateFilename), 'utf8')
+      .replace(/{{COMPANY_NAME}}/g, 'Carpincho Corp.');
+    fs.writeFileSync(path.join(outputDir, `${outputHtmlFilename}.html`), content, 'utf-8');
+
+    // generate pdf
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+    const downloadBaseUrl = `http://localhost:8000/download`;
+    const downloadFilename = `${outputHtmlFilename}.pdf`;
+    await page.goto(`${downloadBaseUrl}/${outputHtmlFilename}.html`, { waitUntil: 'networkidle0' });
+    await page.pdf({
+      path: path.join(outputDir, downloadFilename),
+      format: 'A4',
+      margin: { top: 20, bottom: 20, left: 20, right: 20 },
+      printBackground: true,
+    });
+    await browser.close();
+
+    return `${downloadBaseUrl}/${downloadFilename}`;
   }
 
   @ResolveField()

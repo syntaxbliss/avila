@@ -439,7 +439,7 @@ function EligibleRequestsForQuotationList({
             </Box>
           ))
         ) : (
-          <NoRecordsAlert entity="pedidos de cotización elegibles para órdenes de compra." />
+          <NoRecordsAlert entity="pedidos de cotización elegibles para órdenes de compra" />
         )}
       </VStack>
 

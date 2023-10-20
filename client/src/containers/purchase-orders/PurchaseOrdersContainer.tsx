@@ -31,6 +31,7 @@ import {
   MdLocalShipping,
   MdOutlineDelete,
   MdPayments,
+  MdPrint,
 } from 'react-icons/md';
 import { gql } from '../../__generated__';
 import { ApolloError, useMutation, useQuery } from '@apollo/client';
@@ -78,10 +79,17 @@ PurchaseOrdersContainer.gql = {
       }
     `),
   },
+
   mutations: {
     deletePurchaseOrder: gql(`
       mutation PurchaseOrdersContainerDeletePurchaseOrderMutation ($purchaseOrderId: ID!) {
         deletePurchaseOrder (purchaseOrderId: $purchaseOrderId)
+      }
+    `),
+
+    printPurchaseOrder: gql(`
+      mutation PurchaseOrdersContainerPrintPurchaseOrderMutation {
+        printPurchaseOrder
       }
     `),
   },
@@ -124,6 +132,10 @@ export default function PurchaseOrdersContainer(): JSX.Element {
 
   const [deletePurchaseOrderMutation, deletePurchaseOrderMutationStatus] = useMutation(
     PurchaseOrdersContainer.gql.mutations.deletePurchaseOrder
+  );
+
+  const [printPurchaseOrderMutation, printPurchaseOrderMutationStatus] = useMutation(
+    PurchaseOrdersContainer.gql.mutations.printPurchaseOrder
   );
 
   const toast = useToast();
@@ -174,6 +186,11 @@ export default function PurchaseOrdersContainer(): JSX.Element {
       }
     }
   }, [deleteDialog, deletePurchaseOrderMutation, purchaseOrdersQuery, toDelete, toast]);
+
+  // FIXME
+  const handlePrintClick = useCallback(async () => {
+    await printPurchaseOrderMutation();
+  }, [printPurchaseOrderMutation]);
 
   return (
     <>
@@ -291,6 +308,16 @@ export default function PurchaseOrdersContainer(): JSX.Element {
                             ml="1"
                             onClick={() => setToRegisterPayment(purchaseOrder as PurchaseOrder)}
                             isDisabled={purchaseOrder.totalAmount - purchaseOrder.paidAmount === 0}
+                          />
+
+                          <IconButton
+                            aria-label="print"
+                            colorScheme="blue"
+                            rounded="full"
+                            icon={<MdPrint />}
+                            size="xs"
+                            ml="1"
+                            onClick={handlePrintClick}
                           />
 
                           <IconButton

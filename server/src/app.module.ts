@@ -41,6 +41,7 @@ import {
   SupplierLoader,
 } from './loaders';
 import RequestForQuotationMaterialResolver from './resolvers/request-for-quotation-material.resolver';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 const entities = [
   MachineElementEntity,
@@ -81,6 +82,7 @@ const loaders = [
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    ServeStaticModule.forRoot({ rootPath: path.join(__dirname, 'assets') }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'mysql',
